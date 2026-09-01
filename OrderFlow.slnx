@@ -1,1 +1,12 @@
-<Solution />
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OrderFlow.API/OrderFlow.API.csproj" />
+    <Project Path="src/OrderFlow.Application/OrderFlow.Application.csproj" />
+    <Project Path="src/OrderFlow.Domain/OrderFlow.Domain.csproj" />
+    <Project Path="src/OrderFlow.Infrastructure/OrderFlow.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OrderFlow.IntegrationTests/OrderFlow.IntegrationTests.csproj" Id="44004447-0885-4196-9697-1a5f62619b89" />
+    <Project Path="tests/OrderFlow.Tests/OrderFlow.Tests.csproj" Id="919f980e-6034-488f-8cf9-5cbca43da885" />
+  </Folder>
+</Solution>
