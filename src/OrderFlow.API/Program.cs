@@ -15,6 +15,8 @@ var app = builder.Build();
         app.MapOpenApi();
         app.MapScalarApiReference();
     }
+
+    app.UseExceptionHandler();
     app.UseHttpsRedirection();
     app.MapControllers();
     app.Run();
