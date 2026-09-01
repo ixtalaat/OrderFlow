@@ -1,23 +1,42 @@
 using OrderFlow.API;
 using OrderFlow.Infrastructure;
 using Scalar.AspNetCore;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
-{
-    builder.Services.AddAPI();
-    builder.Services.AddInfrastructure(builder.Configuration);
-}
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-var app = builder.Build();
+try
 {
-    if (app.Environment.IsDevelopment())
+    Log.Information("Starting OrderFlow API");
+    var builder = WebApplication.CreateBuilder(args);
     {
-        app.MapOpenApi();
-        app.MapScalarApiReference();
+        builder.Services.AddAPI(builder.Configuration);
+        builder.Services.AddInfrastructure(builder.Configuration);
     }
 
-    app.UseExceptionHandler();
-    app.UseHttpsRedirection();
-    app.MapControllers();
-    app.Run();
+    var app = builder.Build();
+    {
+        app.UseSerilogRequestLogging();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapOpenApi();
+            app.MapScalarApiReference();
+        }
+
+        app.UseExceptionHandler();
+        app.UseHttpsRedirection();
+        app.MapControllers();
+        app.Run();
+    }
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "OrderFlow API terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
 }
