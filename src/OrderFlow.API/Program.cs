@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using OrderFlow.API;
+using OrderFlow.API.HealthChecks;
 using OrderFlow.Infrastructure;
 using Scalar.AspNetCore;
 using Serilog;
@@ -27,8 +29,16 @@ try
         }
 
         app.UseExceptionHandler();
+
         app.UseHttpsRedirection();
+
         app.MapControllers();
+
+        app.MapHealthChecks("/health", new HealthCheckOptions
+        {
+            ResponseWriter = HealthCheckResponseWriter.WriteResponseAsync
+        });
+
         app.Run();
     }
 }

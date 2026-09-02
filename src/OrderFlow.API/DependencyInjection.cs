@@ -1,4 +1,5 @@
 ﻿using OrderFlow.API.ExceptionHandling;
+using OrderFlow.Infrastructure.Persistence;
 using Serilog;
 
 namespace OrderFlow.API;
@@ -31,6 +32,12 @@ public static class DependencyInjection
                     context.HttpContext.TraceIdentifier;
             };
         });
+
+        services
+            .AddHealthChecks()
+            .AddDbContextCheck<ApplicationDbContext>(
+                name: "database",
+                tags: ["ready"]);
 
         return services;
     }
