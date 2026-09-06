@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using OrderFlow.API;
 using OrderFlow.API.HealthChecks;
 using OrderFlow.Infrastructure;
+using OrderFlow.Infrastructure.Identity;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -18,8 +19,15 @@ try
         builder.Services.AddInfrastructure(builder.Configuration);
     }
 
+
+
     var app = builder.Build();
     {
+        using (var scope = app.Services.CreateScope())
+        {
+            await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+        }
+
         app.UseSerilogRequestLogging();
 
         if (app.Environment.IsDevelopment())

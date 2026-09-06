@@ -32,6 +32,9 @@ public static class DependencyInjection
             options.User.RequireUniqueEmail = true;
         });
 
+        services.Configure<AdminSeedOptions>(
+            configuration.GetSection(AdminSeedOptions.SectionName));
+
         return services;
     }
 }
