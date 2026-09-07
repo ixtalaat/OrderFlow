@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using OrderFlow.Application.Authentication;
+using OrderFlow.Infrastructure.Authentication;
 using OrderFlow.Infrastructure.Identity;
 using OrderFlow.Infrastructure.Persistence;
+using System.Text;
 
 namespace OrderFlow.Infrastructure;
 
@@ -34,6 +39,46 @@ public static class DependencyInjection
 
         services.Configure<AdminSeedOptions>(
             configuration.GetSection(AdminSeedOptions.SectionName));
+
+        services.Configure<JwtOptions>(
+            configuration.GetSection(JwtOptions.SectionName));
+
+        services
+        .AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+
+            options.DefaultChallengeScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            var jwtOptions = configuration
+                .GetSection(JwtOptions.SectionName)
+                .Get<JwtOptions>()
+                ?? throw new InvalidOperationException(
+                    "JWT configuration is missing.");
+
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtOptions.Issuer,
+
+                ValidateAudience = true,
+                ValidAudience = jwtOptions.Audience,
+
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
+
+                ValidateLifetime = true,
+
+                ClockSkew = TimeSpan.Zero
+            };
+        });
+
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         return services;
     }
