@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using OrderFlow.Application.Authentication;
-using OrderFlow.Infrastructure.Authentication;
+using OrderFlow.Application.Auth;
+using OrderFlow.Infrastructure.Auth;
 using OrderFlow.Infrastructure.Identity;
 using OrderFlow.Infrastructure.Persistence;
 using System.Text;
@@ -79,6 +79,8 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IAuthService, AuthService>();
+
 
         return services;
     }

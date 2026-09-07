@@ -1,4 +1,4 @@
-﻿namespace OrderFlow.Infrastructure.Authentication;
+﻿namespace OrderFlow.Infrastructure.Auth;
 
 public sealed class JwtOptions
 {

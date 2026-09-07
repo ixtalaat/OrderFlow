@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using OrderFlow.API;
 using OrderFlow.API.HealthChecks;
+using OrderFlow.Application;
 using OrderFlow.Infrastructure;
 using OrderFlow.Infrastructure.Identity;
 using Scalar.AspNetCore;
@@ -17,6 +18,7 @@ try
     {
         builder.Services.AddAPI(builder.Configuration);
         builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddApplication();
     }
 
 
@@ -39,6 +41,10 @@ try
         app.UseExceptionHandler();
 
         app.UseHttpsRedirection();
+
+        app.UseAuthentication();
+
+        app.UseAuthorization();
 
         app.MapControllers();
 

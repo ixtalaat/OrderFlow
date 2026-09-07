@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using OrderFlow.Application.Authentication;
+using OrderFlow.Application.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace OrderFlow.Infrastructure.Authentication;
+namespace OrderFlow.Infrastructure.Auth;
 
 internal class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenService
 {

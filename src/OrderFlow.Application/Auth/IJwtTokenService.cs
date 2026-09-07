@@ -1,4 +1,4 @@
-﻿namespace OrderFlow.Application.Authentication;
+﻿namespace OrderFlow.Application.Auth;
 
 public interface IJwtTokenService
 {

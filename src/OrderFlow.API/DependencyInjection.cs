@@ -1,6 +1,7 @@
 ﻿using OrderFlow.API.ExceptionHandling;
 using OrderFlow.Infrastructure.Persistence;
 using Serilog;
+using System.Reflection;
 
 namespace OrderFlow.API;
 
