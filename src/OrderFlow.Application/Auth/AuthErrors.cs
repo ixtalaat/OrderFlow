@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using OrderFlow.Application.Common.Results;
 
 namespace OrderFlow.Application.Auth;
@@ -13,7 +13,7 @@ public static class AuthErrors
     public static readonly Error EmailAlreadyExists =
         new(
             "Authentication.EmailAlreadyExists",
-            "Email is already registered.", StatusCodes.Status409Conflict);
+            "Email is already registered.", StatusCodes.Status400BadRequest);
 
     public static readonly Error UserCreationFailed =
         new(

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderFlow.API.Abstractions;
 using OrderFlow.Application.Auth;
 using OrderFlow.Application.Auth.DTOs;
+using OrderFlow.Application.Common.Constants;
 using System.Security.Claims;
 
 namespace OrderFlow.API.Controllers;
@@ -64,6 +65,16 @@ public class AuthController : ControllerBase
             Id = userId,
             Email = email,
             Roles = roles
+        });
+    }
+
+    [Authorize(Roles = Roles.Admin)]
+    [HttpGet("admin")]
+    public IActionResult Admin()
+    {
+        return Ok(new
+        {
+            Message = "You are an admin."
         });
     }
 }
