@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrderFlow.Application.Common.Constants;
+using OrderFlow.Infrastructure.Persistence;
 
 namespace OrderFlow.Infrastructure.Identity;
 
@@ -10,6 +11,11 @@ public static class IdentitySeeder
     public static async Task SeedAsync(
         IServiceProvider services)
     {
+        var db =
+            services.GetRequiredService<ApplicationDbContext>();
+
+        await db.Database.EnsureCreatedAsync();
+
         var roleManager =
             services.GetRequiredService<RoleManager<IdentityRole>>();
 
