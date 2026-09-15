@@ -1,0 +1,17 @@
+{
+  "Version": 1,
+  "ProjectRoot": "C:\\Users\\ixtalaat\\Desktop\\repos\\OrderFlow",
+  "Skills": [
+    "aspnet-core",
+    "coverage-analysis",
+    "coverlet",
+    "entity-framework-core",
+    "microsoft-extensions",
+    "minimal-api-file-upload",
+    "optimizing-ef-core-queries",
+    "xunit",
+    "grill-me",
+    "ponytaill"
+  ],
+  "UpdatedAt": "2026-09-15T13:55:48.1645128+00:00"
+}
