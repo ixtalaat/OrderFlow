@@ -2,7 +2,7 @@
 
 ## Files
 
-- `OrderFlow.postman_collection.json` — authentication and Epic 2 customer-management requests.
+- `OrderFlow.postman_collection.json` — authentication, Epic 2 customer-management, and Epic 3 product-catalog requests.
 - `OrderFlow.postman_environment.json` — local URL, credentials, JWT, customer ID, and pagination variables.
 
 ## Import and setup
@@ -22,4 +22,4 @@
 5. The create request stores the returned profile ID in `customerId`; use it for get, update, activate, and deactivate requests.
 6. Configure `searchTerm`, `isActive`, `pageNumber`, and `pageSize` before running `List Customers`.
 
-The collection reflects the current API routes. Registration and login are public; `/api/auth/me` requires authentication; admin authorization requires the Admin role; customer management requires Admin or SalesEmployee except for owner-protected customer reads.
+The collection reflects the current API routes. Registration and login are public; `/api/auth/me` requires authentication; admin authorization requires the Admin role; customer and product management requires Admin or SalesEmployee. Customer product reads only expose active products.

@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "orderflow-api",
     "name": "OrderFlow API",
-    "description": "OrderFlow authentication and Epic 2 customer-management requests. Select the OrderFlow Local environment before running the collection.",
+    "description": "OrderFlow authentication, Epic 2 customer-management, and Epic 3 product-catalog requests. Select the OrderFlow Local environment before running the collection.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "event": [

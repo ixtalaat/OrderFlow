@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 3 — Product Catalog
+
+Product management is implemented across Domain, Application, Infrastructure, API, and tests. Products support protected fields, normalized unique SKUs, on-demand categories, activation/deactivation, management CRUD, paginated search, and customer-visible active-only reads. Migration `AddProductCatalog` adds product/category tables and unique indexes. Verification: 50 unit tests and 24 integration tests pass.
+
 ## Epic 2 — Customer Management
 
 Customer management is implemented across the Domain, Application, Infrastructure, API, unit-test, and integration-test layers.
