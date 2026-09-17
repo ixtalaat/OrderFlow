@@ -1,4 +1,5 @@
 using MediatR;
+using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Customers;
@@ -10,7 +11,7 @@ using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Application.Orders.Commands.CreateOrder;
 
-public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IProductRepository products, IInventoryRepository inventories, IPricingService pricing, IOrderRepository orders, IUnitOfWork unitOfWork) : IRequestHandler<CreateOrderCommand, Result<OrderResponse>>
+public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IProductRepository products, IInventoryRepository inventories, IPricingService pricing, IOrderRepository orders, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs) : IRequestHandler<CreateOrderCommand, Result<OrderResponse>>
 {
     public async Task<Result<OrderResponse>> Handle(CreateOrderCommand command, CancellationToken ct)
     {
@@ -31,6 +32,7 @@ public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IPr
         order.Submit();
         await orders.AddAsync(order, ct);
         await unitOfWork.SaveChangesAsync(ct);
+        backgroundJobs.EnqueueOrderNotification(order.Id);
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

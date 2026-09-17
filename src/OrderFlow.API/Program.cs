@@ -1,5 +1,7 @@
+using Hangfire;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using OrderFlow.API;
+using OrderFlow.API.BackgroundProcessing;
 using OrderFlow.API.HealthChecks;
 using OrderFlow.Application;
 using OrderFlow.Infrastructure;
@@ -31,6 +33,14 @@ try
         }
 
         app.UseSerilogRequestLogging();
+
+        if (app.Services.GetService<IBackgroundJobClient>() is not null)
+        {
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = [new HangfireDashboardAuthorizationFilter()]
+            });
+        }
 
         if (app.Environment.IsDevelopment())
         {

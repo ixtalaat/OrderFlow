@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using OrderFlow.Application.Auth;
+using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Application.Common.Identity;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Customers;
@@ -14,6 +16,7 @@ using OrderFlow.Application.Pricing;
 using OrderFlow.Application.Pricing.Strategies;
 using OrderFlow.Application.Products;
 using OrderFlow.Infrastructure.Auth;
+using OrderFlow.Infrastructure.BackgroundProcessing;
 using OrderFlow.Infrastructure.Customers;
 using OrderFlow.Infrastructure.Identity;
 using OrderFlow.Infrastructure.Persistence;
@@ -29,8 +32,19 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+
+        if (connectionString?.StartsWith("DataSource=", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            services.AddSingleton<IBackgroundJobScheduler, NoOpBackgroundJobScheduler>();
+        }
+        else
+        {
+            services.AddHangfire(config => config.UseSqlServerStorage(connectionString));
+            services.AddHangfireServer(options => options.WorkerCount = Math.Max(1, Environment.ProcessorCount / 2));
+            services.AddSingleton<IBackgroundJobScheduler, HangfireJobScheduler>();
+        }
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()

@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 7 — Background Processing
+
+Configured Hangfire with SQL Server storage and a background job scheduler abstraction. Order creation queues notification jobs and order completion queues accounting synchronization jobs after successful persistence. Jobs use structured logging, three automatic retries, failed-state retention, and a role-protected `/hangfire` dashboard. SQLite test environments use a no-op scheduler.
+
 ## Epic 6 — Customer-Specific Pricing
 
 Implemented Regular, Wholesale, and VIP customer tiers, validity-window pricing rules, strategy-based price calculation, tier assignment, customer catalog pricing, and order price snapshots. Admins manage pricing rules; SalesEmployees/Admins can change customer tiers. Historical OrderItem prices remain unchanged after pricing rules change. Documentation: `docs/pricing/customer-specific-pricing.md`.
