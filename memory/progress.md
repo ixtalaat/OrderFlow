@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 15 — CI/CD (US-17)
+
+`.github/workflows/ci.yml`: build + unit tests with coverage, integration tests (TRX reports on PRs), Docker build of both images with GHCR push on master (`:sha` + `:latest`), and a master-only compose deploy smoke test (readiness + admin login, ephemeral secrets, full teardown). Failed tests block everything downstream. See `docs/cicd/deployment.md`.
+
 ## Epic 14 — Docker (US-16)
 
 Multi-stage Dockerfiles for the API and fake accounting API, `docker-compose.yml` (SQL Server 2022 with healthcheck + persistent `mssql-data` volume, fake accounting, API with env-based config), `.env.example`, and `docs/docker/docker-setup.md`. Verified live: images build, clean startup with migrations + admin seed, `/health/ready` Healthy, admin login, product/stock/order/confirm flow with real accounting invoice, and data surviving compose down/up. No Redis (not in stack).
