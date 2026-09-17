@@ -17,6 +17,7 @@ public sealed class InventoryTests
         inventory.Quantity.Should().Be(8);
         inventory.ReservedQuantity.Should().Be(1);
         inventory.AvailableQuantity.Should().Be(7);
+        inventory.Version.Should().Be(4);
     }
 
     [Fact]
