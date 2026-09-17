@@ -1,13 +1,15 @@
 using MediatR;
 using OrderFlow.Application.Common.Persistence;
+using OrderFlow.Application.Inventory;
 using OrderFlow.Application.Products;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Products.DTOs;
 using OrderFlow.Domain.Entities;
+using DomainInventory = OrderFlow.Domain.Entities.Inventory;
 
 namespace OrderFlow.Application.Products.Commands.CreateProduct;
 
-public sealed class CreateProductCommandHandler(IProductRepository products, IProductInventoryRepository inventories, IUnitOfWork unitOfWork) : IRequestHandler<CreateProductCommand, Result<ProductResponse>>
+public sealed class CreateProductCommandHandler(IProductRepository products, IInventoryRepository inventories, IUnitOfWork unitOfWork) : IRequestHandler<CreateProductCommand, Result<ProductResponse>>
 {
     public async Task<Result<ProductResponse>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
@@ -18,7 +20,7 @@ public sealed class CreateProductCommandHandler(IProductRepository products, IPr
         var product = Product.Create(command.Name, command.Description, sku, command.Price, category.Id);
         await products.AddAsync(product, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await inventories.AddAsync(ProductInventory.Create(product.Id), cancellationToken);
+        await inventories.AddAsync(DomainInventory.Create(product.Id), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success(new ProductResponse(product.Id, product.Name, product.Description, product.Sku, product.Price, category.Id, category.Name, product.IsActive, product.CreatedAtUtc, product.UpdatedAtUtc));
     }

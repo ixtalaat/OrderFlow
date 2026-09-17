@@ -43,7 +43,7 @@ public sealed class ProductRepository(ApplicationDbContext db) : IProductReposit
 
     public async Task<CatalogProductResponse?> GetCatalogResponseByIdAsync(int id, CancellationToken cancellationToken = default)
         => await db.Products.AsNoTracking().Where(x => x.Id == id && x.IsActive)
-            .Select(x => new CatalogProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Category.Name, x.Price, x.ProductInventory.AvailableQuantity))
+            .Select(x => new CatalogProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Category.Name, x.Price, x.Inventory.AvailableQuantity))
             .FirstOrDefaultAsync(cancellationToken);
 
     public async Task<PagedList<CatalogProductResponse>> GetCatalogPagedListAsync(CatalogQueryParams parameters, CancellationToken cancellationToken = default)
@@ -57,7 +57,7 @@ public sealed class ProductRepository(ApplicationDbContext db) : IProductReposit
         var total = await query.CountAsync(cancellationToken);
         var page = parameters.PageNumber; var size = parameters.PageSize;
         var items = await query.OrderBy(x => x.Name).ThenBy(x => x.Id).Skip((page - 1) * size).Take(size)
-            .Select(x => new CatalogProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Category.Name, x.Price, x.ProductInventory.AvailableQuantity))
+            .Select(x => new CatalogProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Category.Name, x.Price, x.Inventory.AvailableQuantity))
             .ToListAsync(cancellationToken);
         return new PagedList<CatalogProductResponse>(items, total, page, size);
     }

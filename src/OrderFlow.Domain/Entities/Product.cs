@@ -18,7 +18,7 @@ public sealed class Product
     public decimal Price { get; private set; }
     public int CategoryId { get; private set; }
     public Category Category { get; private set; } = null!;
-    public ProductInventory ProductInventory { get; private set; } = null!;
+    public Inventory Inventory { get; private set; } = null!;
     public bool IsActive { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }

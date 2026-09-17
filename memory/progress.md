@@ -2,7 +2,7 @@
 
 ## Epic 3 — Customer Product Catalog
 
-Added customer-facing catalog queries and `ProductCatalogController`. Customers can search active products by name or SKU with database pagination and receive current price plus available quantity. A one-to-one `ProductInventory` record is created at product creation with quantity zero; stock operations remain reserved for the next Inventory Management epic. Verification: catalog integration tests cover authorization, search, pagination, price, availability, and inactive-product hiding.
+Added customer-facing catalog queries and `ProductCatalogController`. Customers can search active products by name or SKU with database pagination and receive current price plus available quantity. A one-to-one `Inventory` record is created at product creation with quantity zero. Inventory management now supports add, reserve, release, confirm, and adjustment operations with available quantity calculated as quantity minus reserved quantity. Verification: catalog integration tests cover authorization, search, pagination, price, availability, and inactive-product hiding.
 
 ## Epic 3 — Product Catalog
 

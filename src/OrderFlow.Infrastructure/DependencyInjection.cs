@@ -8,6 +8,7 @@ using OrderFlow.Application.Auth;
 using OrderFlow.Application.Common.Identity;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Customers;
+using OrderFlow.Application.Inventory;
 using OrderFlow.Application.Products;
 using OrderFlow.Infrastructure.Auth;
 using OrderFlow.Infrastructure.Customers;
@@ -91,7 +92,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<IProductInventoryRepository, ProductInventoryRepository>();
+        services.AddScoped<IInventoryRepository, InventoryRepository>();
 
         return services;
     }

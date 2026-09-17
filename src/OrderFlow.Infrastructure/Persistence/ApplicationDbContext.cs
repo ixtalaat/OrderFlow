@@ -10,7 +10,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Category> Categories => Set<Category>();
-    public DbSet<ProductInventory> ProductInventories => Set<ProductInventory>();
+    public DbSet<Inventory> Inventories => Set<Inventory>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

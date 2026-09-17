@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using OrderFlow.Application.Common.Exceptions;
 
 namespace OrderFlow.API.ExceptionHandling;
@@ -23,6 +24,7 @@ public sealed class GlobalExceptionHandler(
             NotFoundException => StatusCodes.Status404NotFound,
             ValidationException => StatusCodes.Status400BadRequest,
             ConflictException => StatusCodes.Status409Conflict,
+            DbUpdateConcurrencyException => StatusCodes.Status409Conflict,
             UnauthorizedException => StatusCodes.Status401Unauthorized,
             ForbiddenException => StatusCodes.Status403Forbidden,
             _ => StatusCodes.Status500InternalServerError
