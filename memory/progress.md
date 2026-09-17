@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 13 — Testing (US-15)
+
+Coverage audit (Coverlet) drove the work: added validator tests (order/product/pricing/paged queries), pricing service and validity-window tests, domain transition/exception tests, `AccountingService` retry/timeout/idempotency unit tests, accounting-sync persistence tests, order rollback and full-workflow integration tests. Removed one duplicated validator test. Strategy recorded in `docs/testing/test-strategy.md`.
+
 ## Epic 12 — Observability (US-14)
 
 Requests are traceable via `X-Correlation-ID` (accepted or generated, echoed on responses including errors, enriched into every Serilog event and problem-details `traceId`). Order lifecycle and inventory handlers log ID-only business operations; accounting/outbox/email integration outcomes were already logged. Health split into `/health` + `/health/ready` (EF Core database check) and check-free `/health/live`; no Redis check (no Redis in stack). Exception-to-status mappings pinned by unit tests; health and correlation covered by integration tests. See `docs/observability/observability.md`.

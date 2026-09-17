@@ -1,6 +1,5 @@
 using FluentAssertions;
 using OrderFlow.Application.Products;
-using OrderFlow.Application.Products.Commands.CreateProduct;
 using OrderFlow.Application.Products.DTOs;
 using OrderFlow.Domain.Entities;
 
@@ -29,13 +28,5 @@ public class ProductTests
     {
         var action = () => Product.Create("Widget", "Description", "WD-001", -1, 1);
         action.Should().Throw<ArgumentOutOfRangeException>();
-    }
-
-    [Fact]
-    public void Validator_Should_Reject_Missing_Required_Fields()
-    {
-        var result = new CreateProductCommandValidator().Validate(
-            new CreateProductCommand("", "", "bad sku", -1, ""));
-        result.IsValid.Should().BeFalse();
     }
 }

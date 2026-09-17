@@ -46,4 +46,49 @@ public sealed class InventoryTests
         FluentActions.Invoking(() => inventory.AddStock(0)).Should().Throw<ArgumentOutOfRangeException>();
         FluentActions.Invoking(() => inventory.ReserveStock(-1)).Should().Throw<ArgumentOutOfRangeException>();
     }
+
+    [Fact]
+    public void Reserve_Should_Accept_Exact_Available_Quantity()
+    {
+        var inventory = InventoryEntity.Create(1);
+        inventory.AddStock(5);
+        inventory.ReserveStock(5);
+        inventory.AvailableQuantity.Should().Be(0);
+    }
+
+    [Fact]
+    public void Release_Should_Reject_More_Than_Reserved()
+    {
+        var inventory = InventoryEntity.Create(1);
+        inventory.AddStock(5);
+        inventory.ReserveStock(2);
+        FluentActions.Invoking(() => inventory.ReleaseStock(3)).Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Confirm_Should_Reject_More_Than_Reserved()
+    {
+        var inventory = InventoryEntity.Create(1);
+        inventory.AddStock(5);
+        inventory.ReserveStock(2);
+        FluentActions.Invoking(() => inventory.ConfirmStock(3)).Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Adjust_Should_Accept_Quantity_Equal_To_Reserved()
+    {
+        var inventory = InventoryEntity.Create(1);
+        inventory.AddStock(5);
+        inventory.ReserveStock(3);
+        inventory.AdjustStock(-2);
+        inventory.Quantity.Should().Be(3);
+    }
+
+    [Fact]
+    public void Adjust_Should_Reject_Zero_Quantity()
+    {
+        var inventory = InventoryEntity.Create(1);
+        inventory.AddStock(5);
+        FluentActions.Invoking(() => inventory.AdjustStock(0)).Should().Throw<ArgumentOutOfRangeException>();
+    }
 }

@@ -30,4 +30,52 @@ public sealed class OrderTests
     {
         FluentActions.Invoking(() => OrderItem.Create(1, 0, 10)).Should().Throw<ArgumentOutOfRangeException>();
     }
+
+    [Fact]
+    public void Order_Should_Reject_Double_Submit()
+    {
+        var order = Order.Create(1);
+        order.Submit();
+        FluentActions.Invoking(order.Submit).Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Order_Should_Reject_Confirm_From_Draft()
+    {
+        var order = Order.Create(1);
+        FluentActions.Invoking(order.Confirm).Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Order_Should_Reject_Reject_After_Confirm()
+    {
+        var order = Order.Create(1);
+        order.Submit();
+        order.Confirm();
+        FluentActions.Invoking(order.Reject).Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Order_Should_Reject_Process_Before_Confirm()
+    {
+        var order = Order.Create(1);
+        order.Submit();
+        FluentActions.Invoking(order.Process).Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Order_Should_Reject_Complete_Before_Processing()
+    {
+        var order = Order.Create(1);
+        order.Submit();
+        order.Confirm();
+        FluentActions.Invoking(order.Complete).Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Order_Should_Reject_Null_Item()
+    {
+        var order = Order.Create(1);
+        FluentActions.Invoking(() => order.AddItem(null!)).Should().Throw<ArgumentNullException>();
+    }
 }
