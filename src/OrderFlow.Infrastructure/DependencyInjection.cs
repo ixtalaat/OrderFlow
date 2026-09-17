@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using OrderFlow.Application.Auth;
+using OrderFlow.Application.Accounting;
 using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Application.Common.Identity;
 using OrderFlow.Application.Common.Persistence;
@@ -17,6 +18,7 @@ using OrderFlow.Application.Pricing;
 using OrderFlow.Application.Pricing.Strategies;
 using OrderFlow.Application.Products;
 using OrderFlow.Infrastructure.Auth;
+using OrderFlow.Infrastructure.Accounting;
 using OrderFlow.Infrastructure.BackgroundProcessing;
 using OrderFlow.Infrastructure.Customers;
 using OrderFlow.Infrastructure.Identity;
@@ -84,6 +86,17 @@ public static class DependencyInjection
             .Validate(x => x.ExpirationMinutes > 0, "Jwt:ExpirationMinutes must be positive.")
             .Validate(x => x.SecretKey.Length >= 32, "Jwt:SecretKey must be at least 32 characters.")
             .ValidateOnStart();
+        services.AddOptions<AccountingOptions>()
+            .Bind(configuration.GetSection(AccountingOptions.SectionName))
+            .Validate(x => Uri.TryCreate(x.BaseUrl, UriKind.Absolute, out _), "Accounting:BaseUrl must be an absolute URI.")
+            .Validate(x => x.TimeoutSeconds > 0 && x.RetryCount >= 0, "Accounting timeout and retry settings are invalid.")
+            .ValidateOnStart();
+        services.AddHttpClient<IAccountingService, AccountingService>(client =>
+        {
+            var options = configuration.GetSection(AccountingOptions.SectionName).Get<AccountingOptions>() ?? new AccountingOptions();
+            client.BaseAddress = new Uri(options.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+        });
         services.AddOptions<EmailOptions>()
             .Bind(configuration.GetSection(EmailOptions.SectionName))
             .Validate(x => !x.Enabled || (!string.IsNullOrWhiteSpace(x.Host) && x.Port > 0 && !string.IsNullOrWhiteSpace(x.From) && !string.IsNullOrWhiteSpace(x.UserName) && !string.IsNullOrWhiteSpace(x.Password)), "Enabled email requires Host, Port, From, UserName, and Password.")

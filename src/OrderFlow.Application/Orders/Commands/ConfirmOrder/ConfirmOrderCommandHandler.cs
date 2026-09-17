@@ -14,6 +14,7 @@ public sealed class ConfirmOrderCommandHandler(IOrderRepository orders, IUnitOfW
         if (order is null) return Result.Failure<OrderResponse>(OrderErrors.NotFound);
         try { order.Confirm(); } catch (InvalidOperationException) { return Result.Failure<OrderResponse>(OrderErrors.InvalidTransition); }
         backgroundJobs.EnqueueOrderNotification(order);
+        backgroundJobs.EnqueueAccountingSynchronization(order);
         await unitOfWork.SaveChangesAsync(ct);
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }

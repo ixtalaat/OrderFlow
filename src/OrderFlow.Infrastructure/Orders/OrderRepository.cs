@@ -28,5 +28,5 @@ public sealed class OrderRepository(ApplicationDbContext db) : IOrderRepository
 
     public Task AddAsync(Order order, CancellationToken ct = default) => db.Orders.AddAsync(order, ct).AsTask();
 
-    private static OrderResponse Map(Order order) => new(order.Id, order.CustomerId, order.Status, order.TotalAmount, order.CreatedAtUtc, order.Items.Select(x => new OrderItemResponse(x.ProductId, x.Product.Name, x.Quantity, x.UnitPrice, x.LineTotal)).ToList());
+    private static OrderResponse Map(Order order) => new(order.Id, order.CustomerId, order.Status, order.TotalAmount, order.CreatedAtUtc, order.Items.Select(x => new OrderItemResponse(x.ProductId, x.Product.Name, x.Quantity, x.UnitPrice, x.LineTotal)).ToList(), order.AccountingSyncStatus, order.ExternalInvoiceId, order.AccountingSyncAttempts, order.AccountingLastAttemptAtUtc, order.AccountingLastError);
 }

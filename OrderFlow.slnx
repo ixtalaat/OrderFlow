@@ -4,6 +4,7 @@
     <Project Path="src/OrderFlow.Application/OrderFlow.Application.csproj" />
     <Project Path="src/OrderFlow.Domain/OrderFlow.Domain.csproj" />
     <Project Path="src/OrderFlow.Infrastructure/OrderFlow.Infrastructure.csproj" />
+    <Project Path="src/OrderFlow.FakeAccountingApi/OrderFlow.FakeAccountingApi.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/OrderFlow.IntegrationTests/OrderFlow.IntegrationTests.csproj" Id="44004447-0885-4196-9697-1a5f62619b89" />

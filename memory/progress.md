@@ -1,5 +1,11 @@
 # Project Progress
 
+## Epic 9 — Accounting integration
+
+The accounting status and external invoice reference are included in order read models for observability.
+
+Added a simulated external accounting API, typed `HttpClient` integration, bounded transient retries, timeout configuration, idempotency keys, and observable accounting synchronization state on orders. Confirmed orders create accounting outbox messages; successful external invoice IDs and failures are persisted. See `docs/accounting/accounting-integration.md`.
+
 ## Authentication hardening
 
 Auth now uses Identity lockout-aware password validation, validates JWT configuration at startup, reports the configured token expiration, compensates for registration role/profile failures, and applies IP-based rate limiting to auth endpoints. Email confirmation remains an explicit future decision because registration currently issues tokens immediately. See `docs/authentication/auth-hardening.md`.
