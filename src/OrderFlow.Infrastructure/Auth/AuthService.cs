@@ -2,16 +2,19 @@
 using OrderFlow.Application.Auth.DTOs;
 using OrderFlow.Application.Common.Constants;
 using OrderFlow.Application.Common.Results;
+using OrderFlow.Application.Customers;
 using OrderFlow.Infrastructure.Identity;
 
 namespace OrderFlow.Application.Auth;
 
 public sealed class AuthService(
     UserManager<ApplicationUser> userManager,
-    IJwtTokenService jwtTokenService) : IAuthService
+    IJwtTokenService jwtTokenService,
+    ICustomerRepository customerRepository) : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
+    private readonly ICustomerRepository _customerRepository = customerRepository;
 
     public async Task<Result<AuthResponse>> RegisterAsync(
         RegisterRequest request,
@@ -82,6 +85,15 @@ public sealed class AuthService(
                 request.Password);
 
         if (!passwordValid)
+        {
+            return Result.Failure<AuthResponse>(AuthErrors.InvalidCredentials);
+        }
+
+        var customer = await _customerRepository.GetByUserIdAsync(
+            user.Id,
+            cancellationToken);
+
+        if (customer is not null && !customer.IsActive)
         {
             return Result.Failure<AuthResponse>(AuthErrors.InvalidCredentials);
         }

@@ -1,7 +1,9 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using OrderFlow.Application.Auth.DTOs;
+using OrderFlow.Application.Customers.DTOs;
 using OrderFlow.IntegrationTests.Infrastructure;
 
 namespace OrderFlow.IntegrationTests.Auth;
@@ -58,6 +60,38 @@ public class LoginTests(
         result!.AccessToken
             .Should()
             .NotBeNullOrWhiteSpace();
+    }
+
+    [Fact]
+    public async Task Login_Should_Return_Unauthorized_When_Customer_Is_Deactivated()
+    {
+        var email = $"deactivated-{Guid.NewGuid()}@test.com";
+        var password = "Password@123";
+        var (_, salesToken) = await TestAuthHelper.CreateUserAndGetTokenAsync(
+            factory,
+            "SalesEmployee");
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", salesToken);
+
+        var createResponse = await _client.PostAsJsonAsync(
+            "/api/customers",
+            new CreateCustomerRequest(
+                "Deactivated Customer",
+                email,
+                password,
+                "+1234567890",
+                "123 Main St"));
+        var customer = await createResponse.Content.ReadFromJsonAsync<CustomerResponse>();
+
+        await _client.PatchAsync($"/api/customers/{customer!.Id}/deactivate", null);
+        _client.DefaultRequestHeaders.Authorization = null;
+
+        var response = await _client.PostAsJsonAsync(
+            "/api/auth/login",
+            new LoginRequest(email, password));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

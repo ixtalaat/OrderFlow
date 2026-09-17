@@ -1,14 +1,19 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using OrderFlow.Application.Auth;
+using OrderFlow.Application.Common.Identity;
+using OrderFlow.Application.Common.Persistence;
+using OrderFlow.Application.Customers;
 using OrderFlow.Infrastructure.Auth;
+using OrderFlow.Infrastructure.Customers;
 using OrderFlow.Infrastructure.Identity;
 using OrderFlow.Infrastructure.Persistence;
 using System.Text;
+
 
 namespace OrderFlow.Infrastructure;
 
@@ -80,7 +85,9 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
-
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
 
         return services;
     }
