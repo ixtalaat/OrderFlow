@@ -1,10 +1,11 @@
 using MediatR;
 using OrderFlow.Application.Common.Persistence;
+using OrderFlow.Application.Products;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Products.DTOs;
 using OrderFlow.Domain.Entities;
 
-namespace OrderFlow.Application.Products;
+namespace OrderFlow.Application.Products.Commands.UpdateProduct;
 
 public sealed class UpdateProductCommandHandler(IProductRepository products, IUnitOfWork unitOfWork) : IRequestHandler<UpdateProductCommand, Result<ProductResponse>>
 {

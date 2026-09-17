@@ -1,8 +1,9 @@
 using MediatR;
 using OrderFlow.Application.Common.Persistence;
+using OrderFlow.Application.Products;
 using OrderFlow.Application.Common.Results;
 
-namespace OrderFlow.Application.Products;
+namespace OrderFlow.Application.Products.Commands.DeactivateProduct;
 
 public sealed class DeactivateProductCommandHandler(IProductRepository products, IUnitOfWork unitOfWork) : IRequestHandler<DeactivateProductCommand, Result>
 {

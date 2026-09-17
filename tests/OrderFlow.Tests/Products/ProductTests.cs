@@ -1,5 +1,6 @@
 using FluentAssertions;
 using OrderFlow.Application.Products;
+using OrderFlow.Application.Products.Commands.CreateProduct;
 using OrderFlow.Application.Products.DTOs;
 using OrderFlow.Domain.Entities;
 

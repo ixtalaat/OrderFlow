@@ -6,6 +6,12 @@ using OrderFlow.Application.Common.Constants;
 using OrderFlow.Application.Common.Models;
 using OrderFlow.Application.Products;
 using OrderFlow.Application.Products.DTOs;
+using OrderFlow.Application.Products.Commands.ActivateProduct;
+using OrderFlow.Application.Products.Commands.CreateProduct;
+using OrderFlow.Application.Products.Commands.DeactivateProduct;
+using OrderFlow.Application.Products.Commands.UpdateProduct;
+using OrderFlow.Application.Products.Queries.GetProductById;
+using OrderFlow.Application.Products.Queries.GetProducts;
 
 namespace OrderFlow.API.Controllers;
 

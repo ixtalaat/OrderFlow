@@ -2,6 +2,6 @@ using MediatR;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Products.DTOs;
 
-namespace OrderFlow.Application.Products;
+namespace OrderFlow.Application.Products.Commands.CreateProduct;
 
 public sealed record CreateProductCommand(string Name, string Description, string Sku, decimal Price, string CategoryName) : IRequest<Result<ProductResponse>>;

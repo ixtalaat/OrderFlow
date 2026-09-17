@@ -1,8 +1,9 @@
 using MediatR;
 using OrderFlow.Application.Common.Results;
+using OrderFlow.Application.Products;
 using OrderFlow.Application.Products.DTOs;
 
-namespace OrderFlow.Application.Products;
+namespace OrderFlow.Application.Products.Queries.GetProductById;
 
 public sealed class GetProductByIdQueryHandler(IProductRepository products) : IRequestHandler<GetProductByIdQuery, Result<ProductResponse>>
 {
