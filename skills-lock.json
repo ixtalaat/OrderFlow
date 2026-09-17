@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "skills/ponytail/SKILL.md",
       "computedHash": "9e8d05cbbaf6dc38f0cffc924c09b3cbe76d94ba4ba0d09bde803da2f8c6b5a0"
+    },
+    "postman-collection-generator": {
+      "source": "patricio0312rev/skills",
+      "sourceType": "github",
+      "skillPath": "testing/postman-collection-generator/SKILL.md",
+      "computedHash": "2b66fcb334e6eab11e64fc19525fa9c75ef8e6b301dd819b2d57d4792d9ccf9f"
     }
   }
 }

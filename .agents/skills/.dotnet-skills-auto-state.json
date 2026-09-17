@@ -11,7 +11,8 @@
     "optimizing-ef-core-queries",
     "xunit",
     "grill-me",
-    "ponytaill"
+    "ponytaill",
+    "postman-collection-generator"
   ],
   "UpdatedAt": "2026-09-15T13:55:48.1645128+00:00"
 }

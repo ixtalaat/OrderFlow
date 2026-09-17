@@ -73,9 +73,20 @@ optimizing-ef-core-queries
 xunit
 grill-me
 ponytaill
+postman-collection-generator
 ```
 
 When a skill is relevant to the current task, use its guidance.
+
+Use `postman-collection-generator` to create and maintain Postman collections for the OrderFlow API. When generating a collection, include the available authentication flow, environment variables, request examples, and the customer-management endpoints relevant to the current Epic.
+
+The skill source is:
+`https://github.com/patricio0312rev/skills`
+
+Installation command:
+```powershell
+npx skills add https://github.com/patricio0312rev/skills --skill postman-collection-generator
+```
 
 Do not introduce functionality unrelated to the current feature simply because a skill is available.
 
