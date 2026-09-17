@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 11 — Performance & Caching (US-13)
+
+Catalog baseline on 2000 seeded products: single SELECT with category/inventory joins, server-side availability, batched pricing — no N+1. Added migration `AddCatalogPerformanceIndexes` (`Products(IsActive, Name)` covering index, `PricingRules(ProductId, Tier, ValidFromUtc)`); query plans confirm covering-index browse, leading-wildcard search stays a scan (accepted). Caching evaluated and rejected by measurement (~4 ms handler, volatile stock data, tier key explosion); revisit criteria documented. See `docs/products/catalog-performance.md`.
+
 ## Epic 10 — Concurrency & Reliability (US-12)
 
 Inventory reservations are concurrency-safe: `Inventory.Version` (EF Core concurrency token) plus a single atomic unit-of-work save per order means two simultaneous orders for the last stock cannot oversell — one commits, the other gets `409 Conflict`. `UnitOfWork` translates `DbUpdateConcurrencyException` to `ConcurrencyConflictException` so Application handlers return typed 409 results without referencing EF Core; `OrderErrors.ConcurrencyConflict` was added. Verified by parallel `POST /api/orders` integration test (one 201, one 409, reserved 5/available 0), a deterministic stale-write token test, and handler unit tests. Concurrency tests use a file-based SQLite factory because the shared single-connection in-memory factory cannot run parallel writes. See `docs/architecture/adr-001-inventory-concurrency.md`.

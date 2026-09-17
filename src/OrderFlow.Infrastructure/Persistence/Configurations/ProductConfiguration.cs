@@ -13,6 +13,7 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Description).HasMaxLength(2000).IsRequired();
         builder.Property(x => x.Sku).HasMaxLength(50).IsRequired();
         builder.HasIndex(x => x.Sku).IsUnique();
+        builder.HasIndex(x => new { x.IsActive, x.Name });
         builder.Property(x => x.Price).HasPrecision(18, 2);
         builder.HasOne(x => x.Category).WithMany(x => x.Products).HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict);
     }
