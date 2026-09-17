@@ -1,0 +1,42 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:?Set SA_PASSWORD in .env}
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -C -Q "SELECT 1" -b -o /dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  accounting:
+    build:
+      context: .
+      dockerfile: src/OrderFlow.FakeAccountingApi/Dockerfile
+
+  api:
+    build:
+      context: .
+      dockerfile: src/OrderFlow.API/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=OrderFlowDb;User Id=sa;Password=${SA_PASSWORD:?Set SA_PASSWORD in .env};TrustServerCertificate=true
+      Accounting__BaseUrl: http://accounting:5099/
+      Jwt__SecretKey: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env}
+      AdminSeed__Email: ${ADMIN_EMAIL:-admin@orderflow.com}
+      AdminSeed__Password: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      AdminSeed__FullName: ${ADMIN_FULLNAME:-OrderFlow Admin}
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      accounting:
+        condition: service_started
+
+volumes:
+  mssql-data:

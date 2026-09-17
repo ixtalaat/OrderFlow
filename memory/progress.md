@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 14 — Docker (US-16)
+
+Multi-stage Dockerfiles for the API and fake accounting API, `docker-compose.yml` (SQL Server 2022 with healthcheck + persistent `mssql-data` volume, fake accounting, API with env-based config), `.env.example`, and `docs/docker/docker-setup.md`. Verified live: images build, clean startup with migrations + admin seed, `/health/ready` Healthy, admin login, product/stock/order/confirm flow with real accounting invoice, and data surviving compose down/up. No Redis (not in stack).
+
 ## Epic 13 — Testing (US-15)
 
 Coverage audit (Coverlet) drove the work: added validator tests (order/product/pricing/paged queries), pricing service and validity-window tests, domain transition/exception tests, `AccountingService` retry/timeout/idempotency unit tests, accounting-sync persistence tests, order rollback and full-workflow integration tests. Removed one duplicated validator test. Strategy recorded in `docs/testing/test-strategy.md`.
