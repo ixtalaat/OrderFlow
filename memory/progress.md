@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 5 — Orders
+
+Implemented order creation and status workflow. Customer orders validate active customers/products and inventory, snapshot product prices, merge duplicate items, reserve stock, and persist in one EF Core unit of work. Orders support customer history and ownership-protected reads; staff can confirm, reject, process, and complete orders. Rejection releases reservations and completion confirms stock. Documentation: `docs/orders/order-management.md`.
+
 ## Epic 3 — Customer Product Catalog
 
 Added customer-facing catalog queries and `ProductCatalogController`. Customers can search active products by name or SKU with database pagination and receive current price plus available quantity. A one-to-one `Inventory` record is created at product creation with quantity zero. Inventory management now supports add, reserve, release, confirm, and adjustment operations with available quantity calculated as quantity minus reserved quantity. Verification: catalog integration tests cover authorization, search, pagination, price, availability, and inactive-product hiding.
