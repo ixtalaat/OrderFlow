@@ -20,7 +20,7 @@ Epic 3 adds a product catalog managed by administrators and sales employees and 
 | PATCH | `/api/products/{id}/activate` | Admin, SalesEmployee | Activate a product |
 | PATCH | `/api/products/{id}/deactivate` | Admin, SalesEmployee | Deactivate a product |
 
-Customer reads only return active products. Management reads can include inactive products and filter with `isActive`, `searchTerm`, `pageNumber`, and `pageSize`.
+Customer reads through `/api/products` return active products. Management reads can include inactive products and filter with `isActive`, `searchTerm`, `pageNumber`, and `pageSize`. The customer-facing catalog is available at `/api/catalog/products`; it supports active-only listing, name/SKU search, pagination, current product price, and available quantity.
 
 ## Persistence
 

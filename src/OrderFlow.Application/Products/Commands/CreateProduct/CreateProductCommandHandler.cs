@@ -7,7 +7,7 @@ using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Application.Products.Commands.CreateProduct;
 
-public sealed class CreateProductCommandHandler(IProductRepository products, IUnitOfWork unitOfWork) : IRequestHandler<CreateProductCommand, Result<ProductResponse>>
+public sealed class CreateProductCommandHandler(IProductRepository products, IProductInventoryRepository inventories, IUnitOfWork unitOfWork) : IRequestHandler<CreateProductCommand, Result<ProductResponse>>
 {
     public async Task<Result<ProductResponse>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
@@ -17,6 +17,8 @@ public sealed class CreateProductCommandHandler(IProductRepository products, IUn
         if (category is null) { category = Category.Create(command.CategoryName); await products.AddCategoryAsync(category, cancellationToken); await unitOfWork.SaveChangesAsync(cancellationToken); }
         var product = Product.Create(command.Name, command.Description, sku, command.Price, category.Id);
         await products.AddAsync(product, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await inventories.AddAsync(ProductInventory.Create(product.Id), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success(new ProductResponse(product.Id, product.Name, product.Description, product.Sku, product.Price, category.Id, category.Name, product.IsActive, product.CreatedAtUtc, product.UpdatedAtUtc));
     }

@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 3 — Customer Product Catalog
+
+Added customer-facing catalog queries and `ProductCatalogController`. Customers can search active products by name or SKU with database pagination and receive current price plus available quantity. A one-to-one `ProductInventory` record is created at product creation with quantity zero; stock operations remain reserved for the next Inventory Management epic. Verification: catalog integration tests cover authorization, search, pagination, price, availability, and inactive-product hiding.
+
 ## Epic 3 — Product Catalog
 
 Product management is implemented across Domain, Application, Infrastructure, API, and tests. Products support protected fields, normalized unique SKUs, on-demand categories, activation/deactivation, management CRUD, paginated search, and customer-visible active-only reads. Migration `AddProductCatalog` adds product/category tables and unique indexes. Verification: 50 unit tests and 24 integration tests pass.

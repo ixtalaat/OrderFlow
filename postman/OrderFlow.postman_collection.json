@@ -512,6 +512,66 @@
           }
         }
       ]
+    },
+    {
+      "name": "Customer Catalog",
+      "description": "Active products visible to authenticated customers.",
+      "item": [
+        {
+          "name": "List Available Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/catalog/products?pageNumber=1&pageSize=20"
+          }
+        },
+        {
+          "name": "Search Products by Name or SKU",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/catalog/products?searchTerm=widget&pageNumber=1&pageSize=20"
+          }
+        },
+        {
+          "name": "Get Catalog Product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/catalog/products/{{productId}}"
+          }
+        }
+      ]
     }
   ]
 }
