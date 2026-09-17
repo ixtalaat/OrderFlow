@@ -15,8 +15,8 @@ public sealed class GetCatalogProductsQueryHandler(IProductRepository products, 
         if (customer is not null && !customer.IsActive) return Result.Failure<PagedList<CatalogProductResponse>>(ProductErrors.NotFound);
         var tier = customer?.Tier ?? Domain.Entities.CustomerTier.Regular;
         var page = await products.GetCatalogPagedListAsync(query.QueryParams, ct);
-        var items = new List<CatalogProductResponse>(page.Items.Count);
-        foreach (var item in page.Items) items.Add(item with { CurrentCustomerPrice = await pricing.GetPriceAsync(item.Id, item.CurrentCustomerPrice, tier, ct) });
+        var prices = await pricing.GetPricesAsync(page.Items.ToDictionary(x => x.Id, x => x.CurrentCustomerPrice), tier, ct);
+        var items = page.Items.Select(item => item with { CurrentCustomerPrice = prices[item.Id] }).ToList();
         return Result.Success(new PagedList<CatalogProductResponse>(items, page.TotalCount, page.PageNumber, page.PageSize));
     }
 }

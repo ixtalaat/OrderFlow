@@ -126,8 +126,12 @@ public class CustomersController : ControllerBase
 
     [HttpPatch("{id:int}/tier")]
     [Authorize(Roles = $"{Roles.Admin},{Roles.SalesEmployee}")]
-    public async Task<IActionResult> ChangeTier(int id, CustomerTier tier, ISender sender, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeTier(int id, [FromBody] ChangeCustomerTierRequest? request, [FromQuery(Name = "tier")] CustomerTier? legacyTier, ISender sender, CancellationToken cancellationToken)
     {
+        var tierText = request?.Tier ?? legacyTier?.ToString();
+        if (!Enum.TryParse<CustomerTier>(tierText, true, out var tier))
+            return BadRequest("Tier must be Regular, Wholesale, or Vip.");
+
         var result = await sender.Send(new ChangeCustomerTierCommand(id, tier), cancellationToken);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }

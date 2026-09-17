@@ -1,5 +1,9 @@
 # Project Progress
 
+## Reliability hardening — Outbox and startup safety
+
+Added a transactional outbox for order notifications and accounting synchronization. Order handlers add outbox rows before the same unit-of-work save; `OutboxDispatcher` publishes pending rows to Hangfire with at-least-once semantics. Production startup now applies EF migrations, while Testing retains SQLite `EnsureCreatedAsync`. Public registration creates a Customer profile, catalog pricing loads active rules in one batch, product creation uses the transactional unit of work, and the customer tier API accepts a JSON DTO (with legacy query compatibility). Email is validated when enabled and cannot be disabled in Production. Migration: `AddOutbox`. See `docs/background-processing.md`.
+
 ## Epic 8 — Order Notifications
 
 Added MailKit email delivery, order notification templates, and notification services. Hangfire notification jobs are queued after every relevant order status change, use three retries, log failures, and remain retryable from the protected dashboard. Email is disabled in test environments through configuration.

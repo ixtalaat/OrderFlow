@@ -1,4 +1,6 @@
-# Customer Management Documentation
+# Customer Management
+
+Public customer registration now creates both the Identity user and its Customer profile. The tier endpoint accepts a JSON body, for example `{ "tier": "Wholesale" }`, and validates the tier name. Documentation
 
 ## Overview
 Customer Management (Epic 2, US-02) enables sales employees and administrators to manage customer profiles, and allows customers to securely access their own profile data.

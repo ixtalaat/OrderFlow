@@ -1,8 +1,8 @@
 # Customer-Specific Pricing
 
-Customers have one of three pricing tiers: `Regular`, `Wholesale`, or `Vip`. New customers default to `Regular`. Admins can change a customer's tier through `PATCH /api/customers/{id}/tier?tier=Wholesale`.
+Customers have one of three pricing tiers: `Regular`, `Wholesale`, or `Vip`. New customers default to `Regular`. Admins can change a customer's tier through `PATCH /api/customers/{id}/tier` with `{ "tier": "Wholesale" }` (the legacy query-string form remains accepted). Catalog pages batch-load active rules for the page to avoid one pricing query per product.
 
-Pricing rules are product-specific percentage discounts with validity windows. Only Admin users manage rules:
+Pricing rules are product-specific percentage discounts with validity windows. Create and update operations perform overlap validation inside a serializable transaction to prevent concurrent overlapping writes. Only Admin users manage rules:
 
 - `POST /api/pricing-rules`
 - `PUT /api/pricing-rules/{id}`

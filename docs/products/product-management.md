@@ -1,6 +1,6 @@
 # Product Management
 
-Epic 3 adds a product catalog managed by administrators and sales employees and browsable by authenticated customers.
+Epic 3 adds a product catalog managed by administrators and sales employees and browsable by authenticated customers. Product creation runs category, product, and inventory persistence inside one explicit transaction; a failure rolls back the complete workflow.
 
 ## Model and rules
 

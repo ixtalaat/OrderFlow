@@ -18,6 +18,7 @@ public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IPr
         var customer = await customers.GetByIdAsync(command.CustomerId, ct);
         if (customer is null || !customer.IsActive) return Result.Failure<OrderResponse>(OrderErrors.CustomerNotFound);
         var order = Order.Create(command.CustomerId);
+        var lines = new List<(Product Product, int Quantity)>();
         foreach (var group in command.Items.GroupBy(x => x.ProductId))
         {
             var quantity = group.Sum(x => x.Quantity);
@@ -26,13 +27,15 @@ public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IPr
             var inventory = await inventories.GetByProductIdAsync(product.Id, ct);
             if (inventory is null || quantity > inventory.AvailableQuantity) return Result.Failure<OrderResponse>(OrderErrors.InsufficientStock);
             inventory.ReserveStock(quantity);
-            var price = await pricing.GetPriceAsync(product.Id, product.Price, customer.Tier, ct);
-            order.AddItem(OrderItem.Create(product.Id, quantity, price));
+            lines.Add((product, quantity));
         }
+
+        var prices = await pricing.GetPricesAsync(lines.ToDictionary(x => x.Product.Id, x => x.Product.Price), customer.Tier, ct);
+        foreach (var line in lines) order.AddItem(OrderItem.Create(line.Product.Id, line.Quantity, prices[line.Product.Id]));
         order.Submit();
         await orders.AddAsync(order, ct);
+        backgroundJobs.EnqueueOrderNotification(order);
         await unitOfWork.SaveChangesAsync(ct);
-        backgroundJobs.EnqueueOrderNotification(order.Id, order.Status);
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

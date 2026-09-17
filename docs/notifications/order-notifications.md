@@ -1,5 +1,7 @@
 # Order Notifications
 
+SMTP delivery is configured through `Email` settings supplied by environment variables or User Secrets. When `Email:Enabled` is true, `Host`, `Port`, `From`, `UserName`, and `Password` are required and validated at startup. Production must explicitly enable email; disabled delivery is intended only for development and tests.
+
 Order status notifications are delivered through MailKit and Hangfire. The API only enqueues a job after a successful order/status transaction; email delivery never blocks the request.
 
 ## Notification events

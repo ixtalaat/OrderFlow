@@ -12,6 +12,6 @@ public sealed class ProcessOrderCommandHandler(IOrderRepository orders, IUnitOfW
     {
         var order = await orders.GetByIdAsync(command.OrderId, ct); if (order is null) return Result.Failure<OrderResponse>(OrderErrors.NotFound);
         if (order.Status != Domain.Entities.OrderStatus.Confirmed) return Result.Failure<OrderResponse>(OrderErrors.InvalidTransition);
-        order.Process(); await unitOfWork.SaveChangesAsync(ct); backgroundJobs.EnqueueOrderNotification(order.Id, order.Status); return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
+        order.Process(); backgroundJobs.EnqueueOrderNotification(order); await unitOfWork.SaveChangesAsync(ct); return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

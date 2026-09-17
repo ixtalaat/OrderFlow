@@ -1,11 +1,16 @@
+using System.Text.Json;
 using Hangfire;
 using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Domain.Entities;
+using OrderFlow.Infrastructure.Persistence;
 
 namespace OrderFlow.Infrastructure.BackgroundProcessing;
 
-public sealed class HangfireJobScheduler(IBackgroundJobClient client) : IBackgroundJobScheduler
+public sealed class HangfireJobScheduler(ApplicationDbContext db) : IBackgroundJobScheduler
 {
-    public string EnqueueOrderNotification(int orderId, OrderStatus status) => client.Enqueue<OrderNotificationJob>(job => job.ExecuteAsync(orderId, status, CancellationToken.None));
-    public string EnqueueAccountingSynchronization(int orderId) => client.Enqueue<AccountingSynchronizationJob>(job => job.ExecuteAsync(orderId));
+    public void EnqueueOrderNotification(Order order)
+        => db.OutboxMessages.Add(OutboxMessage.Create("OrderNotification", JsonSerializer.Serialize(new { status = order.Status.ToString() }), order));
+
+    public void EnqueueAccountingSynchronization(Order order)
+        => db.OutboxMessages.Add(OutboxMessage.Create("AccountingSynchronization", JsonSerializer.Serialize(new { }), order));
 }

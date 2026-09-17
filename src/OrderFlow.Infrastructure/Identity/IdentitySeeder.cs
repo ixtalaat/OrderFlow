@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using OrderFlow.Application.Common.Constants;
 using OrderFlow.Infrastructure.Persistence;
 
@@ -11,10 +13,13 @@ public static class IdentitySeeder
     public static async Task SeedAsync(
         IServiceProvider services)
     {
-        var db =
-            services.GetRequiredService<ApplicationDbContext>();
+        var db = services.GetRequiredService<ApplicationDbContext>();
+        var environment = services.GetRequiredService<IHostEnvironment>();
 
-        await db.Database.EnsureCreatedAsync();
+        if (environment.IsEnvironment("Testing"))
+            await db.Database.EnsureCreatedAsync();
+        else
+            await db.Database.MigrateAsync();
 
         var roleManager =
             services.GetRequiredService<RoleManager<IdentityRole>>();

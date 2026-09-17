@@ -35,6 +35,10 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var production = string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Production", StringComparison.OrdinalIgnoreCase);
+        if (production && (!bool.TryParse(configuration["Email:Enabled"], out var emailEnabled) || !emailEnabled))
+            throw new InvalidOperationException("Email:Enabled must be true in production.");
+
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
         if (connectionString?.StartsWith("DataSource=", StringComparison.OrdinalIgnoreCase) == true)
@@ -45,7 +49,8 @@ public static class DependencyInjection
         {
             services.AddHangfire(config => config.UseSqlServerStorage(connectionString));
             services.AddHangfireServer(options => options.WorkerCount = Math.Max(1, Environment.ProcessorCount / 2));
-            services.AddSingleton<IBackgroundJobScheduler, HangfireJobScheduler>();
+            services.AddScoped<IBackgroundJobScheduler, HangfireJobScheduler>();
+            services.AddHostedService<OutboxDispatcher>();
         }
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -71,7 +76,10 @@ public static class DependencyInjection
 
         services.Configure<JwtOptions>(
             configuration.GetSection(JwtOptions.SectionName));
-        services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
+        services.AddOptions<EmailOptions>()
+            .Bind(configuration.GetSection(EmailOptions.SectionName))
+            .Validate(x => !x.Enabled || (!string.IsNullOrWhiteSpace(x.Host) && x.Port > 0 && !string.IsNullOrWhiteSpace(x.From) && !string.IsNullOrWhiteSpace(x.UserName) && !string.IsNullOrWhiteSpace(x.Password)), "Enabled email requires Host, Port, From, UserName, and Password.")
+            .ValidateOnStart();
 
         services
         .AddAuthentication(options =>

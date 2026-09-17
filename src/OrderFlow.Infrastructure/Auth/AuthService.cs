@@ -3,18 +3,22 @@ using OrderFlow.Application.Auth.DTOs;
 using OrderFlow.Application.Common.Constants;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Customers;
+using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Infrastructure.Identity;
+using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Application.Auth;
 
 public sealed class AuthService(
     UserManager<ApplicationUser> userManager,
     IJwtTokenService jwtTokenService,
-    ICustomerRepository customerRepository) : IAuthService
+    ICustomerRepository customerRepository,
+    IUnitOfWork unitOfWork) : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
     private readonly ICustomerRepository _customerRepository = customerRepository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<Result<AuthResponse>> RegisterAsync(
         RegisterRequest request,
@@ -46,9 +50,9 @@ public sealed class AuthService(
                 AuthErrors.UserCreationFailed);
         }
 
-        await _userManager.AddToRoleAsync(
-            user,
-            Roles.Customer);
+        await _userManager.AddToRoleAsync(user, Roles.Customer);
+        await _customerRepository.AddAsync(Customer.Create(user.Id, request.PhoneNumber, request.Address), cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var roles = await _userManager.GetRolesAsync(user);
 
