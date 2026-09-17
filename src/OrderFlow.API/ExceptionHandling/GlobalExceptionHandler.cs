@@ -23,6 +23,7 @@ public sealed class GlobalExceptionHandler(
         {
             NotFoundException => StatusCodes.Status404NotFound,
             ValidationException => StatusCodes.Status400BadRequest,
+            ConcurrencyConflictException => StatusCodes.Status409Conflict,
             ConflictException => StatusCodes.Status409Conflict,
             DbUpdateConcurrencyException => StatusCodes.Status409Conflict,
             UnauthorizedException => StatusCodes.Status401Unauthorized,

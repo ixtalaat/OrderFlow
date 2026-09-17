@@ -1,5 +1,6 @@
 using MediatR;
 using OrderFlow.Application.BackgroundProcessing;
+using OrderFlow.Application.Common.Exceptions;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Customers;
@@ -35,7 +36,18 @@ public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IPr
         order.Submit();
         await orders.AddAsync(order, ct);
         backgroundJobs.EnqueueOrderNotification(order);
-        await unitOfWork.SaveChangesAsync(ct);
+        try
+        {
+            // Single unit-of-work save persists the order, inventory
+            // reservations, and outbox row atomically. The Inventory.Version
+            // concurrency token makes overlapping reservations conflict here
+            // instead of overselling.
+            await unitOfWork.SaveChangesAsync(ct);
+        }
+        catch (ConcurrencyConflictException)
+        {
+            return Result.Failure<OrderResponse>(OrderErrors.ConcurrencyConflict);
+        }
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

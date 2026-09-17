@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using OrderFlow.Application.Auth;
 using OrderFlow.Infrastructure.Identity;
@@ -8,7 +9,7 @@ namespace OrderFlow.IntegrationTests.Infrastructure;
 public static class TestAuthHelper
 {
     public static async Task<(string UserId, string Token)> CreateUserAndGetTokenAsync(
-        CustomWebApplicationFactory factory,
+        WebApplicationFactory<Program> factory,
         string role,
         string? email = null,
         string? fullName = null)

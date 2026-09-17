@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 10 — Concurrency & Reliability (US-12)
+
+Inventory reservations are concurrency-safe: `Inventory.Version` (EF Core concurrency token) plus a single atomic unit-of-work save per order means two simultaneous orders for the last stock cannot oversell — one commits, the other gets `409 Conflict`. `UnitOfWork` translates `DbUpdateConcurrencyException` to `ConcurrencyConflictException` so Application handlers return typed 409 results without referencing EF Core; `OrderErrors.ConcurrencyConflict` was added. Verified by parallel `POST /api/orders` integration test (one 201, one 409, reserved 5/available 0), a deterministic stale-write token test, and handler unit tests. Concurrency tests use a file-based SQLite factory because the shared single-connection in-memory factory cannot run parallel writes. See `docs/architecture/adr-001-inventory-concurrency.md`.
+
 ## Epic 9 — Accounting integration
 
 The accounting status and external invoice reference are included in order read models for observability.

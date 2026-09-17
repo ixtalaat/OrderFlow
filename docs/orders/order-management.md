@@ -15,4 +15,4 @@ The create workflow constructs and submits the order in one operation. Rejection
 
 Customers use `POST /api/orders` and can access their own order history with `GET /api/orders` and individual orders with `GET /api/orders/{id}`. Admins and sales employees can view orders and transition them with `/confirm`, `/reject`, `/processing`, and `/complete` PATCH endpoints.
 
-Order creation validates an active customer, active products, positive quantities, and available inventory. Duplicate products are merged. A single scoped EF Core save persists the order and inventory reservations; failures roll back both changes. Inventory concurrency conflicts return `409 Conflict`.
+Order creation validates an active customer, active products, positive quantities, and available inventory. Duplicate products are merged. A single scoped EF Core save persists the order, inventory reservations, and notification outbox row; failures roll back all changes. Inventory concurrency conflicts return `409 Conflict` with `Order.ConcurrencyConflict` (colliding write) or `Order.InsufficientStock` (stock already taken). Decision record: `docs/architecture/adr-001-inventory-concurrency.md`.
