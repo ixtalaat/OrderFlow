@@ -22,12 +22,19 @@ public class Customer
     public string PhoneNumber { get; private set; } = string.Empty;
     public string Address { get; private set; } = string.Empty;
     public bool IsActive { get; private set; }
+    public CustomerTier Tier { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
 
     public static Customer Create(string userId, string phoneNumber, string address)
     {
         return new Customer(userId, phoneNumber, address);
+    }
+
+    public void ChangeTier(CustomerTier tier)
+    {
+        Tier = tier;
+        UpdatedAtUtc = DateTime.UtcNow;
     }
 
     public void UpdateDetails(string phoneNumber, string address)

@@ -4,4 +4,4 @@ using OrderFlow.Application.Products.DTOs;
 
 namespace OrderFlow.Application.Products.Queries.GetCatalogProductById;
 
-public sealed record GetCatalogProductByIdQuery(int Id) : IRequest<Result<CatalogProductResponse>>;
+public sealed record GetCatalogProductByIdQuery(int CustomerId, int Id) : IRequest<Result<CatalogProductResponse>>;

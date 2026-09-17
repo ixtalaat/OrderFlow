@@ -13,6 +13,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Inventory> Inventories => Set<Inventory>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<PricingRule> PricingRules => Set<PricingRule>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

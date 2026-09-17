@@ -8,6 +8,8 @@ using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Customers;
 using OrderFlow.Application.Customers.Commands.ActivateCustomer;
 using OrderFlow.Application.Customers.Commands.CreateCustomer;
+using OrderFlow.Application.Customers.Commands.ChangeCustomerTier;
+using OrderFlow.Domain.Entities;
 using OrderFlow.Application.Customers.Commands.DeactivateCustomer;
 using OrderFlow.Application.Customers.Commands.UpdateCustomer;
 using OrderFlow.Application.Customers.DTOs;
@@ -120,6 +122,14 @@ public class CustomersController : ControllerBase
         var result = await sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpPatch("{id:int}/tier")]
+    [Authorize(Roles = $"{Roles.Admin},{Roles.SalesEmployee}")]
+    public async Task<IActionResult> ChangeTier(int id, CustomerTier tier, ISender sender, CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new ChangeCustomerTierCommand(id, tier), cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 
     [HttpPatch("{id:int}/activate")]

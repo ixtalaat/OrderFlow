@@ -5,4 +5,4 @@ using OrderFlow.Application.Products.DTOs;
 
 namespace OrderFlow.Application.Products.Queries.GetCatalogProducts;
 
-public sealed record GetCatalogProductsQuery(CatalogQueryParams QueryParams) : IRequest<Result<PagedList<CatalogProductResponse>>>;
+public sealed record GetCatalogProductsQuery(int CustomerId, CatalogQueryParams QueryParams) : IRequest<Result<PagedList<CatalogProductResponse>>>;

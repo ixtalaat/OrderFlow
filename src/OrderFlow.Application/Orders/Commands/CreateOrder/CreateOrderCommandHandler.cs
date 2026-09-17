@@ -5,11 +5,12 @@ using OrderFlow.Application.Customers;
 using OrderFlow.Application.Inventory;
 using OrderFlow.Application.Orders.DTOs;
 using OrderFlow.Application.Products;
+using OrderFlow.Application.Pricing;
 using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Application.Orders.Commands.CreateOrder;
 
-public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IProductRepository products, IInventoryRepository inventories, IOrderRepository orders, IUnitOfWork unitOfWork) : IRequestHandler<CreateOrderCommand, Result<OrderResponse>>
+public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IProductRepository products, IInventoryRepository inventories, IPricingService pricing, IOrderRepository orders, IUnitOfWork unitOfWork) : IRequestHandler<CreateOrderCommand, Result<OrderResponse>>
 {
     public async Task<Result<OrderResponse>> Handle(CreateOrderCommand command, CancellationToken ct)
     {
@@ -24,7 +25,8 @@ public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IPr
             var inventory = await inventories.GetByProductIdAsync(product.Id, ct);
             if (inventory is null || quantity > inventory.AvailableQuantity) return Result.Failure<OrderResponse>(OrderErrors.InsufficientStock);
             inventory.ReserveStock(quantity);
-            order.AddItem(OrderItem.Create(product.Id, quantity, product.Price));
+            var price = await pricing.GetPriceAsync(product.Id, product.Price, customer.Tier, ct);
+            order.AddItem(OrderItem.Create(product.Id, quantity, price));
         }
         order.Submit();
         await orders.AddAsync(order, ct);

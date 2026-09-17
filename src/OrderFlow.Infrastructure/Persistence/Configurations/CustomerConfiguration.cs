@@ -31,6 +31,11 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.IsActive)
             .IsRequired();
 
+        builder.Property(c => c.Tier)
+            .HasConversion<string>()
+            .HasMaxLength(30)
+            .IsRequired();
+
         builder.Property(c => c.CreatedAtUtc)
             .IsRequired();
 

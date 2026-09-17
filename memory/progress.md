@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 6 — Customer-Specific Pricing
+
+Implemented Regular, Wholesale, and VIP customer tiers, validity-window pricing rules, strategy-based price calculation, tier assignment, customer catalog pricing, and order price snapshots. Admins manage pricing rules; SalesEmployees/Admins can change customer tiers. Historical OrderItem prices remain unchanged after pricing rules change. Documentation: `docs/pricing/customer-specific-pricing.md`.
+
 ## Epic 5 — Orders
 
 Implemented order creation and status workflow. Customer orders validate active customers/products and inventory, snapshot product prices, merge duplicate items, reserve stock, and persist in one EF Core unit of work. Orders support customer history and ownership-protected reads; staff can confirm, reject, process, and complete orders. Rejection releases reservations and completion confirms stock. Documentation: `docs/orders/order-management.md`.

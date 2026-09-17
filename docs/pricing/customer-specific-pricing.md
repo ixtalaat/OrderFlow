@@ -1,0 +1,15 @@
+# Customer-Specific Pricing
+
+Customers have one of three pricing tiers: `Regular`, `Wholesale`, or `Vip`. New customers default to `Regular`. Admins can change a customer's tier through `PATCH /api/customers/{id}/tier?tier=Wholesale`.
+
+Pricing rules are product-specific percentage discounts with validity windows. Only Admin users manage rules:
+
+- `POST /api/pricing-rules`
+- `PUT /api/pricing-rules/{id}`
+- `DELETE /api/pricing-rules/{id}`
+
+A valid rule is active when `ValidFromUtc <= now` and `ValidToUtc` is null or later than now. Overlapping rules for the same product and tier are rejected.
+
+Regular, Wholesale, and VIP strategies calculate the final price using the active rule; without a rule, the product base price is used. Prices are rounded to two decimal places.
+
+The customer catalog and order creation use the same pricing service. The calculated price is copied to `OrderItem.UnitPrice`, so later pricing-rule changes never alter historical orders.

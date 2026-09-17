@@ -924,6 +924,116 @@
           }
         }
       ]
+    },
+    {
+      "name": "Pricing — Admin",
+      "item": [
+        {
+          "name": "Create Pricing Rule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"tier\": \"Wholesale\",\n  \"discountPercentage\": 10,\n  \"validFromUtc\": \"2026-01-01T00:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pricing-rules"
+          }
+        },
+        {
+          "name": "Update Pricing Rule",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"tier\": \"Wholesale\",\n  \"discountPercentage\": 15,\n  \"validFromUtc\": \"2026-01-01T00:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pricing-rules/{{pricingRuleId}}"
+          }
+        },
+        {
+          "name": "Delete Pricing Rule",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/pricing-rules/{{pricingRuleId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer Tier — Sales/Admin",
+      "item": [
+        {
+          "name": "Set Customer Tier",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/customers/{{customerId}}/tier?tier=Wholesale"
+          }
+        }
+      ]
     }
   ]
 }

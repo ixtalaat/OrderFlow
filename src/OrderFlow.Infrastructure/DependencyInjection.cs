@@ -10,12 +10,15 @@ using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Customers;
 using OrderFlow.Application.Inventory;
 using OrderFlow.Application.Orders;
+using OrderFlow.Application.Pricing;
+using OrderFlow.Application.Pricing.Strategies;
 using OrderFlow.Application.Products;
 using OrderFlow.Infrastructure.Auth;
 using OrderFlow.Infrastructure.Customers;
 using OrderFlow.Infrastructure.Identity;
 using OrderFlow.Infrastructure.Persistence;
 using OrderFlow.Infrastructure.Orders;
+using OrderFlow.Infrastructure.Pricing;
 using OrderFlow.Infrastructure.Products;
 using System.Text;
 
@@ -96,6 +99,15 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IInventoryRepository, InventoryRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IPricingRuleRepository, PricingRuleRepository>();
+        services.AddScoped<IPricingService, PricingService>();
+        services.AddScoped<RegularPricingStrategy>();
+        services.AddScoped<WholesalePricingStrategy>();
+        services.AddScoped<VipPricingStrategy>();
+        services.AddScoped<IPricingStrategy>(sp => sp.GetRequiredService<RegularPricingStrategy>());
+        services.AddScoped<IPricingStrategy>(sp => sp.GetRequiredService<WholesalePricingStrategy>());
+        services.AddScoped<IPricingStrategy>(sp => sp.GetRequiredService<VipPricingStrategy>());
+        services.AddScoped<PricingStrategyResolver>();
 
         return services;
     }
