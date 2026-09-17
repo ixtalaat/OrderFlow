@@ -1271,4 +1271,5 @@ The following rules are especially important for OrderFlow:
 21. Do not over-engineer.
 22. Do not introduce patterns without a real reason.
 23. Every C# source file must contain exactly one top-level class, interface, record, enum, or struct. Split commands from handlers, DTOs from one another, validators from handlers, and generic types from their base types into separate files.
+24. Each command or query and its handler must be placed together in a dedicated use-case folder named after the request, such as `Commands/CreateProduct/` or `Queries/GetProducts/`. Keep validators for that request in the same use-case folder.
 ```
