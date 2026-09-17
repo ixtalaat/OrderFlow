@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OrderFlow.Application.Common.Exceptions;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Common.Results;
@@ -6,7 +7,7 @@ using OrderFlow.Application.Inventory.DTOs;
 
 namespace OrderFlow.Application.Inventory.Commands.AddStock;
 
-public sealed class AddStockCommandHandler(IInventoryRepository inventories, IUnitOfWork unitOfWork) : IRequestHandler<AddStockCommand, Result<InventoryResponse>>
+public sealed class AddStockCommandHandler(IInventoryRepository inventories, IUnitOfWork unitOfWork, ILogger<AddStockCommandHandler> logger) : IRequestHandler<AddStockCommand, Result<InventoryResponse>>
 {
     public async Task<Result<InventoryResponse>> Handle(AddStockCommand command, CancellationToken ct)
     {
@@ -22,6 +23,7 @@ public sealed class AddStockCommandHandler(IInventoryRepository inventories, IUn
         {
             return Result.Failure<InventoryResponse>(InventoryErrors.ConcurrencyConflict);
         }
+        logger.LogInformation("Added {Quantity} units for product {ProductId}; {AvailableQuantity} available.", command.Quantity, command.ProductId, inventory.AvailableQuantity);
         return Result.Success(new InventoryResponse(inventory.ProductId, inventory.Quantity, inventory.ReservedQuantity, inventory.AvailableQuantity, inventory.Version));
     }
 }

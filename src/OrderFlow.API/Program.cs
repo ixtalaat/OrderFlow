@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using OrderFlow.API;
 using OrderFlow.API.BackgroundProcessing;
 using OrderFlow.API.HealthChecks;
+using OrderFlow.API.Observability;
 using OrderFlow.Application;
 using OrderFlow.Infrastructure;
 using OrderFlow.Infrastructure.Identity;
@@ -31,6 +32,8 @@ try
         {
             await IdentitySeeder.SeedAsync(scope.ServiceProvider);
         }
+
+        app.UseMiddleware<CorrelationIdMiddleware>();
 
         app.UseSerilogRequestLogging();
 
@@ -62,6 +65,16 @@ try
         app.MapHealthChecks("/health", new HealthCheckOptions
         {
             ResponseWriter = HealthCheckResponseWriter.WriteResponseAsync
+        });
+
+        app.MapHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            ResponseWriter = HealthCheckResponseWriter.WriteResponseAsync
+        });
+
+        app.MapHealthChecks("/health/live", new HealthCheckOptions
+        {
+            Predicate = _ => false
         });
 
         app.Run();

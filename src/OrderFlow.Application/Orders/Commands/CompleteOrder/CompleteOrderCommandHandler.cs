@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Application.Common.Exceptions;
 using OrderFlow.Application.Common.Persistence;
@@ -8,7 +9,7 @@ using OrderFlow.Application.Orders.DTOs;
 
 namespace OrderFlow.Application.Orders.Commands.CompleteOrder;
 
-public sealed class CompleteOrderCommandHandler(IOrderRepository orders, IInventoryRepository inventories, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs) : IRequestHandler<CompleteOrderCommand, Result<OrderResponse>>
+public sealed class CompleteOrderCommandHandler(IOrderRepository orders, IInventoryRepository inventories, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs, ILogger<CompleteOrderCommandHandler> logger) : IRequestHandler<CompleteOrderCommand, Result<OrderResponse>>
 {
     public async Task<Result<OrderResponse>> Handle(CompleteOrderCommand command, CancellationToken ct)
     {
@@ -24,6 +25,7 @@ public sealed class CompleteOrderCommandHandler(IOrderRepository orders, IInvent
         {
             return Result.Failure<OrderResponse>(OrderErrors.ConcurrencyConflict);
         }
+        logger.LogInformation("Order {OrderId} completed.", order.Id);
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

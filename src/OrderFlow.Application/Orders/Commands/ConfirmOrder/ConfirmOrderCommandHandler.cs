@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Common.Results;
@@ -6,7 +7,7 @@ using OrderFlow.Application.Orders.DTOs;
 
 namespace OrderFlow.Application.Orders.Commands.ConfirmOrder;
 
-public sealed class ConfirmOrderCommandHandler(IOrderRepository orders, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs) : IRequestHandler<ConfirmOrderCommand, Result<OrderResponse>>
+public sealed class ConfirmOrderCommandHandler(IOrderRepository orders, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs, ILogger<ConfirmOrderCommandHandler> logger) : IRequestHandler<ConfirmOrderCommand, Result<OrderResponse>>
 {
     public async Task<Result<OrderResponse>> Handle(ConfirmOrderCommand command, CancellationToken ct)
     {
@@ -16,6 +17,7 @@ public sealed class ConfirmOrderCommandHandler(IOrderRepository orders, IUnitOfW
         backgroundJobs.EnqueueOrderNotification(order);
         backgroundJobs.EnqueueAccountingSynchronization(order);
         await unitOfWork.SaveChangesAsync(ct);
+        logger.LogInformation("Order {OrderId} confirmed.", order.Id);
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

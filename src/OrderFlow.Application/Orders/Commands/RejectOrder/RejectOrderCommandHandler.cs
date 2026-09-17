@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Application.Common.Exceptions;
 using OrderFlow.Application.Common.Persistence;
@@ -8,7 +9,7 @@ using OrderFlow.Application.Orders.DTOs;
 
 namespace OrderFlow.Application.Orders.Commands.RejectOrder;
 
-public sealed class RejectOrderCommandHandler(IOrderRepository orders, IInventoryRepository inventories, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs) : IRequestHandler<RejectOrderCommand, Result<OrderResponse>>
+public sealed class RejectOrderCommandHandler(IOrderRepository orders, IInventoryRepository inventories, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs, ILogger<RejectOrderCommandHandler> logger) : IRequestHandler<RejectOrderCommand, Result<OrderResponse>>
 {
     public async Task<Result<OrderResponse>> Handle(RejectOrderCommand command, CancellationToken ct)
     {
@@ -25,6 +26,7 @@ public sealed class RejectOrderCommandHandler(IOrderRepository orders, IInventor
         {
             return Result.Failure<OrderResponse>(OrderErrors.ConcurrencyConflict);
         }
+        logger.LogInformation("Order {OrderId} rejected.", order.Id);
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

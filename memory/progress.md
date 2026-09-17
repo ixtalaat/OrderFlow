@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 12 — Observability (US-14)
+
+Requests are traceable via `X-Correlation-ID` (accepted or generated, echoed on responses including errors, enriched into every Serilog event and problem-details `traceId`). Order lifecycle and inventory handlers log ID-only business operations; accounting/outbox/email integration outcomes were already logged. Health split into `/health` + `/health/ready` (EF Core database check) and check-free `/health/live`; no Redis check (no Redis in stack). Exception-to-status mappings pinned by unit tests; health and correlation covered by integration tests. See `docs/observability/observability.md`.
+
 ## Epic 11 — Performance & Caching (US-13)
 
 Catalog baseline on 2000 seeded products: single SELECT with category/inventory joins, server-side availability, batched pricing — no N+1. Added migration `AddCatalogPerformanceIndexes` (`Products(IsActive, Name)` covering index, `PricingRules(ProductId, Tier, ValidFromUtc)`); query plans confirm covering-index browse, leading-wildcard search stays a scan (accepted). Caching evaluated and rejected by measurement (~4 ms handler, volatile stock data, tier key explosion); revisit criteria documented. See `docs/products/catalog-performance.md`.

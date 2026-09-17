@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Application.Common.Exceptions;
 using OrderFlow.Application.Common.Persistence;
@@ -12,7 +13,7 @@ using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Application.Orders.Commands.CreateOrder;
 
-public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IProductRepository products, IInventoryRepository inventories, IPricingService pricing, IOrderRepository orders, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs) : IRequestHandler<CreateOrderCommand, Result<OrderResponse>>
+public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IProductRepository products, IInventoryRepository inventories, IPricingService pricing, IOrderRepository orders, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs, ILogger<CreateOrderCommandHandler> logger) : IRequestHandler<CreateOrderCommand, Result<OrderResponse>>
 {
     public async Task<Result<OrderResponse>> Handle(CreateOrderCommand command, CancellationToken ct)
     {
@@ -46,8 +47,10 @@ public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IPr
         }
         catch (ConcurrencyConflictException)
         {
+            logger.LogWarning("Order creation conflicted for customer {CustomerId}; inventory changed concurrently.", command.CustomerId);
             return Result.Failure<OrderResponse>(OrderErrors.ConcurrencyConflict);
         }
+        logger.LogInformation("Order {OrderId} created for customer {CustomerId} with {ItemCount} items.", order.Id, command.CustomerId, lines.Count);
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using OrderFlow.Application.BackgroundProcessing;
@@ -44,7 +45,7 @@ public sealed class CreateOrderConcurrencyTests
         unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Throws(new ConcurrencyConflictException("The data was changed by another request."));
 
-        var handler = new CreateOrderCommandHandler(customers, products, inventories, pricing, orders, unitOfWork, backgroundJobs);
+        var handler = new CreateOrderCommandHandler(customers, products, inventories, pricing, orders, unitOfWork, backgroundJobs, Substitute.For<ILogger<CreateOrderCommandHandler>>());
         var result = await handler.Handle(
             new CreateOrderCommand(1, new[] { new CreateOrderItemRequest(7, 5) }),
             CancellationToken.None);
@@ -65,7 +66,7 @@ public sealed class CreateOrderConcurrencyTests
         unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Throws(new ConcurrencyConflictException("The data was changed by another request."));
 
-        var handler = new ReserveStockCommandHandler(inventories, unitOfWork);
+        var handler = new ReserveStockCommandHandler(inventories, unitOfWork, Substitute.For<ILogger<ReserveStockCommandHandler>>());
         var result = await handler.Handle(
             new ReserveStockCommand(1, 5),
             CancellationToken.None);
