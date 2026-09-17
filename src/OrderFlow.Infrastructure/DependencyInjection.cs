@@ -69,13 +69,21 @@ public static class DependencyInjection
         services.Configure<IdentityOptions>(options =>
         {
             options.User.RequireUniqueEmail = true;
+            options.Lockout.AllowedForNewUsers = true;
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         });
 
         services.Configure<AdminSeedOptions>(
             configuration.GetSection(AdminSeedOptions.SectionName));
 
-        services.Configure<JwtOptions>(
-            configuration.GetSection(JwtOptions.SectionName));
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .Validate(x => !string.IsNullOrWhiteSpace(x.Issuer), "Jwt:Issuer is required.")
+            .Validate(x => !string.IsNullOrWhiteSpace(x.Audience), "Jwt:Audience is required.")
+            .Validate(x => x.ExpirationMinutes > 0, "Jwt:ExpirationMinutes must be positive.")
+            .Validate(x => x.SecretKey.Length >= 32, "Jwt:SecretKey must be at least 32 characters.")
+            .ValidateOnStart();
         services.AddOptions<EmailOptions>()
             .Bind(configuration.GetSection(EmailOptions.SectionName))
             .Validate(x => !x.Enabled || (!string.IsNullOrWhiteSpace(x.Host) && x.Port > 0 && !string.IsNullOrWhiteSpace(x.From) && !string.IsNullOrWhiteSpace(x.UserName) && !string.IsNullOrWhiteSpace(x.Password)), "Enabled email requires Host, Port, From, UserName, and Password.")

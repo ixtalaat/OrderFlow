@@ -1,37 +1,28 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using OrderFlow.Application.Auth.DTOs;
 using OrderFlow.Application.Common.Constants;
+using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Customers;
-using OrderFlow.Application.Common.Persistence;
-using OrderFlow.Infrastructure.Identity;
 using OrderFlow.Domain.Entities;
+using OrderFlow.Infrastructure.Identity;
+using OrderFlow.Infrastructure.Auth;
 
 namespace OrderFlow.Application.Auth;
 
 public sealed class AuthService(
     UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
     IJwtTokenService jwtTokenService,
     ICustomerRepository customerRepository,
-    IUnitOfWork unitOfWork) : IAuthService
+    IUnitOfWork unitOfWork,
+    IOptions<JwtOptions> jwtOptions) : IAuthService
 {
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
-    private readonly ICustomerRepository _customerRepository = customerRepository;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-
-    public async Task<Result<AuthResponse>> RegisterAsync(
-        RegisterRequest request,
-        CancellationToken cancellationToken)
+    public async Task<Result<AuthResponse>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
-        var existingUser =
-            await _userManager.FindByEmailAsync(request.Email);
-
-        if (existingUser is not null)
-        {
-            return Result.Failure<AuthResponse>(
-                AuthErrors.EmailAlreadyExists);
-        }
+        if (await userManager.FindByEmailAsync(request.Email) is not null)
+            return Result.Failure<AuthResponse>(AuthErrors.EmailAlreadyExists);
 
         var user = new ApplicationUser
         {
@@ -40,82 +31,59 @@ public sealed class AuthService(
             FullName = request.FullName
         };
 
-        var result = await _userManager.CreateAsync(
-            user,
-            request.Password);
-
+        var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
+            return Result.Failure<AuthResponse>(AuthErrors.UserCreationFailed);
+
+        try
         {
-            return Result.Failure<AuthResponse>(
-                AuthErrors.UserCreationFailed);
+            var roleResult = await userManager.AddToRoleAsync(user, Roles.Customer);
+            if (!roleResult.Succeeded)
+            {
+                await userManager.DeleteAsync(user);
+                return Result.Failure<AuthResponse>(AuthErrors.UserCreationFailed);
+            }
+
+            await customerRepository.AddAsync(Customer.Create(user.Id, request.PhoneNumber, request.Address), cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            await userManager.DeleteAsync(user);
+            return Result.Failure<AuthResponse>(AuthErrors.UserCreationFailed);
         }
 
-        await _userManager.AddToRoleAsync(user, Roles.Customer);
-        await _customerRepository.AddAsync(Customer.Create(user.Id, request.PhoneNumber, request.Address), cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var token = _jwtTokenService.GenerateToken(
+        var roles = await userManager.GetRolesAsync(user);
+        var expiresAt = DateTime.UtcNow.AddMinutes(jwtOptions.Value.ExpirationMinutes);
+        return Result.Success(new AuthResponse(
+            jwtTokenService.GenerateToken(user.Id, user.Email!, roles),
+            expiresAt,
             user.Id,
-            user.Email,
-            roles);
-
-        var response = new AuthResponse(
-            token,
-            DateTime.UtcNow.AddMinutes(60),
-            user.Id,
-            user.Email,
-            roles);
-
-        return Result.Success(response);
+            user.Email!,
+            roles));
     }
 
-    public async Task<Result<AuthResponse>> LoginAsync(
-    LoginRequest request,
-    CancellationToken cancellationToken)
+    public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByEmailAsync(
-            request.Email);
-
+        var user = await userManager.FindByEmailAsync(request.Email);
         if (user is null)
-        {
             return Result.Failure<AuthResponse>(AuthErrors.InvalidCredentials);
-        }
 
-        var passwordValid =
-            await _userManager.CheckPasswordAsync(
-                user,
-                request.Password);
-
-        if (!passwordValid)
-        {
+        var passwordResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+        if (!passwordResult.Succeeded || passwordResult.IsLockedOut)
             return Result.Failure<AuthResponse>(AuthErrors.InvalidCredentials);
-        }
 
-        var customer = await _customerRepository.GetByUserIdAsync(
-            user.Id,
-            cancellationToken);
-
+        var customer = await customerRepository.GetByUserIdAsync(user.Id, cancellationToken);
         if (customer is not null && !customer.IsActive)
-        {
             return Result.Failure<AuthResponse>(AuthErrors.InvalidCredentials);
-        }
 
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var token = _jwtTokenService.GenerateToken(
+        var roles = await userManager.GetRolesAsync(user);
+        var expiresAt = DateTime.UtcNow.AddMinutes(jwtOptions.Value.ExpirationMinutes);
+        return Result.Success(new AuthResponse(
+            jwtTokenService.GenerateToken(user.Id, user.Email!, roles),
+            expiresAt,
             user.Id,
             user.Email!,
-            roles);
-
-        var response = new AuthResponse(
-            token,
-            DateTime.UtcNow.AddMinutes(60),
-            user.Id,
-            user.Email!,
-            roles);
-
-        return Result.Success(response);
+            roles));
     }
 }

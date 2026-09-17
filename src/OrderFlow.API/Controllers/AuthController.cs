@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OrderFlow.API.Abstractions;
 using OrderFlow.Application.Auth;
 using OrderFlow.Application.Auth.DTOs;
@@ -10,6 +11,7 @@ namespace OrderFlow.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
+[EnableRateLimiting("auth")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;

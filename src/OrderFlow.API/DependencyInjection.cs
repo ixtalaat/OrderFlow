@@ -2,6 +2,8 @@
 using OrderFlow.Infrastructure.Persistence;
 using Serilog;
 using System.Reflection;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OrderFlow.API;
 
@@ -18,6 +20,18 @@ public static class DependencyInjection
         });
 
         services.AddControllers();
+        services.AddRateLimiter(options =>
+        {
+            options.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 10,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0
+                }));
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        });
 
         services.AddOpenApi();
 

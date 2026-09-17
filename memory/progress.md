@@ -1,5 +1,9 @@
 # Project Progress
 
+## Authentication hardening
+
+Auth now uses Identity lockout-aware password validation, validates JWT configuration at startup, reports the configured token expiration, compensates for registration role/profile failures, and applies IP-based rate limiting to auth endpoints. Email confirmation remains an explicit future decision because registration currently issues tokens immediately. See `docs/authentication/auth-hardening.md`.
+
 ## Reliability hardening — Outbox and startup safety
 
 Added a transactional outbox for order notifications and accounting synchronization. Order handlers add outbox rows before the same unit-of-work save; `OutboxDispatcher` publishes pending rows to Hangfire with at-least-once semantics. Production startup now applies EF migrations, while Testing retains SQLite `EnsureCreatedAsync`. Public registration creates a Customer profile, catalog pricing loads active rules in one batch, product creation uses the transactional unit of work, and the customer tier API accepts a JSON DTO (with legacy query compatibility). Email is validated when enabled and cannot be disabled in Production. Migration: `AddOutbox`. See `docs/background-processing.md`.
