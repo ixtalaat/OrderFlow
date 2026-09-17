@@ -32,7 +32,7 @@ public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IPr
         order.Submit();
         await orders.AddAsync(order, ct);
         await unitOfWork.SaveChangesAsync(ct);
-        backgroundJobs.EnqueueOrderNotification(order.Id);
+        backgroundJobs.EnqueueOrderNotification(order.Id, order.Status);
         return Result.Success((await orders.GetResponseByIdAsync(order.Id, ct))!);
     }
 }

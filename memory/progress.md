@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 8 — Order Notifications
+
+Added MailKit email delivery, order notification templates, and notification services. Hangfire notification jobs are queued after every relevant order status change, use three retries, log failures, and remain retryable from the protected dashboard. Email is disabled in test environments through configuration.
+
 ## Epic 7 — Background Processing
 
 Configured Hangfire with SQL Server storage and a background job scheduler abstraction. Order creation queues notification jobs and order completion queues accounting synchronization jobs after successful persistence. Jobs use structured logging, three automatic retries, failed-state retention, and a role-protected `/hangfire` dashboard. SQLite test environments use a no-op scheduler.

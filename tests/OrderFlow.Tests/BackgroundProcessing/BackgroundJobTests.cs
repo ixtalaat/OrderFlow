@@ -1,6 +1,9 @@
 using FluentAssertions;
 using Hangfire;
 using Microsoft.Extensions.Logging.Abstractions;
+using NSubstitute;
+using OrderFlow.Application.Notifications;
+using OrderFlow.Domain.Entities;
 using OrderFlow.Infrastructure.BackgroundProcessing;
 
 namespace OrderFlow.Tests.BackgroundProcessing;
@@ -10,8 +13,10 @@ public sealed class BackgroundJobTests
     [Fact]
     public async Task Notification_Job_Should_Execute_Successfully()
     {
-        var job = new OrderNotificationJob(NullLogger<OrderNotificationJob>.Instance);
-        await job.ExecuteAsync(42);
+        var notifications = Substitute.For<IOrderNotificationService>();
+        var job = new OrderNotificationJob(notifications, NullLogger<OrderNotificationJob>.Instance);
+        await job.ExecuteAsync(42, OrderStatus.Submitted);
+        await notifications.Received(1).NotifyStatusChangedAsync(42, OrderStatus.Submitted, Arg.Any<CancellationToken>());
     }
 
     [Fact]

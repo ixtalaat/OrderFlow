@@ -12,6 +12,7 @@ using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Customers;
 using OrderFlow.Application.Inventory;
 using OrderFlow.Application.Orders;
+using OrderFlow.Application.Notifications;
 using OrderFlow.Application.Pricing;
 using OrderFlow.Application.Pricing.Strategies;
 using OrderFlow.Application.Products;
@@ -23,6 +24,7 @@ using OrderFlow.Infrastructure.Persistence;
 using OrderFlow.Infrastructure.Orders;
 using OrderFlow.Infrastructure.Pricing;
 using OrderFlow.Infrastructure.Products;
+using OrderFlow.Infrastructure.Notifications;
 using System.Text;
 
 
@@ -69,6 +71,7 @@ public static class DependencyInjection
 
         services.Configure<JwtOptions>(
             configuration.GetSection(JwtOptions.SectionName));
+        services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
 
         services
         .AddAuthentication(options =>
@@ -107,6 +110,9 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
+        services.AddScoped<IOrderNotificationService, OrderNotificationService>();
+        services.AddScoped<OrderNotificationTemplate>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
