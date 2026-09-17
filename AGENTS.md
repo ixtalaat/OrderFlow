@@ -1270,4 +1270,5 @@ The following rules are especially important for OrderFlow:
 20. Commit completed features with meaningful commit messages.
 21. Do not over-engineer.
 22. Do not introduce patterns without a real reason.
+23. Every C# source file must contain exactly one top-level class, interface, record, enum, or struct. Split commands from handlers, DTOs from one another, validators from handlers, and generic types from their base types into separate files.
 ```
