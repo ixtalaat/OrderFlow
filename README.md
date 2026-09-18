@@ -11,11 +11,15 @@ built with Clean Architecture, CQRS, and 180+ automated tests.
 
 ## Features
 
-- JWT authentication with `Admin` / `SalesEmployee` / `Customer` roles and
-  resource-ownership enforcement.
-- Customer management with activation state and pricing tiers.
-- Product catalog with search, pagination, and per-product inventory.
-- Orders with atomic stock reservation and
+- JWT authentication with `Admin` / `SalesEmployee` / `Customer` roles,
+  email confirmation, refresh-token rotation with theft detection, instant
+  revocation, and resource-ownership enforcement.
+- Customer management with activation state, pricing tiers, audit trail,
+  and GDPR erasure.
+- Product catalog with search, pagination, per-product inventory, and
+  low-stock alerts.
+- Orders with atomic stock reservation, idempotent creation,
+  customer cancellation, coupons, and the
   `Submitted → Confirmed → Processing → Completed` workflow.
 - Optimistic-concurrency inventory (parallel orders for the last units
   cannot oversell; loser gets `409 Conflict`).

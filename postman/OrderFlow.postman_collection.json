@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "orderflow-api",
     "name": "OrderFlow API",
-    "description": "OrderFlow authentication, Epic 2 customer-management, and Epic 3 product-catalog requests. Select the OrderFlow Local environment before running the collection.",
+    "description": "OrderFlow API requests: authentication with email confirmation and refresh tokens, customer management, product catalog, inventory, orders (idempotent creation, cancellation, workflow), pricing rules, coupons, and customer tiers. Select the OrderFlow Local environment before running the collection.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "event": [
@@ -80,7 +80,7 @@
               }
             },
             "url": "{{baseUrl}}/api/auth/login",
-            "description": "Logs in and stores the returned JWT as customerToken. Copy the token to jwtToken when using a sales or admin account."
+            "description": "Logs in and stores the returned JWT as customerToken. Copy the token to jwtToken when using a sales or admin account. Requires a confirmed email address."
           },
           "event": [
             {
@@ -89,11 +89,115 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Login returns a token', function () { pm.expect(pm.response.code).to.equal(200); });",
-                  "if (pm.response.code === 200) { pm.environment.set('customerToken', pm.response.json().accessToken); }"
+                  "if (pm.response.code === 200) { pm.environment.set('customerToken', pm.response.json().accessToken); }",
+                  "if (pm.response.code === 200 && pm.response.json().refreshToken) { pm.environment.set('refreshToken', pm.response.json().refreshToken); }"
                 ]
               }
             }
           ]
+        },
+        {
+          "name": "Confirm Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"token\": \"paste-confirmation-token\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/confirm-email",
+            "description": "Confirms a registered email address with the token from the confirmation email."
+          }
+        },
+        {
+          "name": "Resend Confirmation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{customerEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/resend-confirmation",
+            "description": "Re-sends the confirmation email. Always returns success to avoid user enumeration."
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "description": "Rotates the refresh token and returns a new access token. Reusing an old token revokes the family."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) { pm.environment.set('refreshToken', pm.response.json().refreshToken); pm.environment.set('customerToken', pm.response.json().accessToken); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Revoke Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/revoke",
+            "description": "Revokes a refresh token."
+          }
         },
         {
           "name": "Current User",
@@ -313,6 +417,25 @@
             },
             "url": "{{baseUrl}}/api/customers/{{customerId}}/activate"
           }
+        },
+        {
+          "name": "Erase Customer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/customers/{{customerId}}/erase",
+            "description": "Permanently erases customer PII (Admin only). Order history is kept."
+          }
         }
       ]
     },
@@ -509,6 +632,39 @@
               ]
             },
             "url": "{{baseUrl}}/api/products/{{productId}}/activate"
+          }
+        },
+        {
+          "name": "Set Low-Stock Threshold",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threshold\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/products/{{productId}}/low-stock-threshold",
+            "description": "Sets the low-stock alert threshold (null disables)."
           }
         }
       ]
@@ -745,14 +901,15 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"quantity\": 5\n}",
+              "raw": "{\n  \"quantity\": 5,\n  \"reason\": \"Cycle count correction\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "url": "{{baseUrl}}/api/inventory/{{productId}}/adjust"
+            "url": "{{baseUrl}}/api/inventory/{{productId}}/adjust",
+            "description": "Adjusts stock. A reason is required and is written to the audit trail."
           }
         }
       ]
@@ -768,6 +925,10 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
               }
             ],
             "authentication": {
@@ -782,14 +943,34 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1\n    }\n  ]\n}",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1\n    }\n  ],\n  \"couponCode\": null\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "url": "{{baseUrl}}/api/orders"
+            "url": "{{baseUrl}}/api/orders",
+            "description": "Creates an order. Repeating the request with the same Idempotency-Key replays the original response instead of creating a duplicate."
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/orders/{{orderId}}/cancel",
+            "description": "Cancels your own submitted order and releases its reservation."
           }
         },
         {
@@ -1031,6 +1212,105 @@
               ]
             },
             "url": "{{baseUrl}}/api/customers/{{customerId}}/tier?tier=Wholesale"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coupons — Admin",
+      "description": "Discount coupons applied at order creation. These requests require jwtToken from an Admin account.",
+      "item": [
+        {
+          "name": "Create Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"discountPercentage\": 10,\n  \"minOrderTotal\": 0,\n  \"validFromUtc\": \"2026-01-01T00:00:00Z\",\n  \"validToUtc\": null,\n  \"maxRedemptions\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/coupons"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) { pm.environment.set('couponId', pm.response.json().id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Coupon",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"discountPercentage\": 15,\n  \"minOrderTotal\": 50,\n  \"validFromUtc\": \"2026-01-01T00:00:00Z\",\n  \"validToUtc\": null,\n  \"maxRedemptions\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/coupons/{{couponId}}"
+          }
+        },
+        {
+          "name": "Delete Coupon",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/coupons/{{couponId}}"
           }
         }
       ]

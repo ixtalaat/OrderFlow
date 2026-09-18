@@ -13,3 +13,12 @@ A valid rule is active when `ValidFromUtc <= now` and `ValidToUtc` is null or la
 Regular, Wholesale, and VIP strategies calculate the final price using the active rule; without a rule, the product base price is used. Prices are rounded to two decimal places.
 
 The customer catalog and order creation use the same pricing service. The calculated price is copied to `OrderItem.UnitPrice`, so later pricing-rule changes never alter historical orders.
+
+## Coupons
+
+Admin-managed discount codes (`POST/PUT/DELETE /api/coupons`) with validity
+windows, minimum order totals, optional redemption caps, and activation
+state. At order creation the coupon applies to the post-tier subtotal and
+the code plus discount amount are snapshotted on the order; redemptions are
+counted atomically in the same save, guarded by an optimistic-concurrency
+token so capped coupons cannot over-redeem under parallel orders.

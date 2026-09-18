@@ -2,8 +2,8 @@
 
 ## Files
 
-- `OrderFlow.postman_collection.json` — authentication, Epic 2 customer-management, and Epic 3 product-catalog requests.
-- `OrderFlow.postman_environment.json` — local URL, credentials, JWT, customer ID, and pagination variables.
+- `OrderFlow.postman_collection.json` — authentication (registration, email confirmation, refresh/revoke), customer management and erasure, product catalog and low-stock thresholds, inventory (reasoned adjustments), orders (idempotent creation, cancellation, workflow), pricing rules, coupons, and customer tiers.
+- `OrderFlow.postman_environment.json` — local URL, credentials, JWTs, refresh token, customer/product/order/pricing-rule/coupon IDs, and pagination variables.
 
 ## Import and setup
 
@@ -15,8 +15,7 @@
 
 ## Suggested flow
 
-1. Run `Authentication → Register Customer`.
-2. Run `Authentication → Login`; the test script stores the response token in `customerToken`.
+1. Run `Authentication → Register Customer`, then `Confirm Email` (token from the confirmation email), then `Login`; the test script stores tokens in `customerToken`/`refreshToken`. `Refresh Token` rotates the pair.
 3. Run `Authentication → Current User` and `Customers — Customer Role → Get Current Customer`.
 4. For customer management, set `jwtToken` to a SalesEmployee/Admin JWT, then run `Customers — Sales/Admin → Create Customer`.
 5. The create request stores the returned profile ID in `customerId`; use it for get, update, activate, and deactivate requests.

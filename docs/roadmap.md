@@ -2,10 +2,9 @@
 
 Explicitly deferred during development; each is a scoped future epic.
 
-- **Email confirmation**: registration currently issues tokens immediately;
-  add confirmation flow before any real user data is involved.
-- **Token revocation**: deactivated customers keep valid JWTs until expiry;
-  add a revocation list or short-lived access + refresh tokens.
+- ~~Email confirmation, token revocation, refresh tokens, order
+  idempotency, customer cancellation, coupons, audit trail~~ — done; see
+  ADRs 009–010 and the feature docs.
 - **Full-text catalog search**: leading-wildcard `LIKE` cannot use indexes;
   evaluate SQL Server full-text or a search service past ~100k products.
 - **Caching**: revisit per ADR-007 triggers (p95 > 200 ms, DB saturation).

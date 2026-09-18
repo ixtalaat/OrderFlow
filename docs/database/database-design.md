@@ -9,6 +9,7 @@ migrations at startup; tests use `EnsureCreatedAsync` on SQLite.
 ```mermaid
 erDiagram
     AspNetUsers ||--|| Customers : "UserId (unique)"
+    AspNetUsers ||--o{ RefreshTokens : sessions
     Customers ||--o{ Orders : places
     Orders ||--o{ OrderItems : contains
     Products ||--o{ OrderItems : ordered_as
@@ -26,21 +27,33 @@ erDiagram
   Unique index on `UserId`.
 - **Categories** — unique name; `Restrict` delete while products reference it.
 - **Products** — name, description, SKU (unique, normalized uppercase),
-  price, `IsActive`, timestamps. Supporting index `(IsActive, Name)` for
-  catalog browse; see `docs/products/catalog-performance.md`.
+  price, `IsActive`, optional `LowStockThreshold`, timestamps. Supporting
+  index `(IsActive, Name)` for catalog browse; see
+  `docs/products/catalog-performance.md`.
 - **Inventories** — one row per product (unique `ProductId`, cascade
   delete): `Quantity`, `ReservedQuantity`, and `Version`, an
   application-managed optimistic-concurrency token. `AvailableQuantity` is
   computed (`Quantity - ReservedQuantity`) and never stored.
 - **Orders** — `CustomerId` (`Restrict` delete), `Status` and
   `AccountingSyncStatus` (strings), `ExternalInvoiceId`, sync attempt
-  counters. `TotalAmount` is computed from items, not stored.
+  counters, snapshotted `CouponCode`/`DiscountAmount`. `TotalAmount` is
+  computed from items minus discount, not stored.
 - **OrderItems** — `OrderId` (cascade), `ProductId`, quantity, snapshotted
   `UnitPrice`/`LineTotal` so price history survives rule changes.
 - **PricingRules** — `ProductId`, `Tier`, `DiscountPercentage`,
   `ValidFromUtc`/`ValidToUtc`. Index `(ProductId, Tier, ValidFromUtc)`.
 - **OutboxMessages** — transactional outbox: message type, JSON payload,
   `OrderId`, creation/processing timestamps, Hangfire job id, attempts.
+- **RefreshTokens** — opaque session tokens stored as SHA-256 hashes
+  (unique), with expiry, revocation and rotation-chain columns; cascade on
+  user delete.
+- **IdempotencyKeys** — per-user order idempotency records: key, request
+  hash, serialized response, TTL expiry; composite key `(UserId, Key)`.
+- **AuditEntries** — actor, action, entity type/id, details, timestamp;
+  indexed by entity for accountability queries.
+- **Coupons** — unique code, discount, minimum total, validity window,
+  redemption cap/counter, active flag, and an optimistic-concurrency token
+  guarding capped redemptions.
 
 ## Key design choices
 

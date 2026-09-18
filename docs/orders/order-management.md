@@ -2,11 +2,27 @@
 
 Orders are created by authenticated customers with status `Submitted` and reserve inventory atomically with order persistence. Product prices are snapshotted into order items.
 
+## Idempotency
+
+`POST /api/orders` accepts an optional `Idempotency-Key` header (per-user,
+24-hour TTL). Repeating a request with the same key and payload replays the
+stored `201` without reserving again; the same key with a different payload
+returns `422`. Rationale: `docs/architecture/adr/010-order-idempotency.md`.
+
+## Cancellation and coupons
+
+Customers cancel their own submitted orders with
+`PATCH /api/orders/{id}/cancel` (releases reservations; other statuses and
+other customers' orders are rejected). Orders accept an optional coupon
+code: tier pricing applies first, then the coupon discount on the subtotal,
+with the code and discount amount snapshotted on the order.
+
 ## Status workflow
 
 ```text
 Draft → Submitted → Confirmed → Processing → Completed
-                 └→ Rejected
+                 ├→ Rejected (staff)
+                 └→ Cancelled (customer)
 ```
 
 The create workflow constructs and submits the order in one operation. Rejection releases each item's reservation; completion confirms each reservation and removes stock. Invalid transitions are rejected.

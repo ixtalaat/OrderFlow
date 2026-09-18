@@ -45,7 +45,8 @@ public class Customer
 | `GET` | `/api/customers/{id}` | `Admin`, `SalesEmployee`, `Customer` (Owner only) | Get customer by ID |
 | `PUT` | `/api/customers/{id}` | `Admin`, `SalesEmployee` | Update customer details |
 | `PATCH` | `/api/customers/{id}/activate` | `Admin`, `SalesEmployee` | Activate customer |
-| `PATCH` | `/api/customers/{id}/deactivate` | `Admin`, `SalesEmployee` | Deactivate customer |
+| `PATCH` | `/api/customers/{id}/deactivate` | `Admin`, `SalesEmployee` | Deactivate customer (also revokes outstanding access tokens) |
+| `DELETE` | `/api/customers/{id}/erase` | `Admin` | Erase PII (anonymizes user/profile, deletes sessions; order history kept) |
 
 ---
 
@@ -70,4 +71,10 @@ public class Customer
 - Results are ordered by newest creation time, then customer ID as a deterministic tie-breaker.
 
 ## Epic 2 Status
-The customer-management acceptance scope is implemented, including CRUD-style management, activation/deactivation, pagination, search, validation, role authorization, ownership protection, unit tests, and integration tests. Customer deactivation affects the customer profile state and prevents the associated customer from obtaining new login tokens. Existing JWTs remain governed by their normal expiration and validation rules.
+The customer-management acceptance scope is implemented, including CRUD-style management, activation/deactivation, pagination, search, validation, role authorization, ownership protection, unit tests, and integration tests. Customer deactivation affects the customer profile state, prevents new logins, and revokes outstanding access tokens via the token-version claim (see `../authentication/authentication.md`).
+
+## Staff-audited actions
+
+Tier changes, activation/deactivation, and erasure write `AuditEntry` rows
+with the acting user, action, entity, and details — queryable for
+accountability alongside the stocktake audit entries in inventory.

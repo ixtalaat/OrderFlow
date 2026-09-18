@@ -21,7 +21,15 @@ All endpoints require the `Admin` or `SalesEmployee` role:
 - `POST /api/inventory/{productId}/reserve`
 - `POST /api/inventory/{productId}/release`
 - `POST /api/inventory/{productId}/confirm`
-- `PATCH /api/inventory/{productId}/adjust`
+- `PATCH /api/inventory/{productId}/adjust` (requires a stocktake `reason`, written to the audit trail)
+- `PATCH /api/products/{id}/low-stock-threshold` (sets the alert threshold, null disables)
+
+## Low-stock alerts
+
+When a reservation, confirmation, or negative adjustment pushes availability
+below the product's threshold, staff (Admin/SalesEmployee) are emailed.
+Crossing detection ignores upward movements and already-below states, and
+notification failures never fail the stock operation.
 
 ## Concurrency
 
