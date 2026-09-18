@@ -5,4 +5,6 @@ public sealed record AuthResponse(
     DateTime ExpiresAt,
     string UserId,
     string Email,
-    IEnumerable<string> Roles);
+    IEnumerable<string> Roles,
+    string? RefreshToken = null,
+    DateTime? RefreshExpiresAtUtc = null);

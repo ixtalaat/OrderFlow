@@ -34,13 +34,17 @@ public class RegisterTests(
 
         var result =
             await response.Content
-                .ReadFromJsonAsync<AuthResponse>();
+                .ReadFromJsonAsync<RegisterResponse>();
 
         result.Should().NotBeNull();
 
-        result!.AccessToken
+        result!.Email
             .Should()
-            .NotBeNullOrWhiteSpace();
+            .Be(request.Email);
+
+        result.RequiresEmailConfirmation
+            .Should()
+            .BeTrue();
     }
 
     [Fact]

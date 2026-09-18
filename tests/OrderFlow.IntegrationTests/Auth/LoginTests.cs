@@ -35,6 +35,11 @@ public class LoginTests(
             "/api/auth/register",
             registerRequest);
 
+        await TestAuthHelper.ConfirmEmailAsync(
+            factory,
+            _client,
+            email);
+
         var loginRequest =
             new LoginRequest(
                 email,

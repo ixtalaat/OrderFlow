@@ -5,5 +5,6 @@ public interface IJwtTokenService
     string GenerateToken(
         string userId,
         string email,
-        IEnumerable<string> roles);
+        IEnumerable<string> roles,
+        int tokenVersion);
 }

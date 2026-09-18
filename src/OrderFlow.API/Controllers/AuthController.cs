@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<AuthResponse>> Register(
+    public async Task<ActionResult<RegisterResponse>> Register(
         RegisterRequest request,
         CancellationToken cancellationToken)
     {
@@ -33,6 +33,46 @@ public class AuthController : ControllerBase
                 cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(
+        ConfirmEmailRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _authService.ConfirmEmailAsync(request, cancellationToken);
+
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
+
+    [HttpPost("resend-confirmation")]
+    public async Task<IActionResult> ResendConfirmation(
+        ResendConfirmationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _authService.ResendConfirmationAsync(request, cancellationToken);
+
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult<RefreshResponse>> Refresh(
+        RefreshRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _authService.RefreshAsync(request, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpPost("revoke")]
+    public async Task<IActionResult> Revoke(
+        RevokeRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _authService.RevokeAsync(request, cancellationToken);
+
+        return result.IsSuccess ? Ok() : result.ToProblem();
     }
 
     [HttpPost("login")]

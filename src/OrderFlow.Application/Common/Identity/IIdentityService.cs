@@ -23,4 +23,8 @@ public interface IIdentityService
     Task<bool> UserExistsAsync(
         string userId,
         CancellationToken cancellationToken = default);
+
+    Task IncrementTokenVersionAsync(
+        string userId,
+        CancellationToken cancellationToken = default);
 }

@@ -31,7 +31,9 @@ public sealed class IdentityService : IIdentityService
         {
             UserName = email,
             Email = email,
-            FullName = fullName
+            FullName = fullName,
+            // Staff-provisioned accounts are trusted: they skip email confirmation.
+            EmailConfirmed = true
         };
 
         var result = await _userManager.CreateAsync(user, password);
@@ -85,5 +87,17 @@ public sealed class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId);
         return user is not null;
+    }
+
+    public async Task IncrementTokenVersionAsync(
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return;
+
+        user.TokenVersion++;
+        await _userManager.UpdateAsync(user);
     }
 }

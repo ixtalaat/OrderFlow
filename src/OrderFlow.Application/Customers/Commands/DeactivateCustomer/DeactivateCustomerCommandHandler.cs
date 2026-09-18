@@ -1,4 +1,5 @@
 using MediatR;
+using OrderFlow.Application.Common.Identity;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Common.Results;
 
@@ -8,13 +9,16 @@ public sealed class DeactivateCustomerCommandHandler : IRequestHandler<Deactivat
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IIdentityService _identityService;
 
     public DeactivateCustomerCommandHandler(
         ICustomerRepository customerRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IIdentityService identityService)
     {
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
+        _identityService = identityService;
     }
 
     public async Task<Result> Handle(
@@ -29,6 +33,7 @@ public sealed class DeactivateCustomerCommandHandler : IRequestHandler<Deactivat
 
         customer.Deactivate();
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _identityService.IncrementTokenVersionAsync(customer.UserId, cancellationToken);
 
         return Result.Success();
     }

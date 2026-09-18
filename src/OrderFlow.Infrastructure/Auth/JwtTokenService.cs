@@ -11,15 +11,19 @@ internal class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenService
 {
     private readonly JwtOptions _options = options.Value;
 
+    public const string TokenVersionClaim = "token_version";
+
     public string GenerateToken(string userId,
         string email,
-        IEnumerable<string> roles)
+        IEnumerable<string> roles,
+        int tokenVersion)
     {
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, userId),
             new(JwtRegisteredClaimNames.Email, email),
             new(ClaimTypes.NameIdentifier, userId),
+            new(TokenVersionClaim, tokenVersion.ToString()),
         };
 
         foreach (var role in roles)

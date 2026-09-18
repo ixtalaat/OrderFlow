@@ -87,25 +87,11 @@ public class AuthorizationTests(
     private async Task<string> RegisterAndGetTokenAsync(
         string email)
     {
-        var request =
-            new RegisterRequest(
-                email,
-                "Password@123",
-                "Test Customer");
+        var auth = await TestAuthHelper.RegisterConfirmAndLoginAsync(
+            factory,
+            _client,
+            email);
 
-        var response =
-            await _client.PostAsJsonAsync(
-                "/api/auth/register",
-                request);
-
-        response.EnsureSuccessStatusCode();
-
-        var result =
-            await response.Content
-                .ReadFromJsonAsync<AuthResponse>();
-
-        result.Should().NotBeNull();
-
-        return result!.AccessToken;
+        return auth.AccessToken;
     }
 }

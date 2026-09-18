@@ -27,6 +27,7 @@ using OrderFlow.Infrastructure.Orders;
 using OrderFlow.Infrastructure.Pricing;
 using OrderFlow.Infrastructure.Products;
 using OrderFlow.Infrastructure.Notifications;
+using System.Security.Claims;
 using System.Text;
 
 
@@ -114,6 +115,25 @@ public static class DependencyInjection
         })
         .AddJwtBearer(options =>
         {
+            options.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = async context =>
+                {
+                    var userId = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var version = context.Principal?.FindFirst(JwtTokenService.TokenVersionClaim)?.Value;
+                    if (userId is null || version is null)
+                    {
+                        context.Fail("Token is missing identity claims.");
+                        return;
+                    }
+
+                    var users = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+                    var user = await users.FindByIdAsync(userId);
+                    if (user is null || user.TokenVersion.ToString() != version)
+                        context.Fail("Token has been revoked.");
+                }
+            };
+
             var jwtOptions = configuration
                 .GetSection(JwtOptions.SectionName)
                 .Get<JwtOptions>()
@@ -140,6 +160,9 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddOptions<AuthOptions>()
+            .Bind(configuration.GetSection(AuthOptions.SectionName));
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IOrderNotificationService, OrderNotificationService>();
         services.AddScoped<OrderNotificationTemplate>();
