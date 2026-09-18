@@ -52,6 +52,13 @@ docker compose down -v     # also deletes the database (clean slate)
 
 ## Troubleshooting
 
+- On restart with existing data, the API may crash once with
+  `Database 'OrderFlowDb' already exists`: SQL Server reports healthy
+  before recovered databases are visible, so the migration briefly thinks
+  the database is missing. The `api` service has `restart: unless-stopped`
+  and comes up healthy on retry by itself.
+- `SA_PASSWORD` must satisfy SQL Server complexity (8+ chars, 3 of:
+
 - `SA_PASSWORD` must satisfy SQL Server complexity (8+ chars, 3 of:
   upper, lower, digit, symbol) or `sqlserver` never becomes healthy.
 - `Jwt:SecretKey must be at least 32 characters` aborts API startup:

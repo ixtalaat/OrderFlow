@@ -22,6 +22,9 @@ services:
     build:
       context: .
       dockerfile: src/OrderFlow.API/Dockerfile
+    # Self-heals a startup race where SQL Server accepts connections before
+    # existing databases finish recovery (migration sees a missing DB once).
+    restart: unless-stopped
     ports:
       - "8080:8080"
     environment:

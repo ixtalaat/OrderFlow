@@ -1,5 +1,9 @@
 # Project Progress
 
+## Epic 16 — Documentation & Portfolio (US-18)
+
+Added overview, architecture (with diagram), database design (with ERD), and authentication docs; renumbered the concurrency ADR into a new `docs/architecture/adr/001-008` set covering architecture, SQL Server, auth, concurrency, background processing, accounting, caching, and testing; added roadmap; verified the Postman collection against current routes; captured a Scalar API screenshot; rewrote the README portfolio-ready. Also added `restart: unless-stopped` to the API compose service after observing a SQL-recovery startup race, documented in docker-setup troubleshooting.
+
 ## Epic 15 — CI/CD (US-17)
 
 `.github/workflows/ci.yml`: build + unit tests with coverage, integration tests (TRX reports on PRs), Docker build of both images with GHCR push on master (`:sha` + `:latest`), and a master-only compose deploy smoke test (readiness + admin login, ephemeral secrets, full teardown). Failed tests block everything downstream. See `docs/cicd/deployment.md`.
@@ -22,7 +26,7 @@ Catalog baseline on 2000 seeded products: single SELECT with category/inventory 
 
 ## Epic 10 — Concurrency & Reliability (US-12)
 
-Inventory reservations are concurrency-safe: `Inventory.Version` (EF Core concurrency token) plus a single atomic unit-of-work save per order means two simultaneous orders for the last stock cannot oversell — one commits, the other gets `409 Conflict`. `UnitOfWork` translates `DbUpdateConcurrencyException` to `ConcurrencyConflictException` so Application handlers return typed 409 results without referencing EF Core; `OrderErrors.ConcurrencyConflict` was added. Verified by parallel `POST /api/orders` integration test (one 201, one 409, reserved 5/available 0), a deterministic stale-write token test, and handler unit tests. Concurrency tests use a file-based SQLite factory because the shared single-connection in-memory factory cannot run parallel writes. See `docs/architecture/adr-001-inventory-concurrency.md`.
+Inventory reservations are concurrency-safe: `Inventory.Version` (EF Core concurrency token) plus a single atomic unit-of-work save per order means two simultaneous orders for the last stock cannot oversell — one commits, the other gets `409 Conflict`. `UnitOfWork` translates `DbUpdateConcurrencyException` to `ConcurrencyConflictException` so Application handlers return typed 409 results without referencing EF Core; `OrderErrors.ConcurrencyConflict` was added. Verified by parallel `POST /api/orders` integration test (one 201, one 409, reserved 5/available 0), a deterministic stale-write token test, and handler unit tests. Concurrency tests use a file-based SQLite factory because the shared single-connection in-memory factory cannot run parallel writes. See `docs/architecture/adr/004-inventory-concurrency.md`.
 
 ## Epic 9 — Accounting integration
 

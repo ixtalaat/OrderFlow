@@ -1,4 +1,4 @@
-# ADR-001: Concurrency-Safe Inventory Reservations
+# ADR-004: Inventory Concurrency Strategy
 
 Status: Accepted (2026-09-17)
 
