@@ -41,7 +41,8 @@ public static class DependencyInjection
         if (production && (!bool.TryParse(configuration["Email:Enabled"], out var emailEnabled) || !emailEnabled))
             throw new InvalidOperationException("Email:Enabled must be true in production.");
 
-        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
 
         if (connectionString?.StartsWith("DataSource=", StringComparison.OrdinalIgnoreCase) == true)
         {

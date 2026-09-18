@@ -55,6 +55,9 @@ try
 
         app.UseHttpsRedirection();
 
+        if ((app.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? []).Length > 0)
+            app.UseCors(CorsPolicies.Frontend);
+
         app.UseAuthentication();
 
         app.UseAuthorization();

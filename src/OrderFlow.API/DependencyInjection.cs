@@ -1,4 +1,5 @@
-﻿using OrderFlow.API.ExceptionHandling;
+﻿using Microsoft.AspNetCore.DataProtection;
+using OrderFlow.API.ExceptionHandling;
 using OrderFlow.Infrastructure.Persistence;
 using Serilog;
 using System.Reflection;
@@ -18,6 +19,28 @@ public static class DependencyInjection
                 .ReadFrom.Services(services)
                 .Enrich.FromLogContext();
         });
+
+        // Persist Data Protection keys so app-pool recycles on shared hosting
+        // do not invalidate Identity tokens. Skipped in Testing (ephemeral is fine).
+        if (!string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Testing", StringComparison.OrdinalIgnoreCase))
+        {
+            var keyPath = Path.Combine(AppContext.BaseDirectory, "App_Data", "keys");
+            Directory.CreateDirectory(keyPath);
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(keyPath))
+                .SetApplicationName("OrderFlow");
+        }
+
+        // Optional browser-client support: only registered when origins are configured.
+        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? Array.Empty<string>();
+        if (allowedOrigins.Length > 0)
+        {
+            services.AddCors(options => options.AddPolicy(CorsPolicies.Frontend, policy => policy
+                .WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()));
+        }
 
         services.AddControllers();
         services.AddRateLimiter(options =>

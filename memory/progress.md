@@ -1,5 +1,9 @@
 # Project Progress
 
+## Production hardening (pre-MonsterASP)
+
+SQL Server transient retries (`EnableRetryOnFailure`), Data Protection keys persisted under `App_Data/keys`, rolling file logs in Production (`App_Data/logs/`), and optional `Cors:AllowedOrigins` support with preflight tests. Deployment checklist in `docs/cicd/monsterasp-deployment.md`, including the idle-timeout caveat for background jobs (keep-alive via `/health/live`).
+
 ## Epic 16 — Documentation & Portfolio (US-18)
 
 Added overview, architecture (with diagram), database design (with ERD), and authentication docs; renumbered the concurrency ADR into a new `docs/architecture/adr/001-008` set covering architecture, SQL Server, auth, concurrency, background processing, accounting, caching, and testing; added roadmap; verified the Postman collection against current routes; captured a Scalar API screenshot; rewrote the README portfolio-ready. Also added `restart: unless-stopped` to the API compose service after observing a SQL-recovery startup race, documented in docker-setup troubleshooting.
