@@ -1,6 +1,84 @@
 {
   "version": 1,
   "skills": {
+    "angular-architect": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-architect/SKILL.md",
+      "computedHash": "bb4df7ee3ad3cc43838f417f2fc3e735470f82d78bbe0e5874bb12735d9ac302"
+    },
+    "angular-component": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-component/SKILL.md",
+      "computedHash": "6f2c3ccf3b644fd7feb64b93fa0e333941cdf7bf7bc24a0ad62868c273d1bab9"
+    },
+    "angular-developer": {
+      "source": "angular/skills",
+      "sourceType": "github",
+      "skillPath": "angular-developer/SKILL.md",
+      "computedHash": "cebee5c8c3477eb1c03452a318b9c452fa14e993d57924829cc7e0efa766658c"
+    },
+    "angular-di": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-di/SKILL.md",
+      "computedHash": "8920251229f891325c968da687047e117c5e45c316a6a83c364477b29866c272"
+    },
+    "angular-directives": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-directives/SKILL.md",
+      "computedHash": "1c9e2ec70986aacb2f9698dba76c1facaf493d2119ca1d40f4efa3d78b1bf874"
+    },
+    "angular-forms": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-forms/SKILL.md",
+      "computedHash": "657d2cc5f0018f8e5dc2706f1ab31eb73704b7101346147aeb16a2f9f8bf9363"
+    },
+    "angular-http": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-http/SKILL.md",
+      "computedHash": "98057b1866e3c5554d2deeecc8219043f7a682f33fa6195a736d3a6c46987c1c"
+    },
+    "angular-new-app": {
+      "source": "angular/skills",
+      "sourceType": "github",
+      "skillPath": "angular-new-app/SKILL.md",
+      "computedHash": "d9f712544847ab80ef7ed20043820afd275c394ca05340c2f20a0f051e35d945"
+    },
+    "angular-routing": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-routing/SKILL.md",
+      "computedHash": "2ffea023ef9bc222823b2d104f7a6d2350973defa659e9c71d7702351acc8397"
+    },
+    "angular-signals": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-signals/SKILL.md",
+      "computedHash": "c54dc6ef1b68540ac1e4c0a5c9792653dc0b4a1d5e164fed48832874f898ce09"
+    },
+    "angular-ssr": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-ssr/SKILL.md",
+      "computedHash": "4e185326db4e46334eb534919bc2f8268c84fab5d68c241e74a1622c21e9471d"
+    },
+    "angular-testing": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-testing/SKILL.md",
+      "computedHash": "61e3d3ab9ea2f79aed53a46119fa860a013ca8170478fd90266e027eacfb242c"
+    },
+    "angular-tooling": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-tooling/SKILL.md",
+      "computedHash": "bcb10eec1f6e61fa59d40aa32af189dd172f28393a91163bd3dc64f005af8522"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
