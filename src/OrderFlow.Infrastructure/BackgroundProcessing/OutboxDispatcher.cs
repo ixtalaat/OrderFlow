@@ -21,7 +21,7 @@ public sealed class OutboxDispatcher(IServiceScopeFactory scopeFactory, ILogger<
         }
     }
 
-    private async Task DispatchBatchAsync(CancellationToken ct)
+    internal async Task DispatchBatchAsync(CancellationToken ct)
     {
         using var scope = scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

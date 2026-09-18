@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OrderFlow.API.Abstractions;
 using OrderFlow.Application.Common.Constants;
 using OrderFlow.Application.Common.Models;
@@ -18,6 +19,7 @@ namespace OrderFlow.API.Controllers;
 public sealed class ProductCatalogController(ISender sender, ICustomerRepository customers) : ControllerBase
 {
     [HttpGet]
+    [EnableRateLimiting("catalog")]
     public async Task<ActionResult<PagedList<CatalogProductResponse>>> GetAll([FromQuery] CatalogQueryParams query, CancellationToken ct)
     {
         var customer = await GetCurrentCustomer(ct);

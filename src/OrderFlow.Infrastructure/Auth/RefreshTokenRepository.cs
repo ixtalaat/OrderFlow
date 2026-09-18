@@ -23,4 +23,10 @@ public sealed class RefreshTokenRepository(ApplicationDbContext db) : IRefreshTo
         var expired = await db.RefreshTokens.Where(x => x.ExpiresAtUtc <= utcNow).ToListAsync(cancellationToken);
         db.RefreshTokens.RemoveRange(expired);
     }
+
+    public async Task RemoveByUserIdAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var tokens = await db.RefreshTokens.Where(x => x.UserId == userId).ToListAsync(cancellationToken);
+        db.RefreshTokens.RemoveRange(tokens);
+    }
 }

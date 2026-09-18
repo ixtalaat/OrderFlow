@@ -64,4 +64,12 @@ public class Customer
         IsActive = false;
         UpdatedAtUtc = DateTime.UtcNow;
     }
+
+    public void Anonymize()
+    {
+        PhoneNumber = "erased";
+        Address = "erased";
+        IsActive = false;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
 }

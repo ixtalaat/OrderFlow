@@ -2,6 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OrderFlow.API.Abstractions;
 using OrderFlow.Application.Common.Constants;
 using OrderFlow.Application.Common.Models;
@@ -27,6 +28,7 @@ public sealed class OrdersController(ISender sender, ICustomerRepository custome
 {
     [HttpPost]
     [Authorize(Roles = Roles.Customer)]
+    [EnableRateLimiting("orders")]
     public async Task<ActionResult<OrderResponse>> Create(CreateOrderRequest request, CancellationToken ct)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

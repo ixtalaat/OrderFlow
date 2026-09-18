@@ -21,6 +21,11 @@ public sealed class ConcurrencyWebApplicationFactory : WebApplicationFactory<Pro
     {
         builder.UseEnvironment("Testing");
 
+        // Keep the suite independent of production rate limits.
+        builder.UseSetting("RateLimiting:Auth:PermitLimit", "100000");
+        builder.UseSetting("RateLimiting:Catalog:PermitLimit", "100000");
+        builder.UseSetting("RateLimiting:Orders:PermitLimit", "100000");
+
         builder.ConfigureServices(services =>
         {
             var descriptors = services.Where(d =>
@@ -35,6 +40,22 @@ public sealed class ConcurrencyWebApplicationFactory : WebApplicationFactory<Pro
             foreach (var descriptor in descriptors)
             {
                 services.Remove(descriptor);
+            }
+
+            // SQL Server when requested (CI parity job), file SQLite otherwise.
+            if (string.Equals(
+                    Environment.GetEnvironmentVariable("ORDERFLOW_TEST_DATABASE"),
+                    "SqlServer",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                var connection = Environment.GetEnvironmentVariable("ORDERFLOW_TEST_SQLSERVER")
+                    ?? throw new InvalidOperationException(
+                        "ORDERFLOW_TEST_SQLSERVER is required when ORDERFLOW_TEST_DATABASE=SqlServer.");
+                services.AddDbContext<ApplicationDbContext>(options =>
+                {
+                    options.UseSqlServer(connection);
+                });
+                return;
             }
 
             services.AddDbContext<ApplicationDbContext>(options =>

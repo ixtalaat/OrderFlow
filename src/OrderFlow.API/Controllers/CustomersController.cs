@@ -11,6 +11,7 @@ using OrderFlow.Application.Customers.Commands.CreateCustomer;
 using OrderFlow.Application.Customers.Commands.ChangeCustomerTier;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Application.Customers.Commands.DeactivateCustomer;
+using OrderFlow.Application.Customers.Commands.EraseCustomer;
 using OrderFlow.Application.Customers.Commands.UpdateCustomer;
 using OrderFlow.Application.Customers.DTOs;
 using OrderFlow.Application.Customers.Queries.GetCustomerById;
@@ -157,6 +158,19 @@ public class CustomersController : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = new DeactivateCustomerCommand(id);
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
+    [HttpDelete("{id:int}/erase")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> Erase(
+        int id,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var command = new EraseCustomerCommand(id);
         var result = await sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? NoContent() : result.ToProblem();

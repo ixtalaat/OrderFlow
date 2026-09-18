@@ -100,4 +100,34 @@ public sealed class IdentityService : IIdentityService
         user.TokenVersion++;
         await _userManager.UpdateAsync(user);
     }
+
+    public async Task<bool> AnonymizeUserAsync(
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return false;
+
+        var tag = $"deleted-{Guid.NewGuid():N}@deleted.local";
+        user.UserName = tag;
+        user.Email = tag;
+        user.NormalizedUserName = tag.ToUpperInvariant();
+        user.NormalizedEmail = tag.ToUpperInvariant();
+        user.FullName = "Deleted User";
+        user.PhoneNumber = null;
+        user.TokenVersion++;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return false;
+
+        if (await _userManager.HasPasswordAsync(user))
+        {
+            await _userManager.RemovePasswordAsync(user);
+            await _userManager.AddPasswordAsync(user, $"Erased-{Guid.NewGuid():N}!");
+        }
+
+        return true;
+    }
 }

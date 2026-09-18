@@ -25,6 +25,11 @@ public class CustomWebApplicationFactory
     {
         builder.UseEnvironment("Testing");
 
+        // Keep the suite independent of production rate limits.
+        builder.UseSetting("RateLimiting:Auth:PermitLimit", "100000");
+        builder.UseSetting("RateLimiting:Catalog:PermitLimit", "100000");
+        builder.UseSetting("RateLimiting:Orders:PermitLimit", "100000");
+
         builder.ConfigureServices(services =>
         {
             // Remove all existing DbContext and EF Core registrations
@@ -40,6 +45,22 @@ public class CustomWebApplicationFactory
             foreach (var descriptor in descriptors)
             {
                 services.Remove(descriptor);
+            }
+
+            // SQL Server when requested (CI parity job), SQLite otherwise.
+            if (string.Equals(
+                    Environment.GetEnvironmentVariable("ORDERFLOW_TEST_DATABASE"),
+                    "SqlServer",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                var connection = Environment.GetEnvironmentVariable("ORDERFLOW_TEST_SQLSERVER")
+                    ?? throw new InvalidOperationException(
+                        "ORDERFLOW_TEST_SQLSERVER is required when ORDERFLOW_TEST_DATABASE=SqlServer.");
+                services.AddDbContext<ApplicationDbContext>(options =>
+                {
+                    options.UseSqlServer(connection);
+                });
+                return;
             }
 
             // Register SQLite test database

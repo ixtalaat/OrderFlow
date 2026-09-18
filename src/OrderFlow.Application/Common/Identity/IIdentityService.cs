@@ -27,4 +27,8 @@ public interface IIdentityService
     Task IncrementTokenVersionAsync(
         string userId,
         CancellationToken cancellationToken = default);
+
+    Task<bool> AnonymizeUserAsync(
+        string userId,
+        CancellationToken cancellationToken = default);
 }

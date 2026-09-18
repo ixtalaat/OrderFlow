@@ -37,7 +37,7 @@ try
 
         app.UseSerilogRequestLogging();
 
-        if (app.Services.GetService<IBackgroundJobClient>() is not null)
+        if (app.Services.GetService<JobStorage>() is not null)
         {
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
@@ -61,8 +61,7 @@ try
         app.UseAuthentication();
 
         app.UseAuthorization();
-        if (!app.Environment.IsEnvironment("Testing"))
-            app.UseRateLimiter();
+        app.UseRateLimiter();
 
         app.MapControllers();
 

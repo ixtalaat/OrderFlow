@@ -18,4 +18,10 @@ public sealed class IdempotencyRepository(ApplicationDbContext db) : IIdempotenc
         db.IdempotencyKeys.Remove(idempotencyKey);
         return Task.CompletedTask;
     }
+
+    public async Task RemoveByUserIdAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var keys = await db.IdempotencyKeys.Where(x => x.UserId == userId).ToListAsync(cancellationToken);
+        db.IdempotencyKeys.RemoveRange(keys);
+    }
 }

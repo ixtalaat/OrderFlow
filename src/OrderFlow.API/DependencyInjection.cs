@@ -48,14 +48,9 @@ public static class DependencyInjection
         services.AddControllers();
         services.AddRateLimiter(options =>
         {
-            options.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
-                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-                _ => new FixedWindowRateLimiterOptions
-                {
-                    PermitLimit = 10,
-                    Window = TimeSpan.FromMinutes(1),
-                    QueueLimit = 0
-                }));
+            options.AddPolicy("auth", context => ForIp(context, configuration.GetValue("RateLimiting:Auth:PermitLimit", 10)));
+            options.AddPolicy("catalog", context => ForIp(context, configuration.GetValue("RateLimiting:Catalog:PermitLimit", 100)));
+            options.AddPolicy("orders", context => ForIp(context, configuration.GetValue("RateLimiting:Orders:PermitLimit", 30)));
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
         });
 
@@ -82,4 +77,14 @@ public static class DependencyInjection
 
         return services;
     }
+
+    private static RateLimitPartition<string> ForIp(HttpContext context, int permitLimit)
+        => RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = permitLimit,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            });
 }
