@@ -4,4 +4,4 @@ using OrderFlow.Application.Inventory.DTOs;
 
 namespace OrderFlow.Application.Inventory.Commands.AdjustStock;
 
-public sealed record AdjustStockCommand(int ProductId, int Quantity) : IRequest<Result<InventoryResponse>>;
+public sealed record AdjustStockCommand(int ProductId, int Quantity, string Reason) : IRequest<Result<InventoryResponse>>;

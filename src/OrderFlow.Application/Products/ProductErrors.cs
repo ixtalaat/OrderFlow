@@ -8,4 +8,5 @@ public static class ProductErrors
     public static readonly Error NotFound = new("Product.NotFound", "Product not found.", StatusCodes.Status404NotFound);
     public static readonly Error DuplicateSku = new("Product.DuplicateSku", "SKU is already in use.", StatusCodes.Status409Conflict);
     public static readonly Error CategoryNotFound = new("Product.CategoryNotFound", "Category could not be created.", StatusCodes.Status400BadRequest);
+    public static readonly Error InvalidThreshold = new("Product.InvalidThreshold", "Low stock threshold must be zero or greater.", StatusCodes.Status400BadRequest);
 }

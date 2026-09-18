@@ -20,6 +20,7 @@ public sealed class Product
     public Category Category { get; private set; } = null!;
     public Inventory Inventory { get; private set; } = null!;
     public bool IsActive { get; private set; }
+    public int? LowStockThreshold { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
 
@@ -40,6 +41,13 @@ public sealed class Product
     public void Deactivate()
     {
         if (IsActive) { IsActive = false; UpdatedAtUtc = DateTime.UtcNow; }
+    }
+
+    public void SetLowStockThreshold(int? threshold)
+    {
+        if (threshold.HasValue && threshold.Value < 0) throw new ArgumentOutOfRangeException(nameof(threshold));
+        LowStockThreshold = threshold;
+        UpdatedAtUtc = DateTime.UtcNow;
     }
 
     private void SetDetails(string name, string description, string sku, decimal price, int categoryId)

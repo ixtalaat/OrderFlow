@@ -9,11 +9,12 @@ using OrderFlow.Application.Inventory;
 using OrderFlow.Application.Orders.DTOs;
 using OrderFlow.Application.Products;
 using OrderFlow.Application.Pricing;
+using OrderFlow.Application.Coupons;
 using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Application.Orders.Commands.CreateOrder;
 
-public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IProductRepository products, IInventoryRepository inventories, IPricingService pricing, IOrderRepository orders, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs, ILogger<CreateOrderCommandHandler> logger) : IRequestHandler<CreateOrderCommand, Result<OrderResponse>>
+public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IProductRepository products, IInventoryRepository inventories, IPricingService pricing, ICouponRepository coupons, IOrderRepository orders, IUnitOfWork unitOfWork, IBackgroundJobScheduler backgroundJobs, ILogger<CreateOrderCommandHandler> logger) : IRequestHandler<CreateOrderCommand, Result<OrderResponse>>
 {
     public async Task<Result<OrderResponse>> Handle(CreateOrderCommand command, CancellationToken ct)
     {
@@ -34,6 +35,15 @@ public sealed class CreateOrderCommandHandler(ICustomerRepository customers, IPr
 
         var prices = await pricing.GetPricesAsync(lines.ToDictionary(x => x.Product.Id, x => x.Product.Price), customer.Tier, ct);
         foreach (var line in lines) order.AddItem(OrderItem.Create(line.Product.Id, line.Quantity, prices[line.Product.Id]));
+        if (command.CouponCode is not null)
+        {
+            var coupon = await coupons.GetByCodeAsync(command.CouponCode, ct);
+            var subtotal = order.TotalAmount;
+            if (coupon is null || !coupon.CanRedeem(subtotal, DateTime.UtcNow))
+                return Result.Failure<OrderResponse>(OrderErrors.InvalidCoupon);
+            order.ApplyCoupon(coupon.Code, subtotal * coupon.DiscountPercentage / 100);
+            coupon.Redeem();
+        }
         order.Submit();
         await orders.AddAsync(order, ct);
         backgroundJobs.EnqueueOrderNotification(order);

@@ -43,7 +43,7 @@ public sealed class OrdersController(ISender sender, ICustomerRepository custome
                 return CreatedAtAction(nameof(Get), new { id = replay.Order.Id }, replay.Order);
             }
         }
-        var result = await sender.Send(new CreateOrderCommand(customer.Id, request.Items), ct);
+        var result = await sender.Send(new CreateOrderCommand(customer.Id, request.Items, request.CouponCode), ct);
         if (result.IsFailure) return result.ToProblem();
         if (idempotencyKey is not null)
             await idempotency.RecordAsync(userId!, idempotencyKey, request, result.Value!, ct);

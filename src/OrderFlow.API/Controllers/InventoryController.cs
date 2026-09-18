@@ -42,8 +42,8 @@ public sealed class InventoryController(ISender sender) : ControllerBase
         => Send(new ConfirmStockCommand(productId, request.Quantity), ct);
 
     [HttpPatch("{productId:int}/adjust")]
-    public Task<IActionResult> Adjust(int productId, InventoryQuantityRequest request, CancellationToken ct)
-        => Send(new AdjustStockCommand(productId, request.Quantity), ct);
+    public Task<IActionResult> Adjust(int productId, InventoryAdjustRequest request, CancellationToken ct)
+        => Send(new AdjustStockCommand(productId, request.Quantity, request.Reason), ct);
 
     private async Task<IActionResult> Send<T>(T command, CancellationToken ct) where T : MediatR.IRequest<OrderFlow.Application.Common.Results.Result<InventoryResponse>>
     {

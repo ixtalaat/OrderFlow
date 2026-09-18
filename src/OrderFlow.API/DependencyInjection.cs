@@ -42,6 +42,9 @@ public static class DependencyInjection
                 .AllowAnyMethod()));
         }
 
+        services.AddHttpContextAccessor();
+        services.AddScoped<Application.Common.Identity.ICurrentUser, Abstractions.CurrentUser>();
+
         services.AddControllers();
         services.AddRateLimiter(options =>
         {

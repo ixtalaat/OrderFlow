@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NSubstitute;
+using OrderFlow.Application.Common.Auditing;
 using OrderFlow.Application.Common.Identity;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Customers;
@@ -14,6 +15,7 @@ public class ActivateDeactivateCommandHandlerTests
     private readonly ICustomerRepository _customerRepository = Substitute.For<ICustomerRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IIdentityService _identityService = Substitute.For<IIdentityService>();
+    private readonly IAuditService _auditService = Substitute.For<IAuditService>();
 
     [Fact]
     public async Task Activate_Should_Return_NotFound_When_Customer_Missing()
@@ -22,7 +24,7 @@ public class ActivateDeactivateCommandHandlerTests
         _customerRepository.GetByIdAsync(999, Arg.Any<CancellationToken>())
             .Returns((Customer?)null);
 
-        var handler = new ActivateCustomerCommandHandler(_customerRepository, _unitOfWork);
+        var handler = new ActivateCustomerCommandHandler(_customerRepository, _unitOfWork, _auditService);
 
         // Act
         var result = await handler.Handle(new ActivateCustomerCommand(999), CancellationToken.None);
@@ -43,7 +45,7 @@ public class ActivateDeactivateCommandHandlerTests
         _customerRepository.GetByIdAsync(customer.Id, Arg.Any<CancellationToken>())
             .Returns(customer);
 
-        var handler = new ActivateCustomerCommandHandler(_customerRepository, _unitOfWork);
+        var handler = new ActivateCustomerCommandHandler(_customerRepository, _unitOfWork, _auditService);
 
         // Act
         var result = await handler.Handle(new ActivateCustomerCommand(customer.Id), CancellationToken.None);
@@ -61,7 +63,7 @@ public class ActivateDeactivateCommandHandlerTests
         _customerRepository.GetByIdAsync(999, Arg.Any<CancellationToken>())
             .Returns((Customer?)null);
 
-        var handler = new DeactivateCustomerCommandHandler(_customerRepository, _unitOfWork, _identityService);
+        var handler = new DeactivateCustomerCommandHandler(_customerRepository, _unitOfWork, _identityService, _auditService);
 
         // Act
         var result = await handler.Handle(new DeactivateCustomerCommand(999), CancellationToken.None);
@@ -81,7 +83,7 @@ public class ActivateDeactivateCommandHandlerTests
         _customerRepository.GetByIdAsync(customer.Id, Arg.Any<CancellationToken>())
             .Returns(customer);
 
-        var handler = new DeactivateCustomerCommandHandler(_customerRepository, _unitOfWork, _identityService);
+        var handler = new DeactivateCustomerCommandHandler(_customerRepository, _unitOfWork, _identityService, _auditService);
 
         // Act
         var result = await handler.Handle(new DeactivateCustomerCommand(customer.Id), CancellationToken.None);

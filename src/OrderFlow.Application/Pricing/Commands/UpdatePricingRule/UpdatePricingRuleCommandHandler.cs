@@ -1,16 +1,23 @@
 using MediatR;
+using OrderFlow.Application.Common.Auditing;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Pricing.DTOs;
 
 namespace OrderFlow.Application.Pricing.Commands.UpdatePricingRule;
 
-public sealed class UpdatePricingRuleCommandHandler(IPricingRuleRepository rules, IUnitOfWork unitOfWork) : IRequestHandler<UpdatePricingRuleCommand, Result<PricingRuleResponse>>
+public sealed class UpdatePricingRuleCommandHandler(IPricingRuleRepository rules, IUnitOfWork unitOfWork, IAuditService audit) : IRequestHandler<UpdatePricingRuleCommand, Result<PricingRuleResponse>>
 {
-    public Task<Result<PricingRuleResponse>> Handle(UpdatePricingRuleCommand command, CancellationToken ct)
-        => unitOfWork is ITransactionalUnitOfWork tx
-            ? tx.ExecuteInSerializableTransactionAsync(() => Core(command, ct), ct)
-            : Core(command, ct);
+    public async Task<Result<PricingRuleResponse>> Handle(UpdatePricingRuleCommand command, CancellationToken ct)
+    {
+        var result = unitOfWork is ITransactionalUnitOfWork tx
+            ? await tx.ExecuteInSerializableTransactionAsync(() => Core(command, ct), ct)
+            : await Core(command, ct);
+        if (result.IsFailure) return result;
+        await audit.LogAsync("PricingRuleUpdated", "PricingRule", command.Id.ToString(), $"{command.Tier}, {command.DiscountPercentage}%.", ct);
+        await audit.TrySaveAsync(ct);
+        return result;
+    }
 
     private async Task<Result<PricingRuleResponse>> Core(UpdatePricingRuleCommand command, CancellationToken ct)
     {

@@ -9,6 +9,7 @@ using OrderFlow.Application.Products.DTOs;
 using OrderFlow.Application.Products.Commands.ActivateProduct;
 using OrderFlow.Application.Products.Commands.CreateProduct;
 using OrderFlow.Application.Products.Commands.DeactivateProduct;
+using OrderFlow.Application.Products.Commands.SetLowStockThreshold;
 using OrderFlow.Application.Products.Commands.UpdateProduct;
 using OrderFlow.Application.Products.Queries.GetProductById;
 using OrderFlow.Application.Products.Queries.GetProducts;
@@ -64,6 +65,14 @@ public sealed class ProductsController(ISender sender) : ControllerBase
     public async Task<IActionResult> Activate(int id, CancellationToken ct)
     {
         var result = await sender.Send(new ActivateProductCommand(id), ct);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
+    [HttpPatch("{id:int}/low-stock-threshold")]
+    [Authorize(Roles = $"{Roles.Admin},{Roles.SalesEmployee}")]
+    public async Task<IActionResult> SetLowStockThreshold(int id, LowStockThresholdRequest request, CancellationToken ct)
+    {
+        var result = await sender.Send(new SetLowStockThresholdCommand(id, request.Threshold), ct);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 }

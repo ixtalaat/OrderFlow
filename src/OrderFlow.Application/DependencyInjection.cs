@@ -1,7 +1,9 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using OrderFlow.Application.Common.Auditing;
 using OrderFlow.Application.Customers.Commands.ActivateCustomer;
+using OrderFlow.Application.Inventory;
 using OrderFlow.Application.Orders;
 using OrderFlow.Application.Customers.Commands.CreateCustomer;
 using OrderFlow.Application.Customers.Commands.DeactivateCustomer;
@@ -25,6 +27,8 @@ public static class DependencyInjection
                 configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
         services.AddScoped<IIdempotencyService, IdempotencyService>();
+        services.AddScoped<IAuditService, AuditService>();
+        services.AddScoped<ILowStockMonitor, LowStockMonitor>();
 
         return services;
     }

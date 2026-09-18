@@ -7,7 +7,7 @@ using OrderFlow.Application.Inventory.DTOs;
 
 namespace OrderFlow.Application.Inventory.Commands.ReserveStock;
 
-public sealed class ReserveStockCommandHandler(IInventoryRepository inventories, IUnitOfWork unitOfWork, ILogger<ReserveStockCommandHandler> logger) : IRequestHandler<ReserveStockCommand, Result<InventoryResponse>>
+public sealed class ReserveStockCommandHandler(IInventoryRepository inventories, IUnitOfWork unitOfWork, ILowStockMonitor lowStock, ILogger<ReserveStockCommandHandler> logger) : IRequestHandler<ReserveStockCommand, Result<InventoryResponse>>
 {
     public async Task<Result<InventoryResponse>> Handle(ReserveStockCommand command, CancellationToken ct)
     {
@@ -15,6 +15,7 @@ public sealed class ReserveStockCommandHandler(IInventoryRepository inventories,
         var inventory = await inventories.GetByProductIdAsync(command.ProductId, ct);
         if (inventory is null) return Result.Failure<InventoryResponse>(InventoryErrors.NotFound);
         if (command.Quantity > inventory.AvailableQuantity) return Result.Failure<InventoryResponse>(InventoryErrors.InsufficientStock);
+        var availableBefore = inventory.AvailableQuantity;
         inventory.ReserveStock(command.Quantity);
         try
         {
@@ -25,6 +26,7 @@ public sealed class ReserveStockCommandHandler(IInventoryRepository inventories,
             return Result.Failure<InventoryResponse>(InventoryErrors.ConcurrencyConflict);
         }
         logger.LogInformation("Reserved {Quantity} units for product {ProductId}; {AvailableQuantity} available.", command.Quantity, command.ProductId, inventory.AvailableQuantity);
+        await lowStock.CheckAsync(command.ProductId, availableBefore, inventory.AvailableQuantity, ct);
         return Result.Success(new InventoryResponse(inventory.ProductId, inventory.Quantity, inventory.ReservedQuantity, inventory.AvailableQuantity, inventory.Version));
     }
 }

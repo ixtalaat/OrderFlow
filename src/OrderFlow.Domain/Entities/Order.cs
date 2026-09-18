@@ -9,7 +9,9 @@ public sealed class Order
     public int CustomerId { get; private set; }
     public Customer Customer { get; private set; } = null!;
     public OrderStatus Status { get; private set; }
-    public decimal TotalAmount => Items.Sum(x => x.LineTotal);
+    public string? CouponCode { get; private set; }
+    public decimal DiscountAmount { get; private set; }
+    public decimal TotalAmount => Items.Sum(x => x.LineTotal) - DiscountAmount;
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
     public AccountingSyncStatus AccountingSyncStatus { get; private set; } = AccountingSyncStatus.Pending;
@@ -21,6 +23,14 @@ public sealed class Order
 
     public static Order Create(int customerId) => new(customerId);
     public void AddItem(OrderItem item) { ArgumentNullException.ThrowIfNull(item); Items.Add(item); }
+    public void ApplyCoupon(string code, decimal discountAmount)
+    {
+        if (string.IsNullOrWhiteSpace(code)) throw new ArgumentException("Coupon code is required.", nameof(code));
+        if (discountAmount < 0) throw new ArgumentOutOfRangeException(nameof(discountAmount));
+        CouponCode = code.Trim().ToUpperInvariant();
+        DiscountAmount = discountAmount;
+        Touch();
+    }
     public void Submit() { EnsureStatus(OrderStatus.Draft); Status = OrderStatus.Submitted; Touch(); }
     public void Confirm() { EnsureStatus(OrderStatus.Submitted); Status = OrderStatus.Confirmed; AccountingSyncStatus = AccountingSyncStatus.Pending; Touch(); }
     public void BeginAccountingAttempt() { AccountingSyncStatus = AccountingSyncStatus.Pending; AccountingSyncAttempts++; AccountingLastAttemptAtUtc = DateTime.UtcNow; }

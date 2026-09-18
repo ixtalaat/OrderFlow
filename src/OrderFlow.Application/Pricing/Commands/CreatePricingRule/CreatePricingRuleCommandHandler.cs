@@ -1,4 +1,5 @@
 using MediatR;
+using OrderFlow.Application.Common.Auditing;
 using OrderFlow.Application.Common.Persistence;
 using OrderFlow.Application.Common.Results;
 using OrderFlow.Application.Pricing.DTOs;
@@ -6,12 +7,18 @@ using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Application.Pricing.Commands.CreatePricingRule;
 
-public sealed class CreatePricingRuleCommandHandler(IPricingRuleRepository rules, IUnitOfWork unitOfWork) : IRequestHandler<CreatePricingRuleCommand, Result<PricingRuleResponse>>
+public sealed class CreatePricingRuleCommandHandler(IPricingRuleRepository rules, IUnitOfWork unitOfWork, IAuditService audit) : IRequestHandler<CreatePricingRuleCommand, Result<PricingRuleResponse>>
 {
-    public Task<Result<PricingRuleResponse>> Handle(CreatePricingRuleCommand command, CancellationToken ct)
-        => unitOfWork is ITransactionalUnitOfWork tx
-            ? tx.ExecuteInSerializableTransactionAsync(() => Core(command, ct), ct)
-            : Core(command, ct);
+    public async Task<Result<PricingRuleResponse>> Handle(CreatePricingRuleCommand command, CancellationToken ct)
+    {
+        var result = unitOfWork is ITransactionalUnitOfWork tx
+            ? await tx.ExecuteInSerializableTransactionAsync(() => Core(command, ct), ct)
+            : await Core(command, ct);
+        if (result.IsFailure) return result;
+        await audit.LogAsync("PricingRuleCreated", "PricingRule", result.Value!.Id.ToString(), $"Product {command.ProductId}, {command.Tier}, {command.DiscountPercentage}%.", ct);
+        await audit.TrySaveAsync(ct);
+        return result;
+    }
 
     private async Task<Result<PricingRuleResponse>> Core(CreatePricingRuleCommand command, CancellationToken ct)
     {

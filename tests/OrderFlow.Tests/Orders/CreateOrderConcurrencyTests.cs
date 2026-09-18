@@ -5,6 +5,7 @@ using NSubstitute.ExceptionExtensions;
 using OrderFlow.Application.BackgroundProcessing;
 using OrderFlow.Application.Common.Exceptions;
 using OrderFlow.Application.Common.Persistence;
+using OrderFlow.Application.Coupons;
 using OrderFlow.Application.Customers;
 using OrderFlow.Application.Inventory;
 using OrderFlow.Application.Inventory.Commands.ReserveStock;
@@ -45,7 +46,7 @@ public sealed class CreateOrderConcurrencyTests
         unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Throws(new ConcurrencyConflictException("The data was changed by another request."));
 
-        var handler = new CreateOrderCommandHandler(customers, products, inventories, pricing, orders, unitOfWork, backgroundJobs, Substitute.For<ILogger<CreateOrderCommandHandler>>());
+        var handler = new CreateOrderCommandHandler(customers, products, inventories, pricing, Substitute.For<ICouponRepository>(), orders, unitOfWork, backgroundJobs, Substitute.For<ILogger<CreateOrderCommandHandler>>());
         var result = await handler.Handle(
             new CreateOrderCommand(1, new[] { new CreateOrderItemRequest(7, 5) }),
             CancellationToken.None);
@@ -66,7 +67,7 @@ public sealed class CreateOrderConcurrencyTests
         unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Throws(new ConcurrencyConflictException("The data was changed by another request."));
 
-        var handler = new ReserveStockCommandHandler(inventories, unitOfWork, Substitute.For<ILogger<ReserveStockCommandHandler>>());
+        var handler = new ReserveStockCommandHandler(inventories, unitOfWork, Substitute.For<ILowStockMonitor>(), Substitute.For<ILogger<ReserveStockCommandHandler>>());
         var result = await handler.Handle(
             new ReserveStockCommand(1, 5),
             CancellationToken.None);
