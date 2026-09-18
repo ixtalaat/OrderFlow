@@ -78,4 +78,24 @@ public sealed class OrderTests
         var order = Order.Create(1);
         FluentActions.Invoking(() => order.AddItem(null!)).Should().Throw<ArgumentNullException>();
     }
+
+    [Fact]
+    public void Order_Should_Cancel_From_Submitted_And_Release_Path()
+    {
+        var order = Order.Create(1);
+        order.Submit();
+        order.Cancel();
+        order.Status.Should().Be(OrderStatus.Cancelled);
+        FluentActions.Invoking(order.Cancel).Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Order_Should_Reject_Cancel_When_Not_Submitted()
+    {
+        var order = Order.Create(1);
+        FluentActions.Invoking(order.Cancel).Should().Throw<InvalidOperationException>();
+        order.Submit();
+        order.Confirm();
+        FluentActions.Invoking(order.Cancel).Should().Throw<InvalidOperationException>();
+    }
 }

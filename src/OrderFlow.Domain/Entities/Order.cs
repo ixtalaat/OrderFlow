@@ -27,6 +27,7 @@ public sealed class Order
     public void MarkAccountingSucceeded(string invoiceId) { ExternalInvoiceId = invoiceId; AccountingSyncStatus = AccountingSyncStatus.Succeeded; AccountingLastError = null; AccountingLastAttemptAtUtc = DateTime.UtcNow; Touch(); }
     public void MarkAccountingFailed(string error) { AccountingSyncStatus = AccountingSyncStatus.Failed; AccountingLastError = error; AccountingLastAttemptAtUtc = DateTime.UtcNow; Touch(); }
     public void Reject() { EnsureStatus(OrderStatus.Submitted); Status = OrderStatus.Rejected; Touch(); }
+    public void Cancel() { EnsureStatus(OrderStatus.Submitted); Status = OrderStatus.Cancelled; Touch(); }
     public void Process() { EnsureStatus(OrderStatus.Confirmed); Status = OrderStatus.Processing; Touch(); }
     public void Complete() { EnsureStatus(OrderStatus.Processing); Status = OrderStatus.Completed; Touch(); }
     private void EnsureStatus(OrderStatus expected) { if (Status != expected) throw new InvalidOperationException($"Order must be {expected}."); }

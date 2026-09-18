@@ -172,6 +172,7 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IInventoryRepository, InventoryRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
         services.AddScoped<IPricingRuleRepository, PricingRuleRepository>();
         services.AddScoped<IPricingService, PricingService>();
         services.AddScoped<RegularPricingStrategy>();

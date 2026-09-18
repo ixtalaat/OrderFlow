@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using OrderFlow.Application.Customers.Commands.ActivateCustomer;
+using OrderFlow.Application.Orders;
 using OrderFlow.Application.Customers.Commands.CreateCustomer;
 using OrderFlow.Application.Customers.Commands.DeactivateCustomer;
 using OrderFlow.Application.Customers.Commands.UpdateCustomer;
@@ -22,6 +23,8 @@ public static class DependencyInjection
             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
             .AddMediatR(configuration =>
                 configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+        services.AddScoped<IIdempotencyService, IdempotencyService>();
 
         return services;
     }

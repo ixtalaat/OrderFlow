@@ -10,6 +10,7 @@ public static class OrderErrors
     public static readonly Error InvalidQuantity = new("Order.InvalidQuantity", "Quantity must be greater than zero.", StatusCodes.Status400BadRequest);
     public static readonly Error InsufficientStock = new("Order.InsufficientStock", "Insufficient stock.", StatusCodes.Status409Conflict);
     public static readonly Error ConcurrencyConflict = new("Order.ConcurrencyConflict", "Inventory was changed by another request. Please retry.", StatusCodes.Status409Conflict);
+    public static readonly Error IdempotentPayloadMismatch = new("Order.IdempotentPayloadMismatch", "Idempotency key was already used with a different request.", StatusCodes.Status422UnprocessableEntity);
     public static readonly Error NotFound = new("Order.NotFound", "Order not found.", StatusCodes.Status404NotFound);
     public static readonly Error InvalidTransition = new("Order.InvalidTransition", "Invalid order status transition.", StatusCodes.Status409Conflict);
 }

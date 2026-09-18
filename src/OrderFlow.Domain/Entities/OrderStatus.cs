@@ -7,5 +7,6 @@ public enum OrderStatus
     Confirmed,
     Processing,
     Completed,
-    Rejected
+    Rejected,
+    Cancelled
 }

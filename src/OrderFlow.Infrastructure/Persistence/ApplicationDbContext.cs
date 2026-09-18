@@ -16,6 +16,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<PricingRule> PricingRules => Set<PricingRule>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<IdempotencyKey> IdempotencyKeys => Set<IdempotencyKey>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

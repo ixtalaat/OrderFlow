@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using OrderFlow.API.Abstractions;
 using OrderFlow.Application.Common.Constants;
 using OrderFlow.Application.Common.Models;
+using OrderFlow.Application.Common.Results;
+using OrderFlow.Application.Orders;
+using OrderFlow.Application.Orders.Commands.CancelOrder;
 using OrderFlow.Application.Orders.Commands.CompleteOrder;
 using OrderFlow.Application.Orders.Commands.ConfirmOrder;
 using OrderFlow.Application.Orders.Commands.CreateOrder;
@@ -20,7 +23,7 @@ namespace OrderFlow.API.Controllers;
 [ApiController]
 [Route("api/orders")]
 [Authorize]
-public sealed class OrdersController(ISender sender, ICustomerRepository customers) : ControllerBase
+public sealed class OrdersController(ISender sender, ICustomerRepository customers, IIdempotencyService idempotency) : ControllerBase
 {
     [HttpPost]
     [Authorize(Roles = Roles.Customer)]
@@ -29,8 +32,22 @@ public sealed class OrdersController(ISender sender, ICustomerRepository custome
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var customer = userId is null ? null : await customers.GetByUserIdAsync(userId, ct);
         if (customer is null) return Unauthorized();
+        var idempotencyKey = Request.Headers.TryGetValue("Idempotency-Key", out var values) ? values.ToString() : null;
+        if (idempotencyKey is not null)
+        {
+            var replay = await idempotency.LookupAsync(userId!, idempotencyKey, request, ct);
+            if (replay is not null)
+            {
+                if (!replay.PayloadMatches || replay.Order is null)
+                    return Result.Failure<OrderResponse>(OrderErrors.IdempotentPayloadMismatch).ToProblem();
+                return CreatedAtAction(nameof(Get), new { id = replay.Order.Id }, replay.Order);
+            }
+        }
         var result = await sender.Send(new CreateOrderCommand(customer.Id, request.Items), ct);
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value!.Id }, result.Value) : result.ToProblem();
+        if (result.IsFailure) return result.ToProblem();
+        if (idempotencyKey is not null)
+            await idempotency.RecordAsync(userId!, idempotencyKey, request, result.Value!, ct);
+        return CreatedAtAction(nameof(Get), new { id = result.Value!.Id }, result.Value);
     }
 
     [HttpGet("{id:int}")]
@@ -52,6 +69,17 @@ public sealed class OrdersController(ISender sender, ICustomerRepository custome
         var customer = userId is null ? null : await customers.GetByUserIdAsync(userId, ct);
         if (customer is null) return Unauthorized();
         var result = await sender.Send(new GetCustomerOrdersQuery(customer.Id, query), ct);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpPatch("{id:int}/cancel")]
+    [Authorize(Roles = Roles.Customer)]
+    public async Task<IActionResult> Cancel(int id, CancellationToken ct)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var customer = userId is null ? null : await customers.GetByUserIdAsync(userId, ct);
+        if (customer is null) return Unauthorized();
+        var result = await sender.Send(new CancelOrderCommand(id, customer.Id), ct);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
