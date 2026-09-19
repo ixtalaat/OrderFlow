@@ -1,5 +1,9 @@
 # Project Progress
 
+## Frontend (Angular 20 + PrimeNG)
+
+Shop (auth with confirmation, catalog, cart, coupon checkout with idempotency keys, order history/cancel) and staff backoffice (dashboard, products, inventory console, order queue, pricing, coupons, customers) behind role guards, with silent refresh, session restore, correlation IDs, toasts, 54 unit tests, and a Mailpit-backed Playwright e2e. Served separately (nginx) or via compose. See `docs/frontend/frontend.md`.
+
 ## Production gaps bundle
 
 Sessions: 15-min access tokens with rotating refresh tokens (reuse revokes the family), token-version revocation on deactivation/erasure, and mandatory email confirmation for self-registration. Orders: per-user idempotency keys with 422 on payload mismatch, and customer cancellation with stock release. Business: coupons (CRUD, validity/minimum/caps, order-level snapshot, concurrency-guarded redemptions), low-stock thresholds with staff alerts, audit trail on staff actions with stocktake reasons. Reliability: background-path tests, configurable rate limits (catalog/order), SQL Server CI parity job (verified locally), GDPR erasure keeping order history. ADRs 009-010, updated auth/orders/pricing/customer/inventory/database/testing docs, Postman collection extended.

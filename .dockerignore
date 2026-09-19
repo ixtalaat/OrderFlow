@@ -13,3 +13,7 @@ memory/
 .kilo/
 docker-compose.yml
 .env
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/.angular/

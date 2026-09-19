@@ -81,4 +81,26 @@ describe('AuthStore', () => {
     await expectAsync(store.refreshOnce()).toBeRejected();
     expect(store.isAuthenticated()).toBeFalse();
   });
+
+  it('should restore session from a stored refresh token', async () => {
+    localStorage.setItem('orderflow_refresh_token', 'refresh-old');
+    const promise = store.restoreSession();
+    const request = http.expectOne('http://localhost:8080/api/auth/refresh');
+    request.flush({
+      accessToken: fakeJwt(['Customer']),
+      expiresAtUtc: new Date().toISOString(),
+      refreshToken: 'refresh-new',
+      refreshExpiresAtUtc: new Date().toISOString(),
+    });
+    await promise;
+
+    expect(store.isAuthenticated()).toBeTrue();
+  });
+
+  it('should stay logged out when restore has no token', async () => {
+    await store.restoreSession();
+
+    expect(store.isAuthenticated()).toBeFalse();
+    http.expectNone('http://localhost:8080/api/auth/refresh');
+  });
 });

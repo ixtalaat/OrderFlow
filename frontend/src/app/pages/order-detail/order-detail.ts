@@ -6,6 +6,7 @@ import { Card } from 'primeng/card';
 import { Message } from 'primeng/message';
 import { ApiErrorHandler } from '../../core/api-error-handler';
 import { OrdersService } from '../../core/orders.service';
+import { ToastNotify } from '../../core/toast-notify';
 import { Order } from '../../core/models/order';
 import { orderStatusLabel } from '../../core/models/order-status';
 
@@ -19,6 +20,7 @@ export class OrderDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly orders = inject(OrdersService);
   private readonly errors = inject(ApiErrorHandler);
+  private readonly toast = inject(ToastNotify);
 
   protected readonly order = signal<Order | null>(null);
   protected readonly failure = signal<string | null>(null);
@@ -40,6 +42,7 @@ export class OrderDetail {
     this.busy.set(true);
     try {
       this.order.set(await firstValueFrom(this.orders.cancel(current.id)));
+      this.toast.success(`Order #${current.id} cancelled.`);
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
     } finally {

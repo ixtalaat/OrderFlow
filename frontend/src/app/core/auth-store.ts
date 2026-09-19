@@ -44,6 +44,15 @@ export class AuthStore {
     );
   }
 
+  async restoreSession(): Promise<void> {
+    if (this.accessToken() || !localStorage.getItem(REFRESH_KEY)) return;
+    try {
+      await this.refreshOnce();
+    } catch {
+      // Stay logged out; refresh errors already clear the session.
+    }
+  }
+
   logout(navigate = true): void {
     this.accessToken.set(null);
     this.roles.set([]);

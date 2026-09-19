@@ -7,6 +7,7 @@ import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { ApiErrorHandler } from '../../../core/api-error-handler';
+import { ToastNotify } from '../../../core/toast-notify';
 import { PricingService } from '../../../core/pricing.service';
 
 @Component({
@@ -18,6 +19,7 @@ import { PricingService } from '../../../core/pricing.service';
 export class AdminPricing {
   private readonly pricing = inject(PricingService);
   private readonly errors = inject(ApiErrorHandler);
+  private readonly toast = inject(ToastNotify);
 
   protected readonly failure = signal<string | null>(null);
   protected readonly success = signal<string | null>(null);
@@ -51,6 +53,7 @@ export class AdminPricing {
       );
       this.dialogOpen.set(false);
       this.success.set(`Rule #${created.id} created.`);
+      this.toast.success(`Pricing rule #${created.id} created.`);
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
     }

@@ -8,7 +8,13 @@
     }
     <p><strong>Subtotal: {{ cart.subtotal() }}</strong></p>
     <label for="coupon">Coupon code (optional)</label>
-    <input pInputText id="coupon" [(ngModel)]="couponCode" placeholder="SAVE10" />
+    <input
+      pInputText
+      id="coupon"
+      [ngModel]="couponCode()"
+      (ngModelChange)="couponCode.set($event)"
+      placeholder="SAVE10"
+    />
     @if (failure()) {
       <p-message severity="error" [text]="failure()!" />
     }

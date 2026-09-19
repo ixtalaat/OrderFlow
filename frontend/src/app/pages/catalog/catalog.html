@@ -1,6 +1,12 @@
 <h1>Catalog</h1>
 <div class="search-row">
-  <input pInputText placeholder="Search name or SKU" [(ngModel)]="search" (keyup.enter)="searchNow()" />
+  <input
+    pInputText
+    placeholder="Search name or SKU"
+    [ngModel]="search()"
+    (ngModelChange)="search.set($event)"
+    (keyup.enter)="searchNow()"
+  />
   <p-button label="Search" (onClick)="searchNow()" />
 </div>
 @if (failure()) {

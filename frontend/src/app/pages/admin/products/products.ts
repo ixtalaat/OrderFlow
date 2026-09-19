@@ -10,6 +10,7 @@ import { Message } from 'primeng/message';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { TableModule } from 'primeng/table';
 import { ApiErrorHandler } from '../../../core/api-error-handler';
+import { ToastNotify } from '../../../core/toast-notify';
 import { ManagedProduct } from '../../../core/models/managed-product';
 import { PagedList } from '../../../core/models/paged-list';
 import { ProductInput, ProductsAdminService } from '../../../core/products-admin.service';
@@ -23,6 +24,7 @@ import { ProductInput, ProductsAdminService } from '../../../core/products-admin
 export class AdminProducts {
   private readonly products = inject(ProductsAdminService);
   private readonly errors = inject(ApiErrorHandler);
+  private readonly toast = inject(ToastNotify);
 
   protected readonly search = signal('');
   protected readonly page = signal<PagedList<ManagedProduct> | null>(null);
@@ -88,6 +90,7 @@ export class AdminProducts {
         await firstValueFrom(this.products.create(this.form));
       }
       this.dialogOpen.set(false);
+      this.toast.success(id !== null ? 'Product updated.' : 'Product created.');
       await this.load(this.page()?.pageNumber ?? 1);
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
@@ -101,6 +104,7 @@ export class AdminProducts {
     try {
       await firstValueFrom(this.products.setThreshold(id, this.threshold.value));
       this.thresholdOpen.set(false);
+      this.toast.success('Threshold updated.');
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
     }
@@ -114,6 +118,7 @@ export class AdminProducts {
       } else {
         await firstValueFrom(this.products.activate(product.id));
       }
+      this.toast.success(product.isActive ? 'Product deactivated.' : 'Product activated.');
       await this.load(this.page()?.pageNumber ?? 1);
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));

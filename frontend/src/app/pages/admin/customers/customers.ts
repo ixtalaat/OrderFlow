@@ -7,6 +7,7 @@ import { Message } from 'primeng/message';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { TableModule } from 'primeng/table';
 import { ApiErrorHandler } from '../../../core/api-error-handler';
+import { ToastNotify } from '../../../core/toast-notify';
 import { CustomersService } from '../../../core/customers.service';
 import { ManagedCustomer } from '../../../core/models/managed-customer';
 import { PagedList } from '../../../core/models/paged-list';
@@ -20,6 +21,7 @@ import { PagedList } from '../../../core/models/paged-list';
 export class AdminCustomers {
   private readonly customers = inject(CustomersService);
   private readonly errors = inject(ApiErrorHandler);
+  private readonly toast = inject(ToastNotify);
 
   protected readonly search = signal('');
   protected readonly page = signal<PagedList<ManagedCustomer> | null>(null);
@@ -39,26 +41,32 @@ export class AdminCustomers {
   }
 
   protected async setTier(customer: ManagedCustomer, tier: string): Promise<void> {
-    await this.act(() => this.customers.setTier(customer.id, tier));
+    await this.act(() => this.customers.setTier(customer.id, tier), 'Tier updated.');
   }
 
   protected async toggleActive(customer: ManagedCustomer): Promise<void> {
-    await this.act(() =>
-      customer.isActive
-        ? this.customers.deactivate(customer.id)
-        : this.customers.activate(customer.id),
+    await this.act(
+      () =>
+        customer.isActive
+          ? this.customers.deactivate(customer.id)
+          : this.customers.activate(customer.id),
+      customer.isActive ? 'Customer deactivated.' : 'Customer activated.',
     );
   }
 
   protected async erase(customer: ManagedCustomer): Promise<void> {
     if (!confirm(`Erase all personal data of ${customer.email}?`)) return;
-    await this.act(() => this.customers.erase(customer.id));
+    await this.act(() => this.customers.erase(customer.id), 'Customer erased.');
   }
 
-  private async act(action: () => ReturnType<CustomersService['setTier']>): Promise<void> {
+  private async act(
+    action: () => ReturnType<CustomersService['setTier']>,
+    confirmation: string,
+  ): Promise<void> {
     this.failure.set(null);
     try {
       await firstValueFrom(action());
+      this.toast.success(confirmation);
       await this.load(this.page()?.pageNumber ?? 1);
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));

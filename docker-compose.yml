@@ -18,6 +18,26 @@ services:
       context: .
       dockerfile: src/OrderFlow.FakeAccountingApi/Dockerfile
 
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "4200:80"
+    environment:
+      API_URL: http://localhost:8080
+    depends_on:
+      - api
+
+  mailpit:
+    image: axllent/mailpit:latest
+    # --smtp-auth-allow-insecure is dev/test only: authentication without TLS.
+    command: ["--smtp-auth-allow-insecure"]
+    ports:
+      - "8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+
   api:
     build:
       context: .
@@ -31,6 +51,13 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=OrderFlowDb;User Id=sa;Password=${SA_PASSWORD:?Set SA_PASSWORD in .env};TrustServerCertificate=true
       Accounting__BaseUrl: http://accounting:5099/
+      Email__Enabled: true
+      Email__Host: mailpit
+      Email__Port: 1025
+      Email__From: no-reply@orderflow.local
+      Email__UserName: mailpit
+      Email__Password: mailpit
+      Cors__AllowedOrigins__0: http://localhost:4200
       Jwt__SecretKey: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env}
       AdminSeed__Email: ${ADMIN_EMAIL:-admin@orderflow.com}
       AdminSeed__Password: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}

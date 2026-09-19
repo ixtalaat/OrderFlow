@@ -7,6 +7,7 @@ import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { ApiErrorHandler } from '../../../core/api-error-handler';
+import { ToastNotify } from '../../../core/toast-notify';
 import { CouponsService } from '../../../core/coupons.service';
 
 @Component({
@@ -18,6 +19,7 @@ import { CouponsService } from '../../../core/coupons.service';
 export class AdminCoupons {
   private readonly coupons = inject(CouponsService);
   private readonly errors = inject(ApiErrorHandler);
+  private readonly toast = inject(ToastNotify);
 
   protected readonly failure = signal<string | null>(null);
   protected readonly success = signal<string | null>(null);
@@ -50,6 +52,7 @@ export class AdminCoupons {
       );
       this.dialogOpen.set(false);
       this.success.set(`Coupon ${created.code} created.`);
+      this.toast.success(`Coupon ${created.code} created.`);
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
     }

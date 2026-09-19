@@ -9,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiErrorHandler } from '../../core/api-error-handler';
 import { CartStore } from '../../core/cart-store';
 import { OrdersService } from '../../core/orders.service';
+import { ToastNotify } from '../../core/toast-notify';
 
 @Component({
   selector: 'app-checkout',
@@ -19,6 +20,7 @@ import { OrdersService } from '../../core/orders.service';
 export class Checkout {
   private readonly orders = inject(OrdersService);
   private readonly errors = inject(ApiErrorHandler);
+  private readonly toast = inject(ToastNotify);
   private readonly router = inject(Router);
   protected readonly cart = inject(CartStore);
 
@@ -48,6 +50,7 @@ export class Checkout {
       this.cart.clear();
       this.lastSignature = null;
       this.idempotencyKey = null;
+      this.toast.success(`Order #${order.id} placed.`);
       await this.router.navigate(['/orders', order.id]);
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));

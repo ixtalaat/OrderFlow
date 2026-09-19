@@ -18,5 +18,6 @@ WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_HTTP_PORTS=8080
 COPY --from=build /app/publish ./
+RUN mkdir -p /app/App_Data && chown -R app:app /app/App_Data
 USER app
 ENTRYPOINT ["dotnet", "OrderFlow.API.dll"]

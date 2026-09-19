@@ -7,6 +7,7 @@ import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { ApiErrorHandler } from '../../../core/api-error-handler';
+import { ToastNotify } from '../../../core/toast-notify';
 import { InventoryService } from '../../../core/inventory.service';
 import { InventoryRecord } from '../../../core/models/inventory-record';
 
@@ -19,6 +20,7 @@ import { InventoryRecord } from '../../../core/models/inventory-record';
 export class AdminInventory {
   private readonly inventory = inject(InventoryService);
   private readonly errors = inject(ApiErrorHandler);
+  private readonly toast = inject(ToastNotify);
 
   protected readonly productId = signal<number | null>(null);
   protected readonly record = signal<InventoryRecord | null>(null);
@@ -44,6 +46,7 @@ export class AdminInventory {
     this.failure.set(null);
     try {
       this.record.set(await firstValueFrom(this.inventory.operate(id, action, this.quantity())));
+      this.toast.success('Inventory updated.');
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
     }
@@ -57,6 +60,7 @@ export class AdminInventory {
       this.record.set(
         await firstValueFrom(this.inventory.adjust(id, this.quantity(), this.reason())),
       );
+      this.toast.success('Stock adjusted.');
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
     }

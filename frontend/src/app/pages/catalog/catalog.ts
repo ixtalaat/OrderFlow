@@ -29,6 +29,7 @@ export class Catalog {
   protected readonly failure = signal<string | null>(null);
   protected readonly loading = signal(false);
   protected readonly pageSize = 12;
+  private loadSeq = 0;
 
   constructor() {
     void this.load(1);
@@ -47,15 +48,17 @@ export class Catalog {
   }
 
   private async load(pageNumber: number): Promise<void> {
+    const sequence = ++this.loadSeq;
     this.loading.set(true);
     this.failure.set(null);
     try {
       const term = this.search().trim() || null;
-      this.page.set(await firstValueFrom(this.catalog.list(term, pageNumber, this.pageSize)));
+      const result = await firstValueFrom(this.catalog.list(term, pageNumber, this.pageSize));
+      if (sequence === this.loadSeq) this.page.set(result);
     } catch (error: unknown) {
-      this.failure.set(this.errors.toMessage(error));
+      if (sequence === this.loadSeq) this.failure.set(this.errors.toMessage(error));
     } finally {
-      this.loading.set(false);
+      if (sequence === this.loadSeq) this.loading.set(false);
     }
   }
 }

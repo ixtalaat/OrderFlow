@@ -25,7 +25,7 @@ public sealed class SmtpEmailSender(IOptions<EmailOptions> options, ILogger<Smtp
         message.Body = new TextPart("plain") { Text = body };
 
         using var client = new SmtpClient();
-        await client.ConnectAsync(settings.Host, settings.Port, SecureSocketOptions.StartTls, cancellationToken);
+        await client.ConnectAsync(settings.Host, settings.Port, SecureSocketOptions.Auto, cancellationToken);
         await client.AuthenticateAsync(settings.UserName, settings.Password, cancellationToken);
         await client.SendAsync(message, cancellationToken);
         await client.DisconnectAsync(true, cancellationToken);

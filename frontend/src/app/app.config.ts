@@ -14,6 +14,7 @@ import Aura from '@primeuix/themes/aura';
 
 import { routes } from './app.routes';
 import { AppConfigService } from './core/app-config.service';
+import { AuthStore } from './core/auth-store';
 import { authInterceptor } from './core/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -24,7 +25,14 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({ theme: { preset: Aura } }),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideAppInitializer(() => inject(AppConfigService).load()),
+    provideAppInitializer(() => {
+      const config = inject(AppConfigService);
+      const auth = inject(AuthStore);
+      return (async () => {
+        await config.load();
+        await auth.restoreSession();
+      })();
+    }),
     MessageService,
   ],
 };

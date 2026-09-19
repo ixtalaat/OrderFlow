@@ -6,6 +6,7 @@ import { Card } from 'primeng/card';
 import { Message } from 'primeng/message';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { ApiErrorHandler } from '../../../core/api-error-handler';
+import { ToastNotify } from '../../../core/toast-notify';
 import { DashboardService } from '../../../core/dashboard.service';
 import { Order } from '../../../core/models/order';
 import { PagedList } from '../../../core/models/paged-list';
@@ -20,6 +21,7 @@ import { orderStatusLabel } from '../../../core/models/order-status';
 export class AdminOrders {
   private readonly dashboard = inject(DashboardService);
   private readonly errors = inject(ApiErrorHandler);
+  private readonly toast = inject(ToastNotify);
 
   protected readonly page = signal<PagedList<Order> | null>(null);
   protected readonly failure = signal<string | null>(null);
@@ -38,6 +40,7 @@ export class AdminOrders {
     this.failure.set(null);
     try {
       await firstValueFrom(this.dashboard.transition(order.id, action));
+      this.toast.success(`Order #${order.id} ${action}.`);
       await this.load(this.page()?.pageNumber ?? 1);
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
