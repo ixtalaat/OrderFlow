@@ -1,7 +1,7 @@
 <section class="hero">
   <div class="hero-copy">
-    <p class="eyebrow">OrderFlow Store</p>
-    <h1>Every order in balance.</h1>
+    <p class="hero-pill"><i class="pi pi-bolt" aria-hidden="true"></i> Live stock, honest counts</p>
+    <h1>Every order in <span class="accent">balance</span>.</h1>
     <p class="lede">
       Browse live stock with your own prices, check out in seconds, and track
       each order to your door.
@@ -10,6 +10,11 @@
       <p-button label="Browse the catalog" routerLink="/catalog" styleClass="p-cta" />
       <p-button label="Create an account" routerLink="/register" severity="secondary" />
     </div>
+    <ul class="trust-row" aria-label="Store highlights">
+      <li><i class="pi pi-star-fill" aria-hidden="true"></i> 4.9 store rating</li>
+      <li><i class="pi pi-truck" aria-hidden="true"></i> Same-day dispatch</li>
+      <li><i class="pi pi-shield" aria-hidden="true"></i> Zero oversells</li>
+    </ul>
   </div>
   <div class="hero-card" aria-hidden="true">
     <div class="hero-stat"><span>4.9</span><small>store rating</small></div>
@@ -21,7 +26,7 @@
   @for (feature of features; track feature.title) {
     <p-card>
       <ng-template #header>
-        <i [class]="feature.icon" aria-hidden="true"></i>
+        <span class="feature-icon"><i [class]="feature.icon" aria-hidden="true"></i></span>
       </ng-template>
       <ng-template #title>{{ feature.title }}</ng-template>
       <ng-template #subtitle>{{ feature.text }}</ng-template>
@@ -30,5 +35,6 @@
 </section>
 <section class="cta-band">
   <h2>Ready when you are.</h2>
+  <p>Join thousands of shoppers who never worry about stock again.</p>
   <p-button label="Start shopping" routerLink="/catalog" styleClass="p-cta" />
 </section>

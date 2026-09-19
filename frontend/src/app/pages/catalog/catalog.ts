@@ -7,6 +7,7 @@ import { Card } from 'primeng/card';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Paginator, PaginatorState } from 'primeng/paginator';
+import { Tag } from 'primeng/tag';
 import { Skeleton } from 'primeng/skeleton';
 import { CatalogService } from '../../core/catalog.service';
 import { ApiErrorHandler } from '../../core/api-error-handler';
@@ -16,7 +17,7 @@ import { PagedList } from '../../core/models/paged-list';
 
 @Component({
   selector: 'app-catalog',
-  imports: [FormsModule, RouterLink, Button, Card, InputText, Message, Paginator, Skeleton],
+  imports: [FormsModule, RouterLink, Button, Card, InputText, Message, Paginator, Skeleton, Tag],
   templateUrl: './catalog.html',
   styleUrl: './catalog.scss',
 })
@@ -46,6 +47,26 @@ export class Catalog {
 
   protected add(product: CatalogProduct): void {
     this.cart.add(product.id, product.name, product.currentCustomerPrice);
+  }
+
+  protected monogram(product: CatalogProduct): string {
+    const initials = product.name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((word) => word.charAt(0).toUpperCase())
+      .join('');
+    return initials || product.sku.slice(0, 2).toUpperCase();
+  }
+
+  protected stockSeverity(available: number): 'success' | 'warn' | 'danger' {
+    if (available <= 0) return 'danger';
+    if (available <= 3) return 'warn';
+    return 'success';
+  }
+
+  protected stockLabel(available: number): string {
+    if (available <= 0) return 'Out of stock';
+    return `${available} available`;
   }
 
   private async load(pageNumber: number): Promise<void> {

@@ -1,5 +1,9 @@
 # Project Progress
 
+## Frontend visual overhaul
+
+Custom blurred header with mobile drawer and footer, showcase hero, monogram catalog cards with stock badges, status tags, dark mode via CSS color-scheme (documented PrimeNG v20 `light-dark()` mechanics in `docs/frontend/frontend.md`), and a 375px verified responsive layout.
+
 ## Frontend (Angular 20 + PrimeNG)
 
 Shop (auth with confirmation, catalog, cart, coupon checkout with idempotency keys, order history/cancel) and staff backoffice (dashboard, products, inventory console, order queue, pricing, coupons, customers) behind role guards, with silent refresh, session restore, correlation IDs, toasts, 54 unit tests, and a Mailpit-backed Playwright e2e. Served separately (nginx) or via compose. See `docs/frontend/frontend.md`.

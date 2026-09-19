@@ -26,16 +26,28 @@
 @if (page(); as result) {
   <div class="grid-cards">
     @for (product of result.items; track product.id) {
-      <p-card [header]="product.name" [subheader]="product.categoryName">
+      <p-card>
+        <ng-template #header>
+          <div class="product-visual" aria-hidden="true">
+            <span>{{ monogram(product) }}</span>
+          </div>
+        </ng-template>
+        <ng-template #title>{{ product.name }}</ng-template>
+        <ng-template #subtitle>{{ product.categoryName }}</ng-template>
         <p>{{ product.description }}</p>
-        <p><span class="price">{{ product.currentCustomerPrice }}</span> · {{ product.availableQuantity }} available</p>
-        <p-button label="Details" [routerLink]="['/catalog', product.id]" severity="secondary" />
-        <p-button
-          label="Add to cart"
-          styleClass="p-cta"
-          (onClick)="add(product)"
-          [disabled]="product.availableQuantity <= 0"
-        />
+        <div class="product-meta">
+          <span class="price">{{ product.currentCustomerPrice }}</span>
+          <p-tag [value]="stockLabel(product.availableQuantity)" [severity]="stockSeverity(product.availableQuantity)" />
+        </div>
+        <div class="product-actions">
+          <p-button label="Details" [routerLink]="['/catalog', product.id]" severity="secondary" />
+          <p-button
+            label="Add to cart"
+            styleClass="p-cta"
+            (onClick)="add(product)"
+            [disabled]="product.availableQuantity <= 0"
+          />
+        </div>
       </p-card>
     } @empty {
       <p>No products found.</p>

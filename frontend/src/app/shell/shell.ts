@@ -1,16 +1,21 @@
-import { Component, computed, inject } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { MenuItem } from 'primeng/api';
+import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Button } from 'primeng/button';
-import { Menubar } from 'primeng/menubar';
+import { Drawer } from 'primeng/drawer';
 import { Toast } from 'primeng/toast';
 import { AuthStore } from '../core/auth-store';
 import { CartStore } from '../core/cart-store';
 import { ThemeService } from '../core/theme.service';
 
+interface NavLink {
+  label: string;
+  route: string[];
+  badge?: number;
+}
+
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, Menubar, Toast, Button],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Button, Drawer, Toast],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })
@@ -18,36 +23,39 @@ export class Shell {
   private readonly auth = inject(AuthStore);
   private readonly cart = inject(CartStore);
   protected readonly theme = inject(ThemeService);
+  protected readonly menuOpen = signal(false);
 
-  protected readonly menuItems = computed<MenuItem[]>(() => {
-    const items: MenuItem[] = [{ label: 'Catalog', routerLink: ['/catalog'] }];
-    if (this.auth.isAuthenticated()) {
-      items.push({ label: `Cart (${this.cart.count()})`, routerLink: ['/cart'] });
-      items.push({ label: 'Orders', routerLink: ['/orders'] });
-      if (this.isStaff()) {
-        items.push({
-          label: 'Admin',
-          items: [
-            { label: 'Dashboard', routerLink: ['/admin'] },
-            { label: 'Products', routerLink: ['/admin/products'] },
-            { label: 'Inventory', routerLink: ['/admin/inventory'] },
-            { label: 'Order queue', routerLink: ['/admin/orders'] },
-            { label: 'Pricing', routerLink: ['/admin/pricing'] },
-            { label: 'Coupons', routerLink: ['/admin/coupons'] },
-            { label: 'Customers', routerLink: ['/admin/customers'] },
-          ],
-        });
-      }
-      items.push({
-        label: 'Log out',
-        command: () => this.auth.logout(),
-      });
-    } else {
-      items.push({ label: 'Log in', routerLink: ['/login'] });
-      items.push({ label: 'Register', routerLink: ['/register'] });
+  protected readonly primaryLinks = computed<NavLink[]>(() => {
+    if (!this.auth.isAuthenticated()) return [];
+    const links: NavLink[] = [
+      { label: 'Catalog', route: ['/catalog'] },
+      { label: `Cart (${this.cart.count()})`, route: ['/cart'] },
+      { label: 'Orders', route: ['/orders'] },
+    ];
+    if (this.isStaff()) {
+      links.push(
+        { label: 'Dashboard', route: ['/admin'] },
+        { label: 'Products', route: ['/admin/products'] },
+        { label: 'Inventory', route: ['/admin/inventory'] },
+        { label: 'Queue', route: ['/admin/orders'] },
+        { label: 'Pricing', route: ['/admin/pricing'] },
+        { label: 'Coupons', route: ['/admin/coupons'] },
+        { label: 'Customers', route: ['/admin/customers'] },
+      );
     }
-    return items;
+    return links;
   });
+
+  protected readonly isLoggedIn = computed(() => this.auth.isAuthenticated());
+
+  protected closeMenu(): void {
+    this.menuOpen.set(false);
+  }
+
+  protected logout(): void {
+    this.closeMenu();
+    this.auth.logout();
+  }
 
   private isStaff(): boolean {
     return this.auth.hasRole('Admin') || this.auth.hasRole('SalesEmployee');

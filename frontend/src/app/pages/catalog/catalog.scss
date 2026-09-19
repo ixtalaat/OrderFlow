@@ -1,0 +1,28 @@
+.product-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7rem;
+  margin: var(--of-space-md) var(--of-space-md) 0;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #059669, #065f46);
+  color: #ffffff;
+  font-family: var(--of-font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.product-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--of-space-sm);
+  margin: var(--of-space-sm) 0 var(--of-space-md);
+}
+
+.product-actions {
+  display: flex;
+  gap: var(--of-space-sm);
+  flex-wrap: wrap;
+}

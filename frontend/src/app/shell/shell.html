@@ -1,12 +1,19 @@
 <header class="topbar">
-  <p-menubar [model]="menuItems()">
-    <ng-template #start>
-      <a routerLink="/" class="brand" aria-label="OrderFlow home">
-        <span class="brand-mark" aria-hidden="true">O</span>
-        <span class="brand-name">OrderFlow</span>
-      </a>
-    </ng-template>
-    <ng-template #end>
+  <div class="topbar-inner">
+    <a routerLink="/" class="brand" aria-label="OrderFlow home">
+      <span class="brand-mark" aria-hidden="true">O</span>
+      <span class="brand-name">OrderFlow</span>
+    </a>
+    <nav class="desktop-nav" aria-label="Primary">
+      @for (link of primaryLinks(); track link.label) {
+        <a [routerLink]="link.route" routerLinkActive="active">{{ link.label }}</a>
+      }
+      @if (!isLoggedIn()) {
+        <a routerLink="/login">Log in</a>
+        <a routerLink="/register" class="nav-cta">Register</a>
+      }
+    </nav>
+    <div class="topbar-actions">
       <p-button
         [icon]="theme.dark() ? 'pi pi-sun' : 'pi pi-moon'"
         [rounded]="true"
@@ -15,13 +22,52 @@
         [ariaLabel]="theme.dark() ? 'Switch to light mode' : 'Switch to dark mode'"
         (onClick)="theme.toggle()"
       />
-    </ng-template>
-  </p-menubar>
+      @if (isLoggedIn()) {
+        <p-button label="Log out" severity="secondary" [text]="true" (onClick)="logout()" />
+      }
+      <p-button
+        icon="pi pi-bars"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        ariaLabel="Open menu"
+        class="mobile-only"
+        (onClick)="menuOpen.set(true)"
+      />
+    </div>
+  </div>
 </header>
+<p-drawer [(visible)]="menuOpen" header="Menu" position="right">
+  <nav class="mobile-nav" aria-label="Mobile">
+    @for (link of primaryLinks(); track link.label) {
+      <a [routerLink]="link.route" (click)="closeMenu()">{{ link.label }}</a>
+    }
+    @if (!isLoggedIn()) {
+      <a routerLink="/login" (click)="closeMenu()">Log in</a>
+      <a routerLink="/register" (click)="closeMenu()">Register</a>
+    }
+  </nav>
+</p-drawer>
 <main class="content">
   <router-outlet />
 </main>
 <footer class="footer">
-  <span>OrderFlow Store — every order in balance.</span>
+  <div class="footer-grid">
+    <div>
+      <strong>OrderFlow Store</strong>
+      <p>Every order in balance.</p>
+    </div>
+    <div>
+      <strong>Shop</strong>
+      <a routerLink="/catalog">Catalog</a>
+      <a routerLink="/cart">Cart</a>
+      <a routerLink="/orders">Orders</a>
+    </div>
+    <div>
+      <strong>Account</strong>
+      <a routerLink="/login">Log in</a>
+      <a routerLink="/register">Register</a>
+    </div>
+  </div>
 </footer>
 <p-toast />
