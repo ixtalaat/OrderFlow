@@ -1,0 +1,14 @@
+<p-card header="Confirm your email" class="auth-card">
+  <p>Check your inbox for the confirmation token, then paste it below.</p>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+    @if (failure()) {
+      <p-message severity="error" [text]="failure()!" />
+    }
+    <label for="email">Email</label>
+    <input pInputText id="email" type="email" formControlName="email" autocomplete="email" />
+    <label for="token">Confirmation token</label>
+    <input pInputText id="token" formControlName="token" />
+    <p-button type="submit" label="Confirm" [loading]="busy()" [disabled]="form.invalid" />
+    <p><a routerLink="/login">Back to login</a></p>
+  </form>
+</p-card>

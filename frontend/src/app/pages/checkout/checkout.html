@@ -1,0 +1,17 @@
+<h1>Checkout</h1>
+@if (cart.lines().length === 0) {
+  <p>Your cart is empty. <a routerLink="/catalog">Browse the catalog</a></p>
+} @else {
+  <p-card header="Order summary">
+    @for (line of cart.lines(); track line.productId) {
+      <p>{{ line.name }} × {{ line.quantity }} — {{ line.unitPrice * line.quantity }}</p>
+    }
+    <p><strong>Subtotal: {{ cart.subtotal() }}</strong></p>
+    <label for="coupon">Coupon code (optional)</label>
+    <input pInputText id="coupon" [(ngModel)]="couponCode" placeholder="SAVE10" />
+    @if (failure()) {
+      <p-message severity="error" [text]="failure()!" />
+    }
+    <p-button label="Place order" (onClick)="submit()" [loading]="busy()" />
+  </p-card>
+}

@@ -1,0 +1,18 @@
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (order(); as item) {
+  <p-card [header]="'Order #' + item.id" [subheader]="label(item.status)">
+    @for (line of item.items; track line.productId) {
+      <p>{{ line.productName }} × {{ line.quantity }} — {{ line.lineTotal }} ({{ line.unitPrice }} each)</p>
+    }
+    @if (item.couponCode) {
+      <p>Coupon {{ item.couponCode }}: −{{ item.discountAmount }}</p>
+    }
+    <p><strong>Total: {{ item.totalAmount }}</strong></p>
+    @if (canCancel()) {
+      <p-button label="Cancel order" severity="danger" (onClick)="cancel()" [loading]="busy()" />
+    }
+    <p-button label="All orders" routerLink="/orders" severity="secondary" />
+  </p-card>
+}

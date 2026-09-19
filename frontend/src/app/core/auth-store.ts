@@ -3,9 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AppConfigService } from './app-config.service';
-import { AuthResponse, RefreshResponse } from './models';
+import { AuthResponse } from './models/auth-response';
+import { RefreshResponse } from './models/refresh-response';
 
-const REFRESH_KEY = 'ordermint_refresh_token';
+const REFRESH_KEY = 'orderflow_refresh_token';
 
 function decodeRoles(token: string): string[] {
   try {

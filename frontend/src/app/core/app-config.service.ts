@@ -1,9 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
-export interface AppConfig {
-  apiUrl: string;
-}
+import { AppConfig } from './models/app-config';
 
 @Injectable({ providedIn: 'root' })
 export class AppConfigService {

@@ -96,6 +96,12 @@
       "sourceType": "github",
       "skillPath": "testing/postman-collection-generator/SKILL.md",
       "computedHash": "2b66fcb334e6eab11e64fc19525fa9c75ef8e6b301dd819b2d57d4792d9ccf9f"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "3f1e66e08e3d1d3feaf2a3187705022812e0bece8ff5bee80fe7cf782f26fe8b"
     }
   }
 }

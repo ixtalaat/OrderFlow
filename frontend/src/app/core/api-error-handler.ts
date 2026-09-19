@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ProblemDetails } from './models';
+import { ProblemDetails } from './models/problem-details';
 
 const CODE_MESSAGES: Record<string, string> = {
   'Authentication.InvalidCredentials': 'Invalid email or password.',

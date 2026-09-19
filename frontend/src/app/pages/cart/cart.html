@@ -1,0 +1,23 @@
+<h1>Cart</h1>
+@if (cart.lines().length === 0) {
+  <p>Your cart is empty. <a routerLink="/catalog">Browse the catalog</a></p>
+} @else {
+  <p-card>
+    @for (line of cart.lines(); track line.productId) {
+      <div class="line">
+        <span>{{ line.name }} × </span>
+        <p-inputNumber
+          [ngModel]="line.quantity"
+          (ngModelChange)="setQuantity(line.productId, $event)"
+          [min]="0"
+          [showButtons]="true"
+        />
+        <span>{{ line.unitPrice }} each</span>
+        <p-button label="Remove" severity="danger" (onClick)="cart.remove(line.productId)" />
+      </div>
+    }
+    <p><strong>Subtotal: {{ cart.subtotal() }}</strong></p>
+    <p-button label="Checkout" routerLink="/checkout" />
+    <p-button label="Clear" severity="secondary" (onClick)="cart.clear()" />
+  </p-card>
+}

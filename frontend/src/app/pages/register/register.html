@@ -1,0 +1,15 @@
+<p-card header="Create account" class="auth-card">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+    @if (failure()) {
+      <p-message severity="error" [text]="failure()!" />
+    }
+    <label for="fullName">Full name</label>
+    <input pInputText id="fullName" formControlName="fullName" autocomplete="name" />
+    <label for="email">Email</label>
+    <input pInputText id="email" type="email" formControlName="email" autocomplete="email" />
+    <label for="password">Password</label>
+    <p-password id="password" formControlName="password" [toggleMask]="true" />
+    <p-button type="submit" label="Register" [loading]="busy()" [disabled]="form.invalid" />
+    <p>Have an account? <a routerLink="/login">Log in</a></p>
+  </form>
+</p-card>

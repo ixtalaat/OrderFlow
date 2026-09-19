@@ -1,0 +1,20 @@
+<h1>My orders</h1>
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (page(); as result) {
+  @for (order of result.items; track order.id) {
+    <p-card [header]="'Order #' + order.id" [subheader]="label(order.status)">
+      <p>Total: {{ order.totalAmount }} · {{ order.items.length }} line(s)</p>
+      <p-button label="Details" [routerLink]="['/orders', order.id]" severity="secondary" />
+    </p-card>
+  } @empty {
+    <p>You have no orders yet. <a routerLink="/catalog">Browse the catalog</a></p>
+  }
+  <p-paginator
+    [rows]="pageSize"
+    [totalRecords]="result.totalCount"
+    [first]="(result.pageNumber - 1) * pageSize"
+    (onPageChange)="onPage($event)"
+  />
+}
