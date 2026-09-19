@@ -18,6 +18,6 @@
     @if (failure()) {
       <p-message severity="error" [text]="failure()!" />
     }
-    <p-button label="Place order" (onClick)="submit()" [loading]="busy()" />
+    <p-button label="Place order" styleClass="p-cta" (onClick)="submit()" [loading]="busy()" />
   </p-card>
 }

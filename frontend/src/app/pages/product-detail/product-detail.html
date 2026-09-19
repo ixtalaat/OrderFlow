@@ -5,8 +5,8 @@
   <p-card [header]="item.name" [subheader]="item.categoryName">
     <p>{{ item.description }}</p>
     <p>SKU: {{ item.sku }}</p>
-    <p><strong>{{ item.currentCustomerPrice }}</strong> · {{ item.availableQuantity }} available</p>
-    <p-button label="Add to cart" (onClick)="add()" [disabled]="item.availableQuantity <= 0" />
+    <p><span class="price">{{ item.currentCustomerPrice }}</span> · {{ item.availableQuantity }} available</p>
+    <p-button label="Add to cart" styleClass="p-cta" (onClick)="add()" [disabled]="item.availableQuantity <= 0" />
     <p-button label="Back to catalog" routerLink="/catalog" severity="secondary" />
   </p-card>
 }

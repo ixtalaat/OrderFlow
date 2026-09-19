@@ -2,7 +2,8 @@
   <p-message severity="error" [text]="failure()!" />
 }
 @if (order(); as item) {
-  <p-card [header]="'Order #' + item.id" [subheader]="label(item.status)">
+  <p-card [header]="'Order #' + item.id">
+    <p><p-tag [value]="label(item.status)" [severity]="tagSeverity(item.status)" /></p>
     @for (line of item.items; track line.productId) {
       <p>{{ line.productName }} × {{ line.quantity }} — {{ line.lineTotal }} ({{ line.unitPrice }} each)</p>
     }

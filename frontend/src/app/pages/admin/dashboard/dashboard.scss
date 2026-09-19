@@ -1,0 +1,15 @@
+.stat-value {
+  font-family: var(--of-font-heading);
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 0 0 var(--of-space-sm);
+  color: #047857;
+}
+
+.stat-alert {
+  border-top: 4px solid #dc2626;
+}
+
+.app-dark .stat-value {
+  color: #6ee7b7;
+}

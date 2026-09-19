@@ -5,15 +5,16 @@ import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
 import { Message } from 'primeng/message';
 import { Paginator, PaginatorState } from 'primeng/paginator';
+import { Tag } from 'primeng/tag';
 import { ApiErrorHandler } from '../../core/api-error-handler';
 import { OrdersService } from '../../core/orders.service';
 import { Order } from '../../core/models/order';
 import { PagedList } from '../../core/models/paged-list';
-import { orderStatusLabel } from '../../core/models/order-status';
+import { orderStatusLabel, orderStatusSeverity } from '../../core/models/order-status';
 
 @Component({
   selector: 'app-orders',
-  imports: [RouterLink, Button, Card, Message, Paginator],
+  imports: [RouterLink, Button, Card, Message, Paginator, Tag],
   templateUrl: './orders.html',
   styleUrl: './orders.scss',
 })
@@ -25,6 +26,7 @@ export class Orders {
   protected readonly failure = signal<string | null>(null);
   protected readonly pageSize = 10;
   protected readonly label = orderStatusLabel;
+  protected readonly tagSeverity = orderStatusSeverity;
 
   constructor() {
     void this.load(1);

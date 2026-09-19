@@ -1,3 +1,210 @@
 @import 'primeicons/primeicons.css';
 
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --of-font-heading: 'Rubik', 'Segoe UI', system-ui, sans-serif;
+  --of-font-body: 'Nunito Sans', 'Segoe UI', system-ui, sans-serif;
+  --of-accent: #ea580c;
+  --of-accent-contrast: #ffffff;
+  --of-space-xs: 0.25rem;
+  --of-space-sm: 0.5rem;
+  --of-space-md: 1rem;
+  --of-space-lg: 1.5rem;
+  --of-space-xl: 2rem;
+  --of-space-2xl: 3rem;
+  --of-space-3xl: 4rem;
+  --of-radius: 0.75rem;
+  --of-transition: 200ms ease;
+  --of-page-max: 72rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+html {
+  color-scheme: light;
+}
+
+html.app-dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: var(--of-font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.app-dark body {
+  background: #020617;
+  color: #f1f5f9;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--of-font-heading);
+  line-height: 1.2;
+  margin: 0 0 var(--of-space-md);
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+a {
+  color: var(--p-primary-700);
+}
+
+button,
+.p-button,
+a {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--p-primary-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Key conversion CTA: orange accent per design system.
+   Targets the inner PrimeNG button for specificity over theme styles. */
+.p-button.p-cta {
+  background: var(--of-accent);
+  border-color: var(--of-accent);
+  color: var(--of-accent-contrast);
+  font-weight: 600;
+  transition:
+    opacity var(--of-transition),
+    transform var(--of-transition);
+}
+
+.p-button.p-cta:enabled:hover {
+  background: #c2410c;
+  border-color: #c2410c;
+  transform: translateY(-1px);
+}
+
+.p-button.p-cta:focus-visible {
+  outline: 3px solid var(--of-accent);
+  outline-offset: 2px;
+}
+
+.page {
+  max-width: var(--of-page-max);
+  margin: 0 auto;
+  padding: var(--of-space-lg) var(--of-space-md) var(--of-space-2xl);
+}
+
+.search-row {
+  display: flex;
+  gap: var(--of-space-sm);
+  margin-bottom: var(--of-space-lg);
+  flex-wrap: wrap;
+}
+
+.search-row input {
+  flex: 1 1 16rem;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--of-space-lg);
+}
+
+.grid-cards .p-card {
+  box-shadow: var(--p-shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+  border-radius: var(--of-radius);
+  transition:
+    box-shadow var(--of-transition),
+    transform var(--of-transition);
+}
+
+.grid-cards .p-card:hover {
+  box-shadow: var(--p-shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+  transform: translateY(-2px);
+}
+
+.price {
+  font-family: var(--of-font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.app-dark .price {
+  color: #f8fafc;
+}
+
+.auth-card {
+  max-width: 28rem;
+  margin: var(--of-space-2xl) auto;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--of-space-sm);
+}
+
+.auth-form label {
+  font-weight: 600;
+  margin-top: var(--of-space-sm);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--of-space-lg);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.line-row {
+  display: flex;
+  align-items: center;
+  gap: var(--of-space-sm);
+  padding: var(--of-space-sm) 0;
+  border-bottom: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.app-dark .line-row {
+  border-bottom-color: #1e293b;
+}
+
+.app-dark a {
+  color: #6ee7b7;
+}
+
+@media (max-width: 40rem) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .page {
+    padding: var(--of-space-md) var(--of-space-sm) var(--of-space-xl);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

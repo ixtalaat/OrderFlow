@@ -16,13 +16,18 @@
   <p>Loading…</p>
 }
 @if (page(); as result) {
-  <div class="grid">
+  <div class="grid-cards">
     @for (product of result.items; track product.id) {
       <p-card [header]="product.name" [subheader]="product.categoryName">
         <p>{{ product.description }}</p>
-        <p><strong>{{ product.currentCustomerPrice }}</strong> · {{ product.availableQuantity }} available</p>
+        <p><span class="price">{{ product.currentCustomerPrice }}</span> · {{ product.availableQuantity }} available</p>
         <p-button label="Details" [routerLink]="['/catalog', product.id]" severity="secondary" />
-        <p-button label="Add to cart" (onClick)="add(product)" [disabled]="product.availableQuantity <= 0" />
+        <p-button
+          label="Add to cart"
+          styleClass="p-cta"
+          (onClick)="add(product)"
+          [disabled]="product.availableQuantity <= 0"
+        />
       </p-card>
     } @empty {
       <p>No products found.</p>

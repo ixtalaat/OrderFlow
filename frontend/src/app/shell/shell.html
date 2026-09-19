@@ -1,9 +1,27 @@
-<p-menubar [model]="menuItems()">
-  <ng-template #start>
-    <span class="brand">OrderFlow</span>
-  </ng-template>
-</p-menubar>
+<header class="topbar">
+  <p-menubar [model]="menuItems()">
+    <ng-template #start>
+      <a routerLink="/" class="brand" aria-label="OrderFlow home">
+        <span class="brand-mark" aria-hidden="true">O</span>
+        <span class="brand-name">OrderFlow</span>
+      </a>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        [icon]="theme.dark() ? 'pi pi-sun' : 'pi pi-moon'"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        [ariaLabel]="theme.dark() ? 'Switch to light mode' : 'Switch to dark mode'"
+        (onClick)="theme.toggle()"
+      />
+    </ng-template>
+  </p-menubar>
+</header>
 <main class="content">
   <router-outlet />
 </main>
+<footer class="footer">
+  <span>OrderFlow Store — every order in balance.</span>
+</footer>
 <p-toast />

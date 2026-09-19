@@ -4,7 +4,8 @@
 }
 @if (page(); as result) {
   @for (order of result.items; track order.id) {
-    <p-card [header]="'Order #' + order.id" [subheader]="label(order.status)">
+    <p-card [header]="'Order #' + order.id">
+      <p><p-tag [value]="label(order.status)" [severity]="tagSeverity(order.status)" /></p>
       <p>Customer #{{ order.customerId }} · Total: {{ order.totalAmount }}</p>
       <p-button label="Details" [routerLink]="['/orders', order.id]" severity="secondary" />
       @if (order.status === 1) {

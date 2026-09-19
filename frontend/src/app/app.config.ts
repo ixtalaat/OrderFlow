@@ -10,7 +10,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
+import { OrderFlowPreset } from './theme/preset';
 
 import { routes } from './app.routes';
 import { AppConfigService } from './core/app-config.service';
@@ -23,7 +23,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync(),
-    providePrimeNG({ theme: { preset: Aura } }),
+    // PrimeNG v20 resolves dark mode via the CSS color-scheme property
+    // (light-dark()), so the .app-dark class only needs color-scheme: dark.
+    providePrimeNG({
+      theme: { preset: OrderFlowPreset },
+    }),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAppInitializer(() => {
       const config = inject(AppConfigService);

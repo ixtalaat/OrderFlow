@@ -4,15 +4,16 @@ import { firstValueFrom } from 'rxjs';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
 import { Message } from 'primeng/message';
+import { Tag } from 'primeng/tag';
 import { ApiErrorHandler } from '../../core/api-error-handler';
 import { OrdersService } from '../../core/orders.service';
 import { ToastNotify } from '../../core/toast-notify';
 import { Order } from '../../core/models/order';
-import { orderStatusLabel } from '../../core/models/order-status';
+import { orderStatusLabel, orderStatusSeverity } from '../../core/models/order-status';
 
 @Component({
   selector: 'app-order-detail',
-  imports: [RouterLink, Button, Card, Message],
+  imports: [RouterLink, Button, Card, Message, Tag],
   templateUrl: './order-detail.html',
   styleUrl: './order-detail.scss',
 })
@@ -26,6 +27,7 @@ export class OrderDetail {
   protected readonly failure = signal<string | null>(null);
   protected readonly busy = signal(false);
   protected readonly label = orderStatusLabel;
+  protected readonly tagSeverity = orderStatusSeverity;
 
   constructor() {
     void this.load();

@@ -1,3 +1,34 @@
-<p-card header="OrderFlow Store">
-  <p>The storefront is coming soon. Browse the API reference while you wait.</p>
-</p-card>
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">OrderFlow Store</p>
+    <h1>Every order in balance.</h1>
+    <p class="lede">
+      Browse live stock with your own prices, check out in seconds, and track
+      each order to your door.
+    </p>
+    <div class="hero-actions">
+      <p-button label="Browse the catalog" routerLink="/catalog" styleClass="p-cta" />
+      <p-button label="Create an account" routerLink="/register" severity="secondary" />
+    </div>
+  </div>
+  <div class="hero-card" aria-hidden="true">
+    <div class="hero-stat"><span>4.9</span><small>store rating</small></div>
+    <div class="hero-stat"><span>Same-day</span><small>dispatch</small></div>
+    <div class="hero-stat"><span>0</span><small>oversold items</small></div>
+  </div>
+</section>
+<section class="features">
+  @for (feature of features; track feature.title) {
+    <p-card>
+      <ng-template #header>
+        <i [class]="feature.icon" aria-hidden="true"></i>
+      </ng-template>
+      <ng-template #title>{{ feature.title }}</ng-template>
+      <ng-template #subtitle>{{ feature.text }}</ng-template>
+    </p-card>
+  }
+</section>
+<section class="cta-band">
+  <h2>Ready when you are.</h2>
+  <p-button label="Start shopping" routerLink="/catalog" styleClass="p-cta" />
+</section>
