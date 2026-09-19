@@ -1,0 +1,43 @@
+<h1>Customers</h1>
+<div class="search-row">
+  <input pInputText placeholder="Search" [(ngModel)]="search" (keyup.enter)="searchNow()" />
+  <p-button label="Search" (onClick)="searchNow()" />
+</div>
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (page(); as result) {
+  <p-table [value]="result.items">
+    <ng-template #header>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Active</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-customer>
+      <tr>
+        <td>{{ customer.fullName }}</td>
+        <td>{{ customer.email }}</td>
+        <td>{{ customer.isActive ? 'Yes' : 'No' }}</td>
+        <td>
+          <p-button label="Wholesale" severity="secondary" (onClick)="setTier(customer, 'Wholesale')" />
+          <p-button label="VIP" severity="secondary" (onClick)="setTier(customer, 'Vip')" />
+          <p-button
+            [label]="customer.isActive ? 'Deactivate' : 'Activate'"
+            severity="secondary"
+            (onClick)="toggleActive(customer)"
+          />
+          <p-button label="Erase" severity="danger" (onClick)="erase(customer)" />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-paginator
+    [rows]="pageSize"
+    [totalRecords]="result.totalCount"
+    [first]="(result.pageNumber - 1) * pageSize"
+    (onPageChange)="onPage($event)"
+  />
+}

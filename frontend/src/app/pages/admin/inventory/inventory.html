@@ -1,0 +1,22 @@
+<h1>Inventory</h1>
+<div class="search-row">
+  <p-inputNumber [(ngModel)]="productId" placeholder="Product ID" />
+  <p-button label="Load" (onClick)="lookup()" />
+</div>
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (record(); as stock) {
+  <p-card [header]="'Product #' + stock.productId">
+    <p>Quantity: {{ stock.quantity }} · Reserved: {{ stock.reservedQuantity }} · Available: {{ stock.availableQuantity }}</p>
+    <p-inputNumber [(ngModel)]="quantity" [showButtons]="true" />
+    <p-button label="Add" (onClick)="operate('add-stock')" />
+    <p-button label="Reserve" (onClick)="operate('reserve')" />
+    <p-button label="Release" (onClick)="operate('release')" />
+    <p-button label="Confirm" (onClick)="operate('confirm')" />
+    <div>
+      <input pInputText [(ngModel)]="reason" placeholder="Stocktake reason" />
+      <p-button label="Adjust" severity="warn" (onClick)="adjust()" />
+    </div>
+  </p-card>
+}

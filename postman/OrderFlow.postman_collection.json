@@ -1033,6 +1033,44 @@
           }
         },
         {
+          "name": "List All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/dashboard/orders?pageNumber=1&pageSize=20",
+            "description": "Staff order queue across all customers."
+          }
+        },
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "authentication": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/dashboard/stats",
+            "description": "Order counts, revenue, catalog and low-stock totals."
+          }
+        },
+        {
           "name": "Confirm Order",
           "request": {
             "method": "PATCH",

@@ -20,6 +20,11 @@ public sealed class ProductRepository(ApplicationDbContext db) : IProductReposit
     public Task AddCategoryAsync(Category category, CancellationToken cancellationToken = default) => db.Categories.AddAsync(category, cancellationToken).AsTask();
     public Task AddAsync(Product product, CancellationToken cancellationToken = default) => db.Products.AddAsync(product, cancellationToken).AsTask();
 
+    public Task<int> GetLowStockCountAsync(CancellationToken cancellationToken = default)
+        => db.Products.AsNoTracking()
+            .Where(x => x.LowStockThreshold.HasValue && x.Inventory.Quantity - x.Inventory.ReservedQuantity < x.LowStockThreshold.Value)
+            .CountAsync(cancellationToken);
+
     public async Task<ProductResponse?> GetResponseByIdAsync(int id, bool activeOnly, CancellationToken cancellationToken = default)
     {
         var product = await Query(activeOnly).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);

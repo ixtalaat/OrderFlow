@@ -1,0 +1,30 @@
+<h1>Order queue</h1>
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (page(); as result) {
+  @for (order of result.items; track order.id) {
+    <p-card [header]="'Order #' + order.id" [subheader]="label(order.status)">
+      <p>Customer #{{ order.customerId }} · Total: {{ order.totalAmount }}</p>
+      <p-button label="Details" [routerLink]="['/orders', order.id]" severity="secondary" />
+      @if (order.status === 1) {
+        <p-button label="Confirm" (onClick)="transition(order, 'confirm')" />
+        <p-button label="Reject" severity="danger" (onClick)="transition(order, 'reject')" />
+      }
+      @if (order.status === 2) {
+        <p-button label="Process" (onClick)="transition(order, 'processing')" />
+      }
+      @if (order.status === 3) {
+        <p-button label="Complete" (onClick)="transition(order, 'complete')" />
+      }
+    </p-card>
+  } @empty {
+    <p>No orders yet.</p>
+  }
+  <p-paginator
+    [rows]="pageSize"
+    [totalRecords]="result.totalCount"
+    [first]="(result.pageNumber - 1) * pageSize"
+    (onPageChange)="onPage($event)"
+  />
+}

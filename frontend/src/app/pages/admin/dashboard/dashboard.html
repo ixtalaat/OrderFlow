@@ -1,0 +1,21 @@
+<h1>Dashboard</h1>
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (stats(); as s) {
+  <div class="grid">
+    <p-card header="Orders">
+      <p>Total: {{ s.totalOrders }}</p>
+      <p>Submitted: {{ s.submittedOrders }} · Completed: {{ s.completedOrders }}</p>
+      <p-button label="Order queue" routerLink="/admin/orders" severity="secondary" />
+    </p-card>
+    <p-card header="Revenue">
+      <p>Total: {{ s.totalRevenue }}</p>
+    </p-card>
+    <p-card header="Catalog">
+      <p>Products: {{ s.totalProducts }} · Customers: {{ s.totalCustomers }}</p>
+      <p>Low stock: {{ s.lowStockProducts }}</p>
+      <p-button label="Products" routerLink="/admin/products" severity="secondary" />
+    </p-card>
+  </div>
+}

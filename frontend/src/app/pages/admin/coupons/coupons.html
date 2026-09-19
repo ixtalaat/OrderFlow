@@ -1,0 +1,17 @@
+<h1>Coupons</h1>
+<p-button label="New coupon" (onClick)="openCreate()" />
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (success()) {
+  <p-message severity="success" [text]="success()!" />
+}
+<p-dialog header="Coupon" [(visible)]="dialogOpen" [modal]="true">
+  <label for="code">Code</label>
+  <input pInputText id="code" [(ngModel)]="form.code" />
+  <label for="discount">Discount %</label>
+  <p-inputNumber id="discount" [(ngModel)]="form.discountPercentage" />
+  <label for="minTotal">Minimum order total</label>
+  <p-inputNumber id="minTotal" [(ngModel)]="form.minOrderTotal" />
+  <p-button label="Save" (onClick)="save()" />
+</p-dialog>

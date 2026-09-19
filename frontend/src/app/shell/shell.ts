@@ -22,6 +22,20 @@ export class Shell {
       items.push({ label: 'Catalog', routerLink: ['/catalog'] });
       items.push({ label: `Cart (${this.cart.count()})`, routerLink: ['/cart'] });
       items.push({ label: 'Orders', routerLink: ['/orders'] });
+      if (this.isStaff()) {
+        items.push({
+          label: 'Admin',
+          items: [
+            { label: 'Dashboard', routerLink: ['/admin'] },
+            { label: 'Products', routerLink: ['/admin/products'] },
+            { label: 'Inventory', routerLink: ['/admin/inventory'] },
+            { label: 'Order queue', routerLink: ['/admin/orders'] },
+            { label: 'Pricing', routerLink: ['/admin/pricing'] },
+            { label: 'Coupons', routerLink: ['/admin/coupons'] },
+            { label: 'Customers', routerLink: ['/admin/customers'] },
+          ],
+        });
+      }
       items.push({
         label: 'Log out',
         command: () => this.auth.logout(),
@@ -32,4 +46,8 @@ export class Shell {
     }
     return items;
   });
+
+  private isStaff(): boolean {
+    return this.auth.hasRole('Admin') || this.auth.hasRole('SalesEmployee');
+  }
 }

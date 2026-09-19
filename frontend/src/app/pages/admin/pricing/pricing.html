@@ -1,0 +1,18 @@
+<h1>Pricing rules</h1>
+<p>Tiers: 0 Regular · 1 Wholesale · 2 VIP. Rules apply per product; overlapping rules are rejected.</p>
+<p-button label="New rule" (onClick)="openCreate()" />
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (success()) {
+  <p-message severity="success" [text]="success()!" />
+}
+<p-dialog header="Pricing rule" [(visible)]="dialogOpen" [modal]="true">
+  <label for="productId">Product ID</label>
+  <p-inputNumber id="productId" [(ngModel)]="form.productId" />
+  <label for="tier">Tier (0/1/2)</label>
+  <p-inputNumber id="tier" [(ngModel)]="form.tier" [min]="0" [max]="2" />
+  <label for="discount">Discount %</label>
+  <p-inputNumber id="discount" [(ngModel)]="form.discountPercentage" />
+  <p-button label="Save" (onClick)="save()" />
+</p-dialog>

@@ -15,4 +15,5 @@ public interface IProductRepository
     Task<Category?> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
     Task AddCategoryAsync(Category category, CancellationToken cancellationToken = default);
     Task AddAsync(Product product, CancellationToken cancellationToken = default);
+    Task<int> GetLowStockCountAsync(CancellationToken cancellationToken = default);
 }

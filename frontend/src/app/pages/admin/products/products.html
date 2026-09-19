@@ -1,0 +1,63 @@
+<h1>Products</h1>
+<div class="search-row">
+  <input pInputText placeholder="Search" [(ngModel)]="search" (keyup.enter)="searchNow()" />
+  <p-button label="Search" (onClick)="searchNow()" />
+  <p-button label="New product" (onClick)="openCreate()" />
+</div>
+@if (failure()) {
+  <p-message severity="error" [text]="failure()!" />
+}
+@if (page(); as result) {
+  <p-table [value]="result.items">
+    <ng-template #header>
+      <tr>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Price</th>
+        <th>Active</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-product>
+      <tr>
+        <td>{{ product.name }}</td>
+        <td>{{ product.sku }}</td>
+        <td>{{ product.price }}</td>
+        <td>{{ product.isActive ? 'Yes' : 'No' }}</td>
+        <td>
+          <p-button label="Edit" severity="secondary" (onClick)="openEdit(product)" />
+          <p-button
+            [label]="product.isActive ? 'Deactivate' : 'Activate'"
+            severity="secondary"
+            (onClick)="toggleActive(product)"
+          />
+          <p-button label="Threshold" severity="secondary" (onClick)="openThreshold(product)" />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-paginator
+    [rows]="pageSize"
+    [totalRecords]="result.totalCount"
+    [first]="(result.pageNumber - 1) * pageSize"
+    (onPageChange)="onPage($event)"
+  />
+}
+<p-dialog header="Product" [(visible)]="dialogOpen" [modal]="true">
+  <label for="name">Name</label>
+  <input pInputText id="name" [(ngModel)]="form.name" />
+  <label for="description">Description</label>
+  <input pInputText id="description" [(ngModel)]="form.description" />
+  <label for="sku">SKU</label>
+  <input pInputText id="sku" [(ngModel)]="form.sku" />
+  <label for="price">Price</label>
+  <p-inputNumber id="price" [(ngModel)]="form.price" mode="decimal" [minFractionDigits]="2" />
+  <label for="category">Category</label>
+  <input pInputText id="category" [(ngModel)]="form.categoryName" />
+  <p-button label="Save" (onClick)="save()" />
+</p-dialog>
+<p-dialog header="Low-stock threshold" [(visible)]="thresholdOpen" [modal]="true">
+  <p>Empty clears the threshold.</p>
+  <p-inputNumber [(ngModel)]="threshold.value" />
+  <p-button label="Save" (onClick)="saveThreshold()" />
+</p-dialog>

@@ -40,6 +40,7 @@ Hardening details (lockout, JWT validation, rate limiting):
 | `POST/PUT/DELETE /api/pricing-rules*` | `Admin` |
 | `POST/GET/PUT/activate/deactivate /api/customers*`, `PATCH tier` | `Admin`, `SalesEmployee` |
 | Order `confirm/reject/processing/complete` | `Admin`, `SalesEmployee` |
+| `GET /api/dashboard/stats`, `GET /api/dashboard/orders` | `Admin`, `SalesEmployee` |
 | `/hangfire` dashboard | `Admin` (+ role filter) |
 
 ## Ownership rules
