@@ -50,6 +50,15 @@ docker compose down        # containers go, mssql-data volume stays
 docker compose down -v     # also deletes the database (clean slate)
 ```
 
+## Admin password changes
+
+The admin user is seeded **once**, on the very first startup. Changing
+`ADMIN_PASSWORD` (or `ADMIN_EMAIL`) in `.env` afterwards does **not**
+update the existing account — log in with the original password, or reset
+the database with `docker compose down -v` (deletes all data) and start
+again. Note `dotnet user-secrets` never reach containers; `.env` is the
+only mechanism, and only at first seed.
+
 ## Troubleshooting
 
 - On restart with existing data, the API may crash once with
