@@ -7,6 +7,12 @@
       "skillPath": "skills/angular-architect/SKILL.md",
       "computedHash": "bb4df7ee3ad3cc43838f417f2fc3e735470f82d78bbe0e5874bb12735d9ac302"
     },
+    "angular-best-practices-primeng": {
+      "source": "alfredoperez/angular-best-practices",
+      "sourceType": "github",
+      "skillPath": "skills/angular-best-practices-primeng/SKILL.md",
+      "computedHash": "65b76cc174bb87c2725de2d24e67e61e84637ebb1e79ad170fdb37b5301c8367"
+    },
     "angular-component": {
       "source": "analogjs/angular-skills",
       "sourceType": "github",

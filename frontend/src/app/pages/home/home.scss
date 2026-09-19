@@ -6,6 +6,10 @@
   padding: var(--of-space-3xl) 0;
 }
 
+.hero > * {
+  min-width: 0;
+}
+
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -98,5 +102,9 @@
   .hero {
     grid-template-columns: 1fr;
     padding: var(--of-space-2xl) 0;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
   }
 }

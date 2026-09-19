@@ -1,4 +1,7 @@
 <p-card header="Confirm your email" class="auth-card">
+  <ng-template #header>
+    <i class="pi pi-envelope auth-icon" aria-hidden="true"></i>
+  </ng-template>
   <p>Check your inbox for the confirmation token, then paste it below.</p>
   <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
     @if (failure()) {

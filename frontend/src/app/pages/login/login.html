@@ -1,4 +1,7 @@
 <p-card header="Log in" class="auth-card">
+  <ng-template #header>
+    <i class="pi pi-sign-in auth-icon" aria-hidden="true"></i>
+  </ng-template>
   <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
     @if (failure()) {
       <p-message severity="error" [text]="failure()!" />

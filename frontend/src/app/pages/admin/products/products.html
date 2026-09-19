@@ -9,7 +9,7 @@
 }
 @if (page(); as result) {
   <div class="table-wrap">
-  <p-table [value]="result.items">
+  <p-table [value]="result.items" stripedRows>
     <ng-template #header>
       <tr>
         <th>Name</th>

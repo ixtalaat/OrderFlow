@@ -49,6 +49,12 @@
   padding: var(--of-space-lg) var(--of-space-md) var(--of-space-2xl);
 }
 
+@media (max-width: 40rem) {
+  .brand-name {
+    display: none;
+  }
+}
+
 .footer {
   text-align: center;
   padding: var(--of-space-lg);

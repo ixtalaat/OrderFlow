@@ -7,6 +7,7 @@ import { Card } from 'primeng/card';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Paginator, PaginatorState } from 'primeng/paginator';
+import { Skeleton } from 'primeng/skeleton';
 import { CatalogService } from '../../core/catalog.service';
 import { ApiErrorHandler } from '../../core/api-error-handler';
 import { CartStore } from '../../core/cart-store';
@@ -15,7 +16,7 @@ import { PagedList } from '../../core/models/paged-list';
 
 @Component({
   selector: 'app-catalog',
-  imports: [FormsModule, RouterLink, Button, Card, InputText, Message, Paginator],
+  imports: [FormsModule, RouterLink, Button, Card, InputText, Message, Paginator, Skeleton],
   templateUrl: './catalog.html',
   styleUrl: './catalog.scss',
 })

@@ -152,6 +152,14 @@ a {
   margin: var(--of-space-2xl) auto;
 }
 
+.auth-icon {
+  display: block;
+  text-align: center;
+  font-size: 2rem;
+  color: var(--p-primary-600);
+  padding-top: var(--of-space-lg);
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -161,6 +169,11 @@ a {
 .auth-form label {
   font-weight: 600;
   margin-top: var(--of-space-sm);
+}
+
+.auth-form input,
+.auth-form .p-password {
+  width: 100%;
 }
 
 .stat-grid {
