@@ -1,9 +1,27 @@
 import { expect, request, test } from '@playwright/test';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+function envFileValue(key: string, fallback: string): string {
+  for (const file of ['../../.env', '../../.env.example']) {
+    const full = path.resolve(__dirname, file);
+    if (!fs.existsSync(full)) continue;
+    const line = fs
+      .readFileSync(full, 'utf8')
+      .split(/\r?\n/)
+      .map((entry) => entry.trim())
+      .find((entry) => entry.startsWith(`${key}=`));
+    if (line) return line.slice(key.length + 1);
+  }
+  return fallback;
+}
 
 const apiUrl = process.env['E2E_API_URL'] ?? 'http://localhost:8080';
 const mailpitUrl = process.env['E2E_MAILPIT_URL'] ?? 'http://localhost:8025';
-const adminEmail = process.env['E2E_ADMIN_EMAIL'] ?? 'admin@orderflow.com';
-const adminPassword = process.env['E2E_ADMIN_PASSWORD'] ?? 'Admin123!';
+const adminEmail =
+  process.env['E2E_ADMIN_EMAIL'] ?? envFileValue('ADMIN_EMAIL', 'admin@orderflow.com');
+const adminPassword =
+  process.env['E2E_ADMIN_PASSWORD'] ?? envFileValue('ADMIN_PASSWORD', 'Admin123!');
 
 async function adminToken(): Promise<string> {
   const api = await request.newContext();
@@ -59,6 +77,7 @@ test('customer registers, confirms, shops, orders, and cancels', async ({ page }
   await page.getByLabel('Full name').fill('E2E Customer');
   await page.getByLabel('Email').fill(email);
   await page.locator('input[type="password"]').fill('Password@123');
+  await page.locator('input[type="password"]').press('Tab');
   await page.getByRole('button', { name: 'Register' }).click();
   await expect(page).toHaveURL(/confirm-email/);
 
