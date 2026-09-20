@@ -22,10 +22,11 @@
   factory, deleted on dispose) exists for tests that issue parallel write
   requests: a single shared connection cannot host overlapping transactions
   and fails with provider errors instead of real concurrency conflicts.
-- SQL Server parity: setting `ORDERFLOW_TEST_DATABASE=SqlServer` with
-  `ORDERFLOW_TEST_SQLSERVER` (connection string) runs the whole integration
-  suite against real SQL Server — used by the CI `sqlserver-tests` job and
-  reproducible locally with the compose database.
+- SQL Server parity: setting `ORDERFLOW_TEST_DATABASE=SqlServer` runs the
+  whole integration suite against real SQL Server via a Testcontainers-managed
+  container (no external server needed; Ryuk reaps it afterwards). An explicit
+  server can still be forced with `ORDERFLOW_TEST_SQLSERVER`. Used by the CI
+  `sqlserver-tests` job with zero service configuration.
 - External HTTP is stubbed, not hosted: `AccountingService` tests use a
   stub `HttpMessageHandler` (success / 5xx / 4xx / timeout / JSON null);
   the `FakeAccountingApi` project remains for manual end-to-end runs only.

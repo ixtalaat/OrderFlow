@@ -48,14 +48,15 @@ public class CustomWebApplicationFactory
             }
 
             // SQL Server when requested (CI parity job), SQLite otherwise.
+            // Without an explicit connection string, a Testcontainers-managed
+            // server is started automatically (cleaned up by Ryuk).
             if (string.Equals(
                     Environment.GetEnvironmentVariable("ORDERFLOW_TEST_DATABASE"),
                     "SqlServer",
                     StringComparison.OrdinalIgnoreCase))
             {
                 var connection = Environment.GetEnvironmentVariable("ORDERFLOW_TEST_SQLSERVER")
-                    ?? throw new InvalidOperationException(
-                        "ORDERFLOW_TEST_SQLSERVER is required when ORDERFLOW_TEST_DATABASE=SqlServer.");
+                    ?? SqlServerTestContainer.GetConnectionString();
                 services.AddDbContext<ApplicationDbContext>(options =>
                 {
                     options.UseSqlServer(connection);
