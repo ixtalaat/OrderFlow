@@ -234,6 +234,16 @@ jobs:
             ${{ env.IMAGE_PREFIX }}-accounting:${{ github.sha }}
             ${{ env.IMAGE_PREFIX }}-accounting:latest
 
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: frontend/Dockerfile
+          push: ${{ github.ref == 'refs/heads/master' }}
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-frontend:${{ github.sha }}
+            ${{ env.IMAGE_PREFIX }}-frontend:latest
+
   deploy-smoke:
     name: Compose deploy smoke test
     runs-on: ubuntu-latest

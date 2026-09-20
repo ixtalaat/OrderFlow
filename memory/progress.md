@@ -1,5 +1,11 @@
 # Project Progress
 
+## Frontend delivery
+
+nginx image with runtime `API_URL` entrypoint, `frontend` compose service,
+CI `frontend` (build + unit) and `e2e` (compose stack) jobs, GHCR frontend
+image, and `docs/frontend/frontend.md`.
+
 ## Frontend visual overhaul
 
 Custom blurred header with mobile drawer and footer, showcase hero, monogram catalog cards with stock badges, status tags, dark mode via CSS color-scheme (documented PrimeNG v20 `light-dark()` mechanics in `docs/frontend/frontend.md`), and a 375px verified responsive layout.

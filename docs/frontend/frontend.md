@@ -17,15 +17,6 @@ npm run e2e          # Playwright; needs the compose stack + Mailpit
 With Docker: `docker compose up --build` also serves the SPA on :4200
 (`API_URL` env points it at the API). Mailpit UI: :8025.
 
-## Design system
-
-Visual direction lives in `design-system/orderflow/MASTER.md` (emerald
-primary, orange conversion CTA, Rubik headings, Nunito Sans body). PrimeNG
-Aura is customized through `app/theme/preset.ts`; dark mode works through
-the CSS `color-scheme` property (PrimeNG v20 resolves `light-dark()` from
-it, so the `.app-dark` toggle must set `color-scheme: dark` on `html` —
-never pin `color-scheme` on `body`, which would freeze the whole subtree).
-
 ## Conventions
 
 - One type per file, including `core/models/*`.

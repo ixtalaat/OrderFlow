@@ -71,6 +71,7 @@ lives in [`postman/`](postman/).
 src/OrderFlow.Api/  src/OrderFlow.Application/  src/OrderFlow.Domain/
 src/OrderFlow.Infrastructure/  src/OrderFlow.FakeAccountingApi/
 tests/OrderFlow.Tests/  tests/OrderFlow.IntegrationTests/
+frontend/  (Angular 20 shop + backoffice, see docs/frontend/frontend.md)
 ```
 
 ## Quality gates
