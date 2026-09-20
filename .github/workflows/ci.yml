@@ -168,7 +168,17 @@ jobs:
         working-directory: .
         run: |
           cp .env.example .env
-          docker compose up -d --build
+          docker compose up -d --build sqlserver accounting mailpit api
+
+      - name: Wait for API readiness
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8080/health/ready | grep -q '"database"'; then
+              echo "ready"; exit 0
+            fi
+            sleep 10
+          done
+          echo "API never became ready"; exit 1
 
       - name: Run e2e
         run: npx playwright test
