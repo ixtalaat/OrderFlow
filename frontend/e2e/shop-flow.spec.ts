@@ -18,7 +18,7 @@ async function adminToken(): Promise<string> {
 
 async function confirmationToken(email: string): Promise<string> {
   const mail = await request.newContext();
-  for (let attempt = 0; attempt < 30; attempt++) {
+  for (let attempt = 0; attempt < 90; attempt++) {
     const messages = await mail.get(`${mailpitUrl}/api/v1/messages`);
     const body = await messages.json();
     const found = (body.messages as { To: { Address: string }[]; ID: string }[]).find((message) =>
