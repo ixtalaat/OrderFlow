@@ -367,3 +367,6 @@ FodyWeavers.xsd
 
 # Docker / compose secrets (see .env.example)
 .env
+# Runtime product image uploads
+src/OrderFlow.API/wwwroot/
+

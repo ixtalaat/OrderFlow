@@ -93,15 +93,24 @@ public static class DependencyInjection
             .ValidateOnStart();
         services.AddOptions<AccountingOptions>()
             .Bind(configuration.GetSection(AccountingOptions.SectionName))
-            .Validate(x => Uri.TryCreate(x.BaseUrl, UriKind.Absolute, out _), "Accounting:BaseUrl must be an absolute URI.")
+            .Validate(x => x.Provider is "Fake" or "GenericRest" or "Disabled", "Accounting:Provider must be Fake, GenericRest, or Disabled.")
+            .Validate(x => x.Provider == "Disabled" || Uri.TryCreate(x.BaseUrl, UriKind.Absolute, out _), "Accounting:BaseUrl must be an absolute URI.")
             .Validate(x => x.TimeoutSeconds > 0 && x.RetryCount >= 0, "Accounting timeout and retry settings are invalid.")
             .ValidateOnStart();
-        services.AddHttpClient<IAccountingService, AccountingService>(client =>
+        var accountingProvider = configuration.GetSection(AccountingOptions.SectionName).Get<AccountingOptions>()?.Provider ?? "Fake";
+        if (accountingProvider == "Disabled")
         {
-            var options = configuration.GetSection(AccountingOptions.SectionName).Get<AccountingOptions>() ?? new AccountingOptions();
-            client.BaseAddress = new Uri(options.BaseUrl);
-            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
-        });
+            services.AddScoped<IAccountingService, DisabledAccountingService>();
+        }
+        else
+        {
+            services.AddHttpClient<IAccountingService, AccountingService>(client =>
+            {
+                var options = configuration.GetSection(AccountingOptions.SectionName).Get<AccountingOptions>() ?? new AccountingOptions();
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            });
+        }
         services.AddOptions<EmailOptions>()
             .Bind(configuration.GetSection(EmailOptions.SectionName))
             .Validate(x => !x.Enabled || (!string.IsNullOrWhiteSpace(x.Host) && x.Port > 0 && !string.IsNullOrWhiteSpace(x.From) && !string.IsNullOrWhiteSpace(x.UserName) && !string.IsNullOrWhiteSpace(x.Password)), "Enabled email requires Host, Port, From, UserName, and Password.")
@@ -175,6 +184,7 @@ public static class DependencyInjection
         services.AddScoped<IAuditRepository, AuditRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IProductImageStorage, ProductImageStorage>();
         services.AddScoped<IInventoryRepository, InventoryRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();

@@ -31,7 +31,7 @@ public sealed class CreateProductCommandHandler(IProductRepository products, IIn
             await unitOfWork.SaveChangesAsync(ct);
             await inventories.AddAsync(DomainInventory.Create(product.Id), ct);
             await unitOfWork.SaveChangesAsync(ct);
-            response = new ProductResponse(product.Id, product.Name, product.Description, product.Sku, product.Price, category.Id, category.Name, product.IsActive, product.CreatedAtUtc, product.UpdatedAtUtc);
+            response = new ProductResponse(product.Id, product.Name, product.Description, product.Sku, product.Price, category.Id, category.Name, product.IsActive, product.CreatedAtUtc, product.UpdatedAtUtc, product.ImageUrl);
         }
 
         if (transactional is null) await Work();

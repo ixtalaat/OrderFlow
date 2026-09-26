@@ -15,6 +15,7 @@ public sealed class Product
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
     public string Sku { get; private set; } = string.Empty;
+    public string? ImageUrl { get; private set; }
     public decimal Price { get; private set; }
     public int CategoryId { get; private set; }
     public Category Category { get; private set; } = null!;
@@ -41,6 +42,13 @@ public sealed class Product
     public void Deactivate()
     {
         if (IsActive) { IsActive = false; UpdatedAtUtc = DateTime.UtcNow; }
+    }
+
+    public void SetImageUrl(string? imageUrl)
+    {
+        if (imageUrl is not null && imageUrl.Length > 500) throw new ArgumentOutOfRangeException(nameof(imageUrl));
+        ImageUrl = string.IsNullOrWhiteSpace(imageUrl) ? null : imageUrl.Trim();
+        UpdatedAtUtc = DateTime.UtcNow;
     }
 
     public void SetLowStockThreshold(int? threshold)

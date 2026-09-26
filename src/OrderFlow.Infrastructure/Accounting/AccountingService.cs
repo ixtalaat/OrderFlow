@@ -17,12 +17,16 @@ public sealed class AccountingService(HttpClient client, IOptions<AccountingOpti
             totalAmount = order.TotalAmount,
             items = order.Items.Select(x => new { productId = x.ProductId, quantity = x.Quantity, unitPrice = x.UnitPrice, lineTotal = x.LineTotal })
         };
+        var path = string.IsNullOrWhiteSpace(options.Value.InvoicesPath) ? "api/invoices" : options.Value.InvoicesPath.TrimStart('/');
 
         for (var attempt = 1; ; attempt++)
         {
             try
             {
-                using var response = await client.PostAsJsonAsync("api/invoices", request, cancellationToken);
+                using var message = new HttpRequestMessage(HttpMethod.Post, path) { Content = JsonContent.Create(request) };
+                if (!string.IsNullOrWhiteSpace(options.Value.ApiKey))
+                    message.Headers.Add("X-Api-Key", options.Value.ApiKey);
+                using var response = await client.SendAsync(message, cancellationToken);
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadFromJsonAsync<AccountingInvoiceResult>(cancellationToken);

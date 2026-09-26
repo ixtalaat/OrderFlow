@@ -7,6 +7,8 @@ using OrderFlow.API.Observability;
 using OrderFlow.Application;
 using OrderFlow.Infrastructure;
 using OrderFlow.Infrastructure.Identity;
+using OrderFlow.Infrastructure.Persistence;
+using OrderFlow.Infrastructure.Persistence.Seed;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -31,6 +33,11 @@ try
         using (var scope = app.Services.CreateScope())
         {
             await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+            if (!app.Environment.IsEnvironment("Testing"))
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await CatalogSeeder.SeedAsync(db);
+            }
         }
 
         app.UseMiddleware<CorrelationIdMiddleware>();
@@ -52,6 +59,8 @@ try
         }
 
         app.UseExceptionHandler();
+
+        app.UseStaticFiles();
 
         app.UseHttpsRedirection();
 

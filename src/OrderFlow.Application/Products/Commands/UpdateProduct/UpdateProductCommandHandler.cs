@@ -19,6 +19,6 @@ public sealed class UpdateProductCommandHandler(IProductRepository products, IUn
         if (category is null) { category = Category.Create(command.CategoryName); await products.AddCategoryAsync(category, cancellationToken); }
         product.UpdateDetails(command.Name, command.Description, sku, command.Price, category.Id);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        return Result.Success(new ProductResponse(product.Id, product.Name, product.Description, product.Sku, product.Price, category.Id, category.Name, product.IsActive, product.CreatedAtUtc, product.UpdatedAtUtc));
+        return Result.Success(new ProductResponse(product.Id, product.Name, product.Description, product.Sku, product.Price, category.Id, category.Name, product.IsActive, product.CreatedAtUtc, product.UpdatedAtUtc, product.ImageUrl));
     }
 }

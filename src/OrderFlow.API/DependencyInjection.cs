@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using OrderFlow.API.ExceptionHandling;
+using OrderFlow.API.Observability;
 using OrderFlow.Infrastructure.Persistence;
 using Serilog;
 using System.Reflection;
@@ -74,6 +78,34 @@ public static class DependencyInjection
             .AddDbContextCheck<ApplicationDbContext>(
                 name: "database",
                 tags: ["ready"]);
+
+        var telemetry = configuration.GetSection(TelemetryOptions.SectionName).Get<TelemetryOptions>() ?? new TelemetryOptions();
+        var testing = string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Testing", StringComparison.OrdinalIgnoreCase);
+        if (telemetry.Enabled && !testing)
+        {
+            services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource.AddService(OrderFlowTelemetry.ServiceName))
+                .WithTracing(tracing =>
+                {
+                    tracing
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddEntityFrameworkCoreInstrumentation()
+                        .AddSource(OrderFlowTelemetry.ServiceName);
+                    if (!string.IsNullOrWhiteSpace(telemetry.OtlpEndpoint))
+                        tracing.AddOtlpExporter(options => options.Endpoint = new Uri(telemetry.OtlpEndpoint));
+                })
+                .WithMetrics(metrics =>
+                {
+                    metrics
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddRuntimeInstrumentation()
+                        .AddMeter(OrderFlowTelemetry.ServiceName);
+                    if (!string.IsNullOrWhiteSpace(telemetry.OtlpEndpoint))
+                        metrics.AddOtlpExporter(options => options.Endpoint = new Uri(telemetry.OtlpEndpoint));
+                });
+        }
 
         return services;
     }

@@ -10,6 +10,7 @@ using OrderFlow.Application.Products.Commands.ActivateProduct;
 using OrderFlow.Application.Products.Commands.CreateProduct;
 using OrderFlow.Application.Products.Commands.DeactivateProduct;
 using OrderFlow.Application.Products.Commands.SetLowStockThreshold;
+using OrderFlow.Application.Products.Commands.SetProductImage;
 using OrderFlow.Application.Products.Commands.UpdateProduct;
 using OrderFlow.Application.Products.Queries.GetProductById;
 using OrderFlow.Application.Products.Queries.GetProducts;
@@ -74,5 +75,18 @@ public sealed class ProductsController(ISender sender) : ControllerBase
     {
         var result = await sender.Send(new SetLowStockThresholdCommand(id, request.Threshold), ct);
         return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
+    [HttpPost("{id:int}/image")]
+    [Authorize(Roles = $"{Roles.Admin},{Roles.SalesEmployee}")]
+    [RequestSizeLimit(5_000_000)]
+    public async Task<ActionResult<ProductResponse>> UploadImage(int id, IFormFile file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0) return BadRequest("An image file is required.");
+        if (file.Length > 5 * 1024 * 1024) return BadRequest("Image must be a JPEG or PNG file up to 5 MB.");
+        await using var stream = new MemoryStream();
+        await file.CopyToAsync(stream, ct);
+        var result = await sender.Send(new SetProductImageCommand(id, stream, file.ContentType, file.Length), ct);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 }

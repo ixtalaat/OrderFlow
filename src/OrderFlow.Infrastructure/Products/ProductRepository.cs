@@ -42,13 +42,13 @@ public sealed class ProductRepository(ApplicationDbContext db) : IProductReposit
         if (parameters.IsActive.HasValue) query = query.Where(x => x.IsActive == parameters.IsActive.Value);
         var total = await query.CountAsync(cancellationToken);
         var page = parameters.PageNumber; var size = parameters.PageSize;
-        var items = await query.OrderByDescending(x => x.CreatedAtUtc).ThenByDescending(x => x.Id).Skip((page - 1) * size).Take(size).Select(x => new ProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Price, x.CategoryId, x.Category.Name, x.IsActive, x.CreatedAtUtc, x.UpdatedAtUtc)).ToListAsync(cancellationToken);
+        var items = await query.OrderByDescending(x => x.CreatedAtUtc).ThenByDescending(x => x.Id).Skip((page - 1) * size).Take(size).Select(x => new ProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Price, x.CategoryId, x.Category.Name, x.IsActive, x.CreatedAtUtc, x.UpdatedAtUtc, x.ImageUrl)).ToListAsync(cancellationToken);
         return new PagedList<ProductResponse>(items, total, page, size);
     }
 
     public async Task<CatalogProductResponse?> GetCatalogResponseByIdAsync(int id, CancellationToken cancellationToken = default)
         => await db.Products.AsNoTracking().Where(x => x.Id == id && x.IsActive)
-            .Select(x => new CatalogProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Category.Name, x.Price, x.Inventory.AvailableQuantity))
+            .Select(x => new CatalogProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Category.Name, x.Price, x.Inventory.AvailableQuantity, x.ImageUrl))
             .FirstOrDefaultAsync(cancellationToken);
 
     public async Task<PagedList<CatalogProductResponse>> GetCatalogPagedListAsync(CatalogQueryParams parameters, CancellationToken cancellationToken = default)
@@ -62,12 +62,12 @@ public sealed class ProductRepository(ApplicationDbContext db) : IProductReposit
         var total = await query.CountAsync(cancellationToken);
         var page = parameters.PageNumber; var size = parameters.PageSize;
         var items = await query.OrderBy(x => x.Name).ThenBy(x => x.Id).Skip((page - 1) * size).Take(size)
-            .Select(x => new CatalogProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Category.Name, x.Price, x.Inventory.AvailableQuantity))
+            .Select(x => new CatalogProductResponse(x.Id, x.Name, x.Description, x.Sku, x.Category.Name, x.Price, x.Inventory.AvailableQuantity, x.ImageUrl))
             .ToListAsync(cancellationToken);
         return new PagedList<CatalogProductResponse>(items, total, page, size);
     }
 
     private IQueryable<Product> Query(bool activeOnly) => db.Products.AsNoTracking().Include(x => x.Category).Where(x => !activeOnly || x.IsActive);
 
-    private static ProductResponse ToResponse(Product x) => new(x.Id, x.Name, x.Description, x.Sku, x.Price, x.CategoryId, x.Category.Name, x.IsActive, x.CreatedAtUtc, x.UpdatedAtUtc);
+    private static ProductResponse ToResponse(Product x) => new(x.Id, x.Name, x.Description, x.Sku, x.Price, x.CategoryId, x.Category.Name, x.IsActive, x.CreatedAtUtc, x.UpdatedAtUtc, x.ImageUrl);
 }
