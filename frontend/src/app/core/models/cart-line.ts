@@ -3,4 +3,5 @@ export interface CartLine {
   name: string;
   unitPrice: number;
   quantity: number;
+  imageUrl?: string | null;
 }

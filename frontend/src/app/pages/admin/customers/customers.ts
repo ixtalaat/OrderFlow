@@ -26,6 +26,7 @@ export class AdminCustomers {
   protected readonly search = signal('');
   protected readonly page = signal<PagedList<ManagedCustomer> | null>(null);
   protected readonly failure = signal<string | null>(null);
+  protected readonly loading = signal(false);
   protected readonly pageSize = 10;
 
   constructor() {
@@ -74,12 +75,15 @@ export class AdminCustomers {
   }
 
   private async load(pageNumber: number): Promise<void> {
+    this.loading.set(true);
     this.failure.set(null);
     try {
       const term = this.search().trim() || null;
       this.page.set(await firstValueFrom(this.customers.list(term, pageNumber, this.pageSize)));
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
+    } finally {
+      this.loading.set(false);
     }
   }
 }

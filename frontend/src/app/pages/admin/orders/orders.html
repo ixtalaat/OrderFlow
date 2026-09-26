@@ -2,26 +2,33 @@
 @if (failure()) {
   <p-message severity="error" [text]="failure()!" />
 }
+@if (loading() && !page()) {
+  <p class="loading" role="status" aria-busy="true">Loading orders…</p>
+}
 @if (page(); as result) {
+  <div class="order-list">
   @for (order of result.items; track order.id) {
     <p-card [header]="'Order #' + order.id">
       <p><p-tag [value]="label(order.status)" [severity]="tagSeverity(order.status)" /></p>
-      <p>Customer #{{ order.customerId }} · Total: {{ order.totalAmount }}</p>
-      <p-button label="Details" [routerLink]="['/orders', order.id]" severity="secondary" />
-      @if (order.status === 1) {
-        <p-button label="Confirm" (onClick)="transition(order, 'confirm')" />
-        <p-button label="Reject" severity="danger" (onClick)="transition(order, 'reject')" />
-      }
-      @if (order.status === 2) {
-        <p-button label="Process" (onClick)="transition(order, 'processing')" />
-      }
-      @if (order.status === 3) {
-        <p-button label="Complete" (onClick)="transition(order, 'complete')" />
-      }
+      <p>Customer #{{ order.customerId }} · Total: {{ order.totalAmount | currency:'EGP':'symbol':'1.2-2' }}</p>
+      <div class="button-row">
+        <p-button label="Details" [routerLink]="['/orders', order.id]" severity="secondary" [text]="true" />
+        @if (order.status === 1) {
+          <p-button label="Confirm" (onClick)="transition(order, 'confirm')" />
+          <p-button label="Reject" severity="danger" (onClick)="transition(order, 'reject')" />
+        }
+        @if (order.status === 2) {
+          <p-button label="Process" (onClick)="transition(order, 'processing')" />
+        }
+        @if (order.status === 3) {
+          <p-button label="Complete" (onClick)="transition(order, 'complete')" />
+        }
+      </div>
     </p-card>
   } @empty {
     <p>No orders yet.</p>
   }
+  </div>
   <p-paginator
     [rows]="pageSize"
     [totalRecords]="result.totalCount"

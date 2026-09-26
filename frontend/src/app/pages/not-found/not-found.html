@@ -1,4 +1,4 @@
-<p-card header="Page not found">
-  <p>The page you are looking for does not exist.</p>
-  <p-button label="Go home" routerLink="/" />
+<p-card [header]="lang.t('notfound.title')">
+  <p>{{ lang.t('notfound.text') }}</p>
+  <p-button [label]="lang.t('notfound.home')" routerLink="/" />
 </p-card>

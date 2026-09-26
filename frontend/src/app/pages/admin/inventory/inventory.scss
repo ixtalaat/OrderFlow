@@ -1,0 +1,16 @@
+.adjust-row {
+  display: flex;
+  gap: var(--of-space-sm);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: var(--of-space-md);
+}
+
+.adjust-row input {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+p-inputnumber {
+  max-width: 100%;
+}

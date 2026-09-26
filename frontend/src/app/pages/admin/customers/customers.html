@@ -6,6 +6,9 @@
 @if (failure()) {
   <p-message severity="error" [text]="failure()!" />
 }
+@if (loading() && !page()) {
+  <p class="loading" role="status" aria-busy="true">Loading customers…</p>
+}
 @if (page(); as result) {
   <div class="table-wrap">
   <p-table [value]="result.items" stripedRows>
@@ -17,20 +20,27 @@
         <th>Actions</th>
       </tr>
     </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="4">No customers found. Try a different search.</td>
+      </tr>
+    </ng-template>
     <ng-template #body let-customer>
       <tr>
         <td>{{ customer.fullName }}</td>
         <td>{{ customer.email }}</td>
         <td>{{ customer.isActive ? 'Yes' : 'No' }}</td>
         <td>
-          <p-button label="Wholesale" severity="secondary" (onClick)="setTier(customer, 'Wholesale')" />
-          <p-button label="VIP" severity="secondary" (onClick)="setTier(customer, 'Vip')" />
-          <p-button
-            [label]="customer.isActive ? 'Deactivate' : 'Activate'"
-            severity="secondary"
-            (onClick)="toggleActive(customer)"
-          />
-          <p-button label="Erase" severity="danger" (onClick)="erase(customer)" />
+          <div class="row-actions">
+            <p-button label="Wholesale" severity="secondary" (onClick)="setTier(customer, 'Wholesale')" />
+            <p-button label="VIP" severity="secondary" (onClick)="setTier(customer, 'Vip')" />
+            <p-button
+              [label]="customer.isActive ? 'Deactivate' : 'Activate'"
+              severity="secondary"
+              (onClick)="toggleActive(customer)"
+            />
+            <p-button label="Erase" severity="danger" (onClick)="erase(customer)" />
+          </div>
         </td>
       </tr>
     </ng-template>

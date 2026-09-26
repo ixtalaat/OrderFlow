@@ -2,6 +2,9 @@
 @if (failure()) {
   <p-message severity="error" [text]="failure()!" />
 }
+@if (loading() && !stats()) {
+  <p class="loading" role="status" aria-busy="true">Loading dashboard…</p>
+}
 @if (stats(); as s) {
   <div class="stat-grid">
     <p-card header="Orders">
@@ -10,7 +13,7 @@
       <p-button label="Order queue" routerLink="/admin/orders" severity="secondary" />
     </p-card>
     <p-card header="Revenue">
-      <p class="stat-value">{{ s.totalRevenue }}</p>
+      <p class="stat-value">{{ s.totalRevenue | currency:'EGP':'symbol':'1.2-2' }}</p>
       <p>Across all orders</p>
     </p-card>
     <p-card header="Catalog">

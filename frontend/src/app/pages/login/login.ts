@@ -8,10 +8,12 @@ import { Message } from 'primeng/message';
 import { Password } from 'primeng/password';
 import { AuthStore } from '../../core/auth-store';
 import { ApiErrorHandler } from '../../core/api-error-handler';
+import { LangService } from '../../core/lang.service';
+import { AuthAside } from '../../shared/auth-aside/auth-aside';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, Button, Card, InputText, Message, Password],
+  imports: [ReactiveFormsModule, RouterLink, Button, Card, InputText, AuthAside, Message, Password],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -22,6 +24,7 @@ export class Login {
 
   protected readonly failure = signal<string | null>(null);
   protected readonly busy = signal(false);
+  protected readonly lang = inject(LangService);
   protected readonly form = inject(FormBuilder).group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],

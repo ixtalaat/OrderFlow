@@ -28,15 +28,17 @@ export class CartStore {
     });
   }
 
-  add(productId: number, name: string, unitPrice: number, quantity = 1): void {
+  add(productId: number, name: string, unitPrice: number, quantity = 1, imageUrl: string | null = null): void {
     this.lines.update((lines) => {
       const existing = lines.find((line) => line.productId === productId);
       if (existing) {
         return lines.map((line) =>
-          line.productId === productId ? { ...line, quantity: line.quantity + quantity } : line,
+          line.productId === productId
+            ? { ...line, quantity: line.quantity + quantity, imageUrl: imageUrl ?? line.imageUrl ?? null }
+            : line,
         );
       }
-      return [...lines, { productId, name, unitPrice, quantity }];
+      return [...lines, { productId, name, unitPrice, quantity, imageUrl }];
     });
   }
 

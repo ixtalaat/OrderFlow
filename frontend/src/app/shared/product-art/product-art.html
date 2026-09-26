@@ -1,0 +1,20 @@
+<div
+  class="product-art"
+  [class.compact]="compact()"
+  [style.background]="gradient()"
+  role="img"
+  [attr.aria-label]="'Illustration for ' + name()"
+>
+  @if (fullImageUrl() && !imageFailed()) {
+    <img
+      class="photo"
+      [src]="fullImageUrl()"
+      [alt]="name()"
+      loading="lazy"
+      (error)="onImageError()"
+    />
+  } @else {
+    <i [class]="icon()" aria-hidden="true"></i>
+    <span class="initials" aria-hidden="true">{{ initials() }}</span>
+  }
+</div>

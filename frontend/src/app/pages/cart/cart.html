@@ -1,23 +1,33 @@
-<h1>Cart</h1>
+<h1>{{ lang.t('cart.title') }}</h1>
 @if (cart.lines().length === 0) {
-  <p>Your cart is empty. <a routerLink="/catalog">Browse the catalog</a></p>
+  <p>{{ lang.t('cart.empty') }} <a routerLink="/catalog">{{ lang.t('cart.browse') }}</a></p>
 } @else {
   <p-card>
     @for (line of cart.lines(); track line.productId) {
-      <div class="line">
-        <span>{{ line.name }} × </span>
+      <div class="line-row cart-line">
+        <app-product-art [name]="line.name" [compact]="true" [imageUrl]="line.imageUrl" />
+        <span class="cart-name">{{ line.name }}</span>
         <p-inputNumber
           [ngModel]="line.quantity"
           (ngModelChange)="setQuantity(line.productId, $event)"
           [min]="0"
           [showButtons]="true"
+          [ariaLabel]="lang.t('cart.qtyOf') + ' ' + line.name"
         />
-        <span>{{ line.unitPrice }} each</span>
-        <p-button label="Remove" severity="danger" (onClick)="cart.remove(line.productId)" />
+        <span class="cart-price">{{ line.unitPrice | currency:'EGP':'symbol':'1.2-2' }} {{ lang.t('cart.each') }}</span>
+        <p-button
+          [label]="lang.t('cart.remove')"
+          severity="danger"
+          [text]="true"
+          (onClick)="cart.remove(line.productId)"
+          [ariaLabel]="lang.t('cart.removeOf') + ' ' + line.name"
+        />
       </div>
     }
-    <p><strong>Subtotal: {{ cart.subtotal() }}</strong></p>
-    <p-button label="Checkout" routerLink="/checkout" />
-    <p-button label="Clear" severity="secondary" (onClick)="cart.clear()" />
+    <p role="status"><strong>{{ lang.t('cart.subtotal') }}: {{ cart.subtotal() | currency:'EGP':'symbol':'1.2-2' }}</strong></p>
+    <div class="button-row">
+      <p-button [label]="lang.t('cart.checkout')" routerLink="/checkout" />
+      <p-button [label]="lang.t('cart.clear')" severity="secondary" [text]="true" (onClick)="cart.clear()" />
+    </div>
   </p-card>
 }

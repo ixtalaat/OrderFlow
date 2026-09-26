@@ -2,18 +2,35 @@
   <p-message severity="error" [text]="failure()!" />
 }
 @if (order(); as item) {
-  <p-card [header]="'Order #' + item.id">
-    <p><p-tag [value]="label(item.status)" [severity]="tagSeverity(item.status)" /></p>
-    @for (line of item.items; track line.productId) {
-      <p>{{ line.productName }} × {{ line.quantity }} — {{ line.lineTotal }} ({{ line.unitPrice }} each)</p>
+  <h1>Order #{{ item.id }}</h1>
+  <p-card>
+    @if (terminated(); as endState) {
+      <p><p-tag [value]="endState" severity="danger" /></p>
+    } @else {
+      <ol class="timeline" [attr.aria-label]="'Order status: ' + label(item.status)">
+        @for (step of timeline(); track step.status) {
+          <li [class]="step.state" [attr.aria-current]="step.state === 'current' ? 'step' : null">
+            <span class="dot" aria-hidden="true">@if (step.state === 'done') { <i class="pi pi-check"></i> }</span>
+            {{ step.label }}
+          </li>
+        }
+      </ol>
     }
+    <h2 class="visually-hidden">{{ lang.t('detail.lines') }}</h2>
+    <ul class="order-lines">
+      @for (line of item.items; track line.productId) {
+        <li>{{ line.productName }} × {{ line.quantity }} — {{ line.lineTotal | currency:'EGP':'symbol':'1.2-2' }} ({{ line.unitPrice | currency:'EGP':'symbol':'1.2-2' }} {{ lang.t('cart.each') }})</li>
+      }
+    </ul>
     @if (item.couponCode) {
-      <p>Coupon {{ item.couponCode }}: −{{ item.discountAmount }}</p>
+      <p>Coupon {{ item.couponCode }}: −{{ item.discountAmount | currency:'EGP':'symbol':'1.2-2' }}</p>
     }
-    <p><strong>Total: {{ item.totalAmount }}</strong></p>
-    @if (canCancel()) {
-      <p-button label="Cancel order" severity="danger" (onClick)="cancel()" [loading]="busy()" />
-    }
-    <p-button label="All orders" routerLink="/orders" severity="secondary" />
+    <p role="status"><strong>{{ lang.t('orders.total') }}: {{ item.totalAmount | currency:'EGP':'symbol':'1.2-2' }}</strong></p>
+    <div class="button-row">
+      @if (canCancel()) {
+        <p-button [label]="lang.t('detail.cancel')" severity="danger" (onClick)="cancel()" [loading]="busy()" />
+      }
+      <p-button [label]="lang.t('detail.allOrders')" routerLink="/orders" severity="secondary" [text]="true" />
+    </div>
   </p-card>
 }

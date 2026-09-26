@@ -4,30 +4,38 @@
     [ngModel]="productId()"
     (ngModelChange)="productId.set($event)"
     placeholder="Product ID"
+    ariaLabel="Product ID"
   />
   <p-button label="Load" (onClick)="lookup()" />
 </div>
 @if (failure()) {
   <p-message severity="error" [text]="failure()!" />
 }
+@if (!record() && !failure()) {
+  <p class="hint">Enter a product ID and press Load to see stock.</p>
+}
 @if (record(); as stock) {
   <p-card [header]="'Product #' + stock.productId">
-    <p>Quantity: {{ stock.quantity }} · Reserved: {{ stock.reservedQuantity }} · Available: {{ stock.availableQuantity }}</p>
+    <p role="status">Quantity: {{ stock.quantity }} · Reserved: {{ stock.reservedQuantity }} · Available: {{ stock.availableQuantity }}</p>
     <p-inputNumber
       [ngModel]="quantity()"
       (ngModelChange)="quantity.set($event)"
       [showButtons]="true"
+      ariaLabel="Quantity"
     />
-    <p-button label="Add" (onClick)="operate('add-stock')" />
-    <p-button label="Reserve" (onClick)="operate('reserve')" />
-    <p-button label="Release" (onClick)="operate('release')" />
-    <p-button label="Confirm" (onClick)="operate('confirm')" />
-    <div>
+    <div class="button-row">
+      <p-button label="Add" (onClick)="operate('add-stock')" />
+      <p-button label="Reserve" severity="secondary" (onClick)="operate('reserve')" />
+      <p-button label="Release" severity="secondary" (onClick)="operate('release')" />
+      <p-button label="Confirm" severity="secondary" (onClick)="operate('confirm')" />
+    </div>
+    <div class="adjust-row">
       <input
         pInputText
         [ngModel]="reason()"
         (ngModelChange)="reason.set($event)"
         placeholder="Stocktake reason"
+        aria-label="Stocktake reason"
       />
       <p-button label="Adjust" severity="warn" (onClick)="adjust()" />
     </div>

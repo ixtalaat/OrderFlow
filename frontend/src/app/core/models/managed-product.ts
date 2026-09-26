@@ -9,4 +9,5 @@ export interface ManagedProduct {
   isActive: boolean;
   createdAtUtc: string;
   updatedAtUtc?: string | null;
+  imageUrl?: string | null;
 }

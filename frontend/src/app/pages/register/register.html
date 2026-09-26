@@ -1,18 +1,20 @@
-<p-card header="Create account" class="auth-card">
-  <ng-template #header>
-    <i class="pi pi-user-plus auth-icon" aria-hidden="true"></i>
-  </ng-template>
-  <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
-    @if (failure()) {
-      <p-message severity="error" [text]="failure()!" />
-    }
-    <label for="fullName">Full name</label>
-    <input pInputText id="fullName" formControlName="fullName" autocomplete="name" />
-    <label for="email">Email</label>
-    <input pInputText id="email" type="email" formControlName="email" autocomplete="email" />
-    <label for="password">Password</label>
-    <p-password id="password" formControlName="password" [toggleMask]="true" />
-    <p-button type="submit" label="Register" [loading]="busy()" [disabled]="form.invalid" />
-    <p>Have an account? <a routerLink="/login">Log in</a></p>
-  </form>
-</p-card>
+<div class="auth-split">
+  <app-auth-aside />
+  <div class="auth-main">
+    <p-card [header]="lang.t('auth.registerTitle')" class="auth-card">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+        @if (failure()) {
+          <p-message severity="error" [text]="failure()!" />
+        }
+        <label for="fullName">{{ lang.t('auth.fullName') }}</label>
+        <input pInputText id="fullName" formControlName="fullName" autocomplete="name" />
+        <label for="email">{{ lang.t('auth.email') }}</label>
+        <input pInputText id="email" type="email" formControlName="email" autocomplete="email" />
+        <label for="password">{{ lang.t('auth.password') }}</label>
+        <p-password id="password" formControlName="password" [toggleMask]="true" />
+        <p-button type="submit" [label]="lang.t('auth.registerBtn')" [loading]="busy()" [disabled]="form.invalid" />
+        <p>{{ lang.t('auth.haveAccount') }} <a routerLink="/login">{{ lang.t('auth.loginBtn') }}</a></p>
+      </form>
+    </p-card>
+  </div>
+</div>

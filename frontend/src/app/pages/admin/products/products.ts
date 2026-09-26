@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { Button } from 'primeng/button';
-import { Card } from 'primeng/card';
 import { Dialog } from 'primeng/dialog';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
@@ -17,7 +17,7 @@ import { ProductInput, ProductsAdminService } from '../../../core/products-admin
 
 @Component({
   selector: 'app-admin-products',
-  imports: [FormsModule, Button, Card, Dialog, InputNumber, InputText, Message, Paginator, TableModule],
+  imports: [CurrencyPipe, FormsModule, Button, Dialog, InputNumber, InputText, Message, Paginator, TableModule],
   templateUrl: './products.html',
   styleUrl: './products.scss',
 })
@@ -29,9 +29,12 @@ export class AdminProducts {
   protected readonly search = signal('');
   protected readonly page = signal<PagedList<ManagedProduct> | null>(null);
   protected readonly failure = signal<string | null>(null);
+  protected readonly loading = signal(false);
   protected readonly dialogOpen = signal(false);
   protected readonly thresholdOpen = signal(false);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly imageFile = signal<File | null>(null);
+  protected readonly uploading = signal(false);
   protected readonly form: ProductInput = {
     name: '',
     description: '',
@@ -55,6 +58,7 @@ export class AdminProducts {
   }
 
   protected openCreate(): void {
+    this.imageFile.set(null);
     this.editingId.set(null);
     this.form.name = '';
     this.form.description = '';
@@ -65,6 +69,7 @@ export class AdminProducts {
   }
 
   protected openEdit(product: ManagedProduct): void {
+    this.imageFile.set(null);
     this.editingId.set(product.id);
     this.form.name = product.name;
     this.form.description = product.description;
@@ -97,6 +102,29 @@ export class AdminProducts {
     }
   }
 
+  protected onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.imageFile.set(input.files?.[0] ?? null);
+  }
+
+  protected async uploadImage(): Promise<void> {
+    const id = this.editingId();
+    const file = this.imageFile();
+    if (id === null || !file || this.uploading()) return;
+    this.failure.set(null);
+    this.uploading.set(true);
+    try {
+      await firstValueFrom(this.products.uploadImage(id, file));
+      this.imageFile.set(null);
+      this.toast.success('Product image uploaded.');
+      await this.load(this.page()?.pageNumber ?? 1);
+    } catch (error: unknown) {
+      this.failure.set(this.errors.toMessage(error));
+    } finally {
+      this.uploading.set(false);
+    }
+  }
+
   protected async saveThreshold(): Promise<void> {
     const id = this.editingId();
     if (id === null) return;
@@ -126,12 +154,15 @@ export class AdminProducts {
   }
 
   private async load(pageNumber: number): Promise<void> {
+    this.loading.set(true);
     this.failure.set(null);
     try {
       const term = this.search().trim() || null;
       this.page.set(await firstValueFrom(this.products.list(term, pageNumber, this.pageSize)));
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
+    } finally {
+      this.loading.set(false);
     }
   }
 }

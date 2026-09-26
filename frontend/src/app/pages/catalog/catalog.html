@@ -1,20 +1,53 @@
-<h1>Catalog</h1>
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a routerLink="/">Home</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">{{ lang.t('nav.catalog') }}</span>
+</nav>
+<h1>{{ lang.t('catalog.title') }}</h1>
+<p class="lede">{{ lang.t('catalog.lede') }}</p>
 <div class="search-row">
   <input
     pInputText
-    placeholder="Search name or SKU"
+    [placeholder]="lang.t('catalog.searchPh')"
     [ngModel]="search()"
-    (ngModelChange)="search.set($event)"
+    (ngModelChange)="onSearchInput($event)"
     (keyup.enter)="searchNow()"
+    [attr.aria-label]="lang.t('catalog.searchLabel')"
   />
-  <p-button label="Search" (onClick)="searchNow()" />
+  <p-button [label]="lang.t('catalog.search')" (onClick)="searchNow()" />
+  <p-button [label]="lang.t('catalog.clear')" severity="secondary" [text]="true" (onClick)="clearAll()" />
 </div>
+<div class="toolbar">
+  <label class="toolbar-field">
+    {{ lang.t('catalog.sort') }}
+    <select [ngModel]="sort()" (ngModelChange)="sort.set($event)" [attr.aria-label]="lang.t('catalog.sort')">
+      <option value="name">{{ lang.t('catalog.sortName') }}</option>
+      <option value="price-asc">{{ lang.t('catalog.sortLo') }}</option>
+      <option value="price-desc">{{ lang.t('catalog.sortHi') }}</option>
+    </select>
+  </label>
+  <label class="toolbar-check">
+    <input type="checkbox" [ngModel]="inStockOnly()" (ngModelChange)="inStockOnly.set($event)" />
+    {{ lang.t('catalog.inStock') }}
+  </label>
+  @if (page(); as result) {
+    <span class="result-count" role="status">{{ resultCount(result.totalCount) }}</span>
+  }
+</div>
+@if (categories().length > 0) {
+  <div class="chip-row" role="group" [attr.aria-label]="lang.t('catalog.filterByCategory')">
+    <button type="button" class="chip" [class.active]="category() === null" [attr.aria-pressed]="category() === null" (click)="selectCategory(null)">{{ lang.t('catalog.all') }}</button>
+    @for (name of categories(); track name) {
+      <button type="button" class="chip" [class.active]="category() === name" [attr.aria-pressed]="category() === name" (click)="selectCategory(name)">{{ name }}</button>
+    }
+  </div>
+}
 @if (failure()) {
   <p-message severity="error" [text]="failure()!" />
 }
 @if (loading() && !page()) {
-  <div class="grid-cards" aria-busy="true" aria-label="Loading products">
-    @for (placeholder of [1, 2, 3, 4]; track placeholder) {
+  <div class="grid-cards" aria-busy="true" [attr.aria-label]="lang.t('catalog.loading')">
+    @for (placeholder of skeletonPlaceholders; track placeholder) {
       <p-card>
         <p-skeleton width="100%" height="1.5rem" />
         <p-skeleton width="60%" height="1rem" />
@@ -25,24 +58,22 @@
 }
 @if (page(); as result) {
   <div class="grid-cards">
-    @for (product of result.items; track product.id) {
+    @for (product of visibleItems(); track product.id) {
       <p-card>
         <ng-template #header>
-          <div class="product-visual" aria-hidden="true">
-            <span>{{ monogram(product) }}</span>
-          </div>
+          <app-product-art [name]="product.name" [category]="product.categoryName" [imageUrl]="product.imageUrl" />
         </ng-template>
         <ng-template #title>{{ product.name }}</ng-template>
         <ng-template #subtitle>{{ product.categoryName }}</ng-template>
         <p>{{ product.description }}</p>
         <div class="product-meta">
-          <span class="price">{{ product.currentCustomerPrice }}</span>
+          <span class="price">{{ product.currentCustomerPrice | currency:'EGP':'symbol':'1.2-2' }}</span>
           <p-tag [value]="stockLabel(product.availableQuantity)" [severity]="stockSeverity(product.availableQuantity)" />
         </div>
         <div class="product-actions">
-          <p-button label="Details" [routerLink]="['/catalog', product.id]" severity="secondary" />
+          <p-button [label]="lang.t('catalog.details')" [routerLink]="['/catalog', product.id]" severity="secondary" />
           <p-button
-            label="Add to cart"
+            [label]="lang.t('catalog.add')"
             styleClass="p-cta"
             (onClick)="add(product)"
             [disabled]="product.availableQuantity <= 0"
@@ -50,7 +81,11 @@
         </div>
       </p-card>
     } @empty {
-      <p>No products found.</p>
+      <div class="empty-state">
+        <p><strong>{{ lang.t('catalog.noMatchT') }}</strong></p>
+        <p>{{ lang.t('catalog.noMatchD') }}</p>
+        <p-button [label]="lang.t('catalog.clearFilters')" severity="secondary" (onClick)="clearAll()" />
+      </div>
     }
   </div>
   <p-paginator
@@ -59,5 +94,5 @@
     [first]="(result.pageNumber - 1) * pageSize"
     (onPageChange)="onPage($event)"
   />
-  <p><a routerLink="/cart">Cart ({{ cart.count() }})</a></p>
+  <p><a routerLink="/cart">{{ lang.t('nav.cart') }} ({{ cart.count() }})</a></p>
 }

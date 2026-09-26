@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
+import { LangService } from '../../core/lang.service';
 
 @Component({
   selector: 'app-not-found',
@@ -9,4 +10,6 @@ import { Card } from 'primeng/card';
   templateUrl: './not-found.html',
   styleUrl: './not-found.scss',
 })
-export class NotFound {}
+export class NotFound {
+  protected readonly lang = inject(LangService);
+}

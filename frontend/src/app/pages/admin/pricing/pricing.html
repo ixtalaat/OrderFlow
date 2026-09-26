@@ -7,12 +7,14 @@
 @if (success()) {
   <p-message severity="success" [text]="success()!" />
 }
-<p-dialog header="Pricing rule" [(visible)]="dialogOpen" [modal]="true">
-  <label for="productId">Product ID</label>
-  <p-inputNumber id="productId" [(ngModel)]="form.productId" />
-  <label for="tier">Tier (0/1/2)</label>
-  <p-inputNumber id="tier" [(ngModel)]="form.tier" [min]="0" [max]="2" />
-  <label for="discount">Discount %</label>
-  <p-inputNumber id="discount" [(ngModel)]="form.discountPercentage" />
-  <p-button label="Save" (onClick)="save()" />
+<p-dialog header="Pricing rule" [(visible)]="dialogOpen" [modal]="true" [dismissableMask]="true" [style]="{ width: '28rem' }" [breakpoints]="{ '640px': '95vw' }">
+  <div class="dialog-form">
+    <label for="productId">Product ID</label>
+    <p-inputNumber id="productId" [(ngModel)]="form.productId" ariaLabel="Product ID" />
+    <label for="tier">Tier (0/1/2)</label>
+    <p-inputNumber id="tier" [(ngModel)]="form.tier" [min]="0" [max]="2" ariaLabel="Tier" />
+    <label for="discount">Discount %</label>
+    <p-inputNumber id="discount" [(ngModel)]="form.discountPercentage" ariaLabel="Discount percentage" />
+    <p-button label="Save" (onClick)="save()" />
+  </div>
 </p-dialog>

@@ -11,10 +11,12 @@ import { Password } from 'primeng/password';
 import { AppConfigService } from '../../core/app-config.service';
 import { ApiErrorHandler } from '../../core/api-error-handler';
 import { AuthStore } from '../../core/auth-store';
+import { LangService } from '../../core/lang.service';
+import { AuthAside } from '../../shared/auth-aside/auth-aside';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink, Button, Card, InputText, Message, Password],
+  imports: [ReactiveFormsModule, RouterLink, Button, Card, InputText, AuthAside, Message, Password],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
@@ -27,6 +29,7 @@ export class Register {
 
   protected readonly failure = signal<string | null>(null);
   protected readonly busy = signal(false);
+  protected readonly lang = inject(LangService);
   protected readonly form = inject(FormBuilder).group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],

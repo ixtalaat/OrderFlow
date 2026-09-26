@@ -1,43 +1,25 @@
 import { Routes } from '@angular/router';
-import { Home } from './pages/home/home';
-import { NotFound } from './pages/not-found/not-found';
-import { Login } from './pages/login/login';
-import { Register } from './pages/register/register';
-import { ConfirmEmail } from './pages/confirm-email/confirm-email';
-import { Catalog } from './pages/catalog/catalog';
-import { ProductDetail } from './pages/product-detail/product-detail';
-import { Cart } from './pages/cart/cart';
-import { Checkout } from './pages/checkout/checkout';
-import { Orders } from './pages/orders/orders';
-import { OrderDetail } from './pages/order-detail/order-detail';
-import { AdminDashboard } from './pages/admin/dashboard/dashboard';
-import { AdminProducts } from './pages/admin/products/products';
-import { AdminInventory } from './pages/admin/inventory/inventory';
-import { AdminOrders } from './pages/admin/orders/orders';
-import { AdminPricing } from './pages/admin/pricing/pricing';
-import { AdminCoupons } from './pages/admin/coupons/coupons';
-import { AdminCustomers } from './pages/admin/customers/customers';
 import { authGuard, roleGuard } from './core/auth-guards';
 
 const staffOnly = roleGuard('Admin', 'SalesEmployee');
 
 export const routes: Routes = [
-  { path: '', component: Home },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
-  { path: 'confirm-email', component: ConfirmEmail },
-  { path: 'catalog', component: Catalog, canActivate: [authGuard] },
-  { path: 'catalog/:id', component: ProductDetail, canActivate: [authGuard] },
-  { path: 'cart', component: Cart, canActivate: [authGuard] },
-  { path: 'checkout', component: Checkout, canActivate: [authGuard] },
-  { path: 'orders', component: Orders, canActivate: [authGuard] },
-  { path: 'orders/:id', component: OrderDetail, canActivate: [authGuard] },
-  { path: 'admin', component: AdminDashboard, canActivate: [staffOnly] },
-  { path: 'admin/products', component: AdminProducts, canActivate: [staffOnly] },
-  { path: 'admin/inventory', component: AdminInventory, canActivate: [staffOnly] },
-  { path: 'admin/orders', component: AdminOrders, canActivate: [staffOnly] },
-  { path: 'admin/pricing', component: AdminPricing, canActivate: [staffOnly] },
-  { path: 'admin/coupons', component: AdminCoupons, canActivate: [staffOnly] },
-  { path: 'admin/customers', component: AdminCustomers, canActivate: [staffOnly] },
-  { path: '**', component: NotFound },
+  { path: '', loadComponent: () => import('./pages/home/home').then((m) => m.Home) },
+  { path: 'login', loadComponent: () => import('./pages/login/login').then((m) => m.Login) },
+  { path: 'register', loadComponent: () => import('./pages/register/register').then((m) => m.Register) },
+  { path: 'confirm-email', loadComponent: () => import('./pages/confirm-email/confirm-email').then((m) => m.ConfirmEmail) },
+  { path: 'catalog', loadComponent: () => import('./pages/catalog/catalog').then((m) => m.Catalog), canActivate: [authGuard] },
+  { path: 'catalog/:id', loadComponent: () => import('./pages/product-detail/product-detail').then((m) => m.ProductDetail), canActivate: [authGuard] },
+  { path: 'cart', loadComponent: () => import('./pages/cart/cart').then((m) => m.Cart), canActivate: [authGuard] },
+  { path: 'checkout', loadComponent: () => import('./pages/checkout/checkout').then((m) => m.Checkout), canActivate: [authGuard] },
+  { path: 'orders', loadComponent: () => import('./pages/orders/orders').then((m) => m.Orders), canActivate: [authGuard] },
+  { path: 'orders/:id', loadComponent: () => import('./pages/order-detail/order-detail').then((m) => m.OrderDetail), canActivate: [authGuard] },
+  { path: 'admin', loadComponent: () => import('./pages/admin/dashboard/dashboard').then((m) => m.AdminDashboard), canActivate: [staffOnly] },
+  { path: 'admin/products', loadComponent: () => import('./pages/admin/products/products').then((m) => m.AdminProducts), canActivate: [staffOnly] },
+  { path: 'admin/inventory', loadComponent: () => import('./pages/admin/inventory/inventory').then((m) => m.AdminInventory), canActivate: [staffOnly] },
+  { path: 'admin/orders', loadComponent: () => import('./pages/admin/orders/orders').then((m) => m.AdminOrders), canActivate: [staffOnly] },
+  { path: 'admin/pricing', loadComponent: () => import('./pages/admin/pricing/pricing').then((m) => m.AdminPricing), canActivate: [staffOnly] },
+  { path: 'admin/coupons', loadComponent: () => import('./pages/admin/coupons/coupons').then((m) => m.AdminCoupons), canActivate: [staffOnly] },
+  { path: 'admin/customers', loadComponent: () => import('./pages/admin/customers/customers').then((m) => m.AdminCustomers), canActivate: [staffOnly] },
+  { path: '**', loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFound) },
 ];

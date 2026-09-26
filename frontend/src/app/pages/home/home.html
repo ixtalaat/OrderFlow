@@ -1,29 +1,51 @@
 <section class="hero">
   <div class="hero-copy">
-    <p class="hero-pill"><i class="pi pi-bolt" aria-hidden="true"></i> Live stock, honest counts</p>
-    <h1>Every order in <span class="accent">balance</span>.</h1>
-    <p class="lede">
-      Browse live stock with your own prices, check out in seconds, and track
-      each order to your door.
-    </p>
+    <p class="hero-pill"><i class="pi pi-bolt" aria-hidden="true"></i> {{ lang.t('home.pill') }}</p>
+    <h1>{{ lang.t('home.titleA') }} <span class="accent">{{ lang.t('home.titleB') }}</span></h1>
+    <p class="lede">{{ lang.t('home.lede') }}</p>
     <div class="hero-actions">
-      <p-button label="Browse the catalog" routerLink="/catalog" styleClass="p-cta" />
-      <p-button label="Create an account" routerLink="/register" severity="secondary" />
+      <p-button [label]="lang.t('home.browse')" routerLink="/catalog" styleClass="p-cta" />
+      <p-button [label]="lang.t('home.createAccount')" routerLink="/register" severity="secondary" />
     </div>
     <ul class="trust-row" aria-label="Store highlights">
-      <li><i class="pi pi-star-fill" aria-hidden="true"></i> 4.9 store rating</li>
-      <li><i class="pi pi-truck" aria-hidden="true"></i> Same-day dispatch</li>
-      <li><i class="pi pi-shield" aria-hidden="true"></i> Zero oversells</li>
+      <li><i class="pi pi-star-fill" aria-hidden="true"></i> {{ lang.t('home.trustRating') }}</li>
+      <li><i class="pi pi-truck" aria-hidden="true"></i> {{ lang.t('home.trustDispatch') }}</li>
+      <li><i class="pi pi-shield" aria-hidden="true"></i> {{ lang.t('home.trustZero') }}</li>
     </ul>
   </div>
-  <div class="hero-card" aria-hidden="true">
-    <div class="hero-stat"><span>4.9</span><small>store rating</small></div>
-    <div class="hero-stat"><span>Same-day</span><small>dispatch</small></div>
-    <div class="hero-stat"><span>0</span><small>oversold items</small></div>
+  <div class="order-mock" aria-hidden="true">
+    <div class="order-mock-head">
+      <span class="order-mock-id">Order #1042</span>
+      <span class="order-mock-status">Processing</span>
+    </div>
+    <div class="order-mock-bar"><span></span></div>
+    <ul class="order-mock-steps">
+      <li class="done"><i class="pi pi-check" aria-hidden="true"></i> Confirmed</li>
+      <li class="done"><i class="pi pi-check" aria-hidden="true"></i> Processing</li>
+      <li>Completed</li>
+    </ul>
+    <div class="order-mock-lines">
+      <div><span>E2E Widget × 2</span><span>$50.00</span></div>
+      <div><span>Express dispatch</span><span>Same-day</span></div>
+    </div>
+    <div class="order-mock-total"><span>Total</span><span>$50.00</span></div>
+  </div>
+</section>
+<section class="popular">
+  <p class="popular-label">{{ lang.t('home.popular') }}</p>
+  <div class="chip-row" role="group" aria-label="Popular searches">
+    @for (term of popularSearches; track term) {
+      <a class="chip" [routerLink]="['/catalog']">{{ term }}</a>
+    }
   </div>
 </section>
 <section class="features">
-  @for (feature of features; track feature.title) {
+  <div class="section-head">
+    <p class="eyebrow">{{ lang.t('home.whyEyebrow') }}</p>
+    <h2>{{ lang.t('home.whyTitle') }}</h2>
+    <p class="section-sub">{{ lang.t('home.whySub') }}</p>
+  </div>
+  @for (feature of features(); track feature.title) {
     <p-card>
       <ng-template #header>
         <span class="feature-icon"><i [class]="feature.icon" aria-hidden="true"></i></span>
@@ -33,8 +55,44 @@
     </p-card>
   }
 </section>
+<section class="steps">
+  <div class="section-head">
+    <p class="eyebrow">{{ lang.t('home.howEyebrow') }}</p>
+    <h2>{{ lang.t('home.howTitle') }}</h2>
+  </div>
+  <ol>
+    @for (step of steps(); track step.title; let i = $index) {
+      <li>
+        <span class="step-number" aria-hidden="true">{{ i + 1 }}</span>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.text }}</p>
+      </li>
+    }
+  </ol>
+</section>
+<section class="testimonials">
+  <div class="section-head">
+    <p class="eyebrow">{{ lang.t('home.lovedEyebrow') }}</p>
+    <h2>{{ lang.t('home.lovedTitle') }}</h2>
+  </div>
+  <div class="testimonial-grid">
+    @for (item of testimonials(); track item.name) {
+      <figure>
+        <div class="stars" aria-label="5 out of 5 stars">
+          <i class="pi pi-star-fill" aria-hidden="true"></i>
+          <i class="pi pi-star-fill" aria-hidden="true"></i>
+          <i class="pi pi-star-fill" aria-hidden="true"></i>
+          <i class="pi pi-star-fill" aria-hidden="true"></i>
+          <i class="pi pi-star-fill" aria-hidden="true"></i>
+        </div>
+        <blockquote>{{ item.quote }}</blockquote>
+        <figcaption><strong>{{ item.name }}</strong> · {{ item.role }}</figcaption>
+      </figure>
+    }
+  </div>
+</section>
 <section class="cta-band">
-  <h2>Ready when you are.</h2>
-  <p>Join thousands of shoppers who never worry about stock again.</p>
-  <p-button label="Start shopping" routerLink="/catalog" styleClass="p-cta" />
+  <h2>{{ lang.t('home.ctaTitle') }}</h2>
+  <p>{{ lang.t('home.ctaText') }}</p>
+  <p-button [label]="lang.t('home.ctaBtn')" routerLink="/catalog" styleClass="p-cta" />
 </section>

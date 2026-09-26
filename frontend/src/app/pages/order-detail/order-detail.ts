@@ -1,4 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { LangService } from '../../core/lang.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Button } from 'primeng/button';
@@ -13,7 +15,7 @@ import { orderStatusLabel, orderStatusSeverity } from '../../core/models/order-s
 
 @Component({
   selector: 'app-order-detail',
-  imports: [RouterLink, Button, Card, Message, Tag],
+  imports: [CurrencyPipe, RouterLink, Button, Card, Message, Tag],
   templateUrl: './order-detail.html',
   styleUrl: './order-detail.scss',
 })
@@ -28,6 +30,22 @@ export class OrderDetail {
   protected readonly busy = signal(false);
   protected readonly label = orderStatusLabel;
   protected readonly tagSeverity = orderStatusSeverity;
+  protected readonly lang = inject(LangService);
+
+  protected readonly timeline = computed(() => {
+    const status = this.order()?.status;
+    if (status === undefined || status === 5 || status === 6) return [];
+    return [1, 2, 3, 4].map((step) => ({
+      status: step,
+      label: orderStatusLabel(step),
+      state: step < status ? 'done' : step === status ? 'current' : 'todo',
+    }));
+  });
+
+  protected readonly terminated = computed(() => {
+    const status = this.order()?.status;
+    return status === 5 || status === 6 ? orderStatusLabel(status) : null;
+  });
 
   constructor() {
     void this.load();

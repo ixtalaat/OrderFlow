@@ -45,4 +45,10 @@ export class ProductsAdminService {
       threshold,
     });
   }
+
+  uploadImage(id: number, file: File): Observable<ManagedProduct> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.http.post<ManagedProduct>(`${this.config.apiUrl}/api/products/${id}/image`, form);
+  }
 }

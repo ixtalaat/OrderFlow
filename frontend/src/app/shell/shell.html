@@ -1,50 +1,63 @@
+<a class="skip-link" routerLink="/catalog">{{ lang.t('nav.skip') }}</a>
+<div class="promo-bar" role="note">{{ lang.t('nav.promo') }}</div>
 <header class="topbar">
   <div class="topbar-inner">
     <a routerLink="/" class="brand" aria-label="OrderFlow home">
-      <span class="brand-mark" aria-hidden="true">O</span>
-      <span class="brand-name">OrderFlow</span>
+      <app-logo />
     </a>
     <nav class="desktop-nav" aria-label="Primary">
       @for (link of primaryLinks(); track link.label) {
-        <a [routerLink]="link.route" routerLinkActive="active">{{ link.label }}</a>
+        <a [routerLink]="link.route" routerLinkActive="active">{{ link.label }}@if (link.badge) {
+          <span class="nav-badge" aria-label="{{ link.badge }} {{ lang.t('nav.cartItems') }}">{{ link.badge }}</span>
+        }</a>
       }
       @if (!isLoggedIn()) {
-        <a routerLink="/login">Log in</a>
-        <a routerLink="/register" class="nav-cta">Register</a>
+        <a routerLink="/login">{{ lang.t('nav.login') }}</a>
+        <a routerLink="/register" class="nav-cta">{{ lang.t('nav.register') }}</a>
       }
     </nav>
     <div class="topbar-actions">
+      <p-button
+        [label]="lang.current() === 'en' ? 'عربي' : 'EN'"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        [ariaLabel]="lang.t('lang.switch')"
+        (onClick)="lang.toggle()"
+      />
       <p-button
         [icon]="theme.dark() ? 'pi pi-sun' : 'pi pi-moon'"
         [rounded]="true"
         [text]="true"
         severity="secondary"
-        [ariaLabel]="theme.dark() ? 'Switch to light mode' : 'Switch to dark mode'"
+        [ariaLabel]="theme.dark() ? lang.t('theme.toLight') : lang.t('theme.toDark')"
         (onClick)="theme.toggle()"
       />
       @if (isLoggedIn()) {
-        <p-button label="Log out" severity="secondary" [text]="true" (onClick)="logout()" />
+        <p-button [label]="lang.t('nav.logout')" severity="secondary" [text]="true" (onClick)="logout()" />
       }
       <p-button
         icon="pi pi-bars"
         [rounded]="true"
         [text]="true"
         severity="secondary"
-        [ariaLabel]="'Open menu'"
+        [ariaLabel]="lang.t('nav.openMenu')"
         class="mobile-only"
         (onClick)="menuOpen.set(true)"
       />
     </div>
   </div>
 </header>
-<p-drawer [(visible)]="menuOpen" header="Menu" position="right">
+<p-drawer [(visible)]="menuOpen" [header]="lang.t('nav.menu')" position="right">
   <nav class="mobile-nav" aria-label="Mobile">
     @for (link of primaryLinks(); track link.label) {
-      <a [routerLink]="link.route" (click)="closeMenu()">{{ link.label }}</a>
+      <a [routerLink]="link.route" (click)="closeMenu()">{{ link.label }}@if (link.badge) {
+        <span class="nav-badge">{{ link.badge }}</span>
+      }</a>
     }
     @if (!isLoggedIn()) {
-      <a routerLink="/login" (click)="closeMenu()">Log in</a>
-      <a routerLink="/register" (click)="closeMenu()">Register</a>
+      <a routerLink="/login" (click)="closeMenu()">{{ lang.t('nav.login') }}</a>
+      <a routerLink="/register" (click)="closeMenu()">{{ lang.t('nav.register') }}</a>
     }
   </nav>
 </p-drawer>
@@ -54,20 +67,45 @@
 <footer class="footer">
   <div class="footer-grid">
     <div>
-      <strong>OrderFlow Store</strong>
-      <p>Every order in balance.</p>
+      <strong>{{ lang.t('footer.store') }}</strong>
+      <p>{{ lang.t('footer.tagline') }}</p>
+      <p class="footer-note">{{ lang.t('footer.secure') }}</p>
     </div>
     <div>
-      <strong>Shop</strong>
-      <a routerLink="/catalog">Catalog</a>
-      <a routerLink="/cart">Cart</a>
-      <a routerLink="/orders">Orders</a>
+      <strong>{{ lang.t('footer.shop') }}</strong>
+      <a routerLink="/catalog">{{ lang.t('nav.catalog') }}</a>
+      <a routerLink="/cart">{{ lang.t('nav.cart') }}</a>
+      <a routerLink="/orders">{{ lang.t('nav.orders') }}</a>
     </div>
     <div>
-      <strong>Account</strong>
-      <a routerLink="/login">Log in</a>
-      <a routerLink="/register">Register</a>
+      <strong>{{ lang.t('footer.account') }}</strong>
+      <a routerLink="/login">{{ lang.t('nav.login') }}</a>
+      <a routerLink="/register">{{ lang.t('nav.register') }}</a>
+    </div>
+    <div>
+      <strong>{{ lang.t('footer.newsTitle') }}</strong>
+      <p>{{ lang.t('footer.newsText') }}</p>
+      <form class="newsletter" (submit)="$event.preventDefault()">
+        <label class="visually-hidden" for="newsletter-email">{{ lang.t('footer.newsEmail') }}</label>
+        <input id="newsletter-email" type="email" placeholder="you@example.com" required />
+        <button type="submit">{{ lang.t('footer.newsSubscribe') }}</button>
+      </form>
     </div>
   </div>
 </footer>
-<p-toast />
+<p-toast>
+  <ng-template let-message pTemplate="headless">
+    <div class="toast-card" [attr.data-severity]="message.severity">
+      <span class="toast-text">
+        <strong>{{ message.summary }}</strong>
+        <span>{{ message.detail }}</span>
+      </span>
+      @if (message.data?.action === 'cart') {
+        <a routerLink="/cart" class="toast-action" (click)="clearToasts()">{{ lang.t('catalog.viewCart') }}</a>
+      }
+      <button type="button" class="toast-close" (click)="clearToasts()" aria-label="Dismiss notification">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
+  </ng-template>
+</p-toast>

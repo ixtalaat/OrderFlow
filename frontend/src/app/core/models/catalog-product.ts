@@ -6,4 +6,5 @@ export interface CatalogProduct {
   categoryName: string;
   currentCustomerPrice: number;
   availableQuantity: number;
+  imageUrl?: string | null;
 }

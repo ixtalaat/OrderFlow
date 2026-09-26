@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Button } from 'primeng/button';
@@ -15,7 +16,7 @@ import { orderStatusLabel, orderStatusSeverity } from '../../../core/models/orde
 
 @Component({
   selector: 'app-admin-orders',
-  imports: [RouterLink, Button, Card, Message, Paginator, Tag],
+  imports: [CurrencyPipe, RouterLink, Button, Card, Message, Paginator, Tag],
   templateUrl: './orders.html',
   styleUrl: './orders.scss',
 })
@@ -26,6 +27,7 @@ export class AdminOrders {
 
   protected readonly page = signal<PagedList<Order> | null>(null);
   protected readonly failure = signal<string | null>(null);
+  protected readonly loading = signal(false);
   protected readonly pageSize = 10;
   protected readonly label = orderStatusLabel;
   protected readonly tagSeverity = orderStatusSeverity;
@@ -50,11 +52,14 @@ export class AdminOrders {
   }
 
   private async load(pageNumber: number): Promise<void> {
+    this.loading.set(true);
     this.failure.set(null);
     try {
       this.page.set(await firstValueFrom(this.dashboard.orders(pageNumber, this.pageSize)));
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
+    } finally {
+      this.loading.set(false);
     }
   }
 }

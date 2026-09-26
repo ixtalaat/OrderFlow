@@ -1,23 +1,30 @@
-<h1>Checkout</h1>
+<h1>{{ lang.t('checkout.title') }}</h1>
 @if (cart.lines().length === 0) {
-  <p>Your cart is empty. <a routerLink="/catalog">Browse the catalog</a></p>
+  <p>{{ lang.t('checkout.empty') }} <a routerLink="/catalog">{{ lang.t('checkout.browse') }}</a></p>
 } @else {
-  <p-card header="Order summary">
-    @for (line of cart.lines(); track line.productId) {
-      <p>{{ line.name }} × {{ line.quantity }} — {{ line.unitPrice * line.quantity }}</p>
-    }
-    <p><strong>Subtotal: {{ cart.subtotal() }}</strong></p>
-    <label for="coupon">Coupon code (optional)</label>
-    <input
-      pInputText
-      id="coupon"
-      [ngModel]="couponCode()"
-      (ngModelChange)="couponCode.set($event)"
-      placeholder="SAVE10"
-    />
+  <p-card [header]="lang.t('checkout.summary')">
+    <ul class="order-lines">
+      @for (line of cart.lines(); track line.productId) {
+        <li>{{ line.name }} × {{ line.quantity }} — {{ line.unitPrice * line.quantity | currency:'EGP':'symbol':'1.2-2' }}</li>
+      }
+    </ul>
+    <p role="status"><strong>{{ lang.t('cart.subtotal') }}: {{ cart.subtotal() | currency:'EGP':'symbol':'1.2-2' }}</strong></p>
+    <div class="coupon-row">
+      <label for="coupon">{{ lang.t('checkout.coupon') }}</label>
+      <input
+        pInputText
+        id="coupon"
+        [ngModel]="couponCode()"
+        (ngModelChange)="couponCode.set($event)"
+        placeholder="SAVE10"
+        autocomplete="off"
+      />
+    </div>
     @if (failure()) {
       <p-message severity="error" [text]="failure()!" />
     }
-    <p-button label="Place order" styleClass="p-cta" (onClick)="submit()" [loading]="busy()" />
+    <div class="button-row">
+      <p-button [label]="lang.t('checkout.place')" styleClass="p-cta" (onClick)="submit()" [loading]="busy()" />
+    </div>
   </p-card>
 }

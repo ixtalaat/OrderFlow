@@ -99,7 +99,7 @@ test('customer registers, confirms, shops, orders, and cancels', async ({ page }
   await page.getByRole('button', { name: 'Add to cart' }).first().click();
 
   await page.goto('/cart');
-  await expect(page.getByText('Subtotal: 25', { exact: true })).toBeVisible();
+  await expect(page.getByText(/Subtotal:.*25\.00/)).toBeVisible();
   await page.getByRole('button', { name: 'Checkout' }).click();
   await expect(page).toHaveURL(/checkout/);
   await page.getByRole('button', { name: 'Place order' }).click();

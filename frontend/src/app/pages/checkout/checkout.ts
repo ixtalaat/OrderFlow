@@ -1,4 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { LangService } from '../../core/lang.service';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Button } from 'primeng/button';
@@ -13,7 +15,7 @@ import { ToastNotify } from '../../core/toast-notify';
 
 @Component({
   selector: 'app-checkout',
-  imports: [FormsModule, RouterLink, Button, Card, InputText, Message],
+  imports: [CurrencyPipe, FormsModule, RouterLink, Button, Card, InputText, Message],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
 })
@@ -26,6 +28,7 @@ export class Checkout {
 
   protected readonly couponCode = signal('');
   protected readonly failure = signal<string | null>(null);
+  protected readonly lang = inject(LangService);
   protected readonly busy = signal(false);
   private lastSignature: string | null = null;
   private idempotencyKey: string | null = null;

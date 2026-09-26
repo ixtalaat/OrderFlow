@@ -1,4 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { LangService } from '../../core/lang.service';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Button } from 'primeng/button';
@@ -14,7 +16,7 @@ import { orderStatusLabel, orderStatusSeverity } from '../../core/models/order-s
 
 @Component({
   selector: 'app-orders',
-  imports: [RouterLink, Button, Card, Message, Paginator, Tag],
+  imports: [CurrencyPipe, RouterLink, Button, Card, Message, Paginator, Tag],
   templateUrl: './orders.html',
   styleUrl: './orders.scss',
 })
@@ -24,9 +26,15 @@ export class Orders {
 
   protected readonly page = signal<PagedList<Order> | null>(null);
   protected readonly failure = signal<string | null>(null);
+  protected readonly loading = signal(false);
   protected readonly pageSize = 10;
   protected readonly label = orderStatusLabel;
   protected readonly tagSeverity = orderStatusSeverity;
+  protected readonly lang = inject(LangService);
+
+  protected linesCount(count: number): string {
+    return this.lang.t('orders.linesN').replace('{n}', String(count));
+  }
 
   constructor() {
     void this.load(1);
@@ -37,11 +45,14 @@ export class Orders {
   }
 
   private async load(pageNumber: number): Promise<void> {
+    this.loading.set(true);
     this.failure.set(null);
     try {
       this.page.set(await firstValueFrom(this.orders.history(pageNumber, this.pageSize)));
     } catch (error: unknown) {
       this.failure.set(this.errors.toMessage(error));
+    } finally {
+      this.loading.set(false);
     }
   }
 }

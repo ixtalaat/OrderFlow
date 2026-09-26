@@ -1,17 +1,28 @@
-<h1>My orders</h1>
+<h1>{{ lang.t('orders.title') }}</h1>
 @if (failure()) {
   <p-message severity="error" [text]="failure()!" />
 }
+@if (loading() && !page()) {
+  <p class="loading" role="status" aria-busy="true">{{ lang.t('orders.loading') }}</p>
+}
 @if (page(); as result) {
-  @for (order of result.items; track order.id) {
-    <p-card [header]="'Order #' + order.id">
-      <p><p-tag [value]="label(order.status)" [severity]="tagSeverity(order.status)" /></p>
-      <p>Total: {{ order.totalAmount }} · {{ order.items.length }} line(s)</p>
-      <p-button label="Details" [routerLink]="['/orders', order.id]" severity="secondary" />
-    </p-card>
-  } @empty {
-    <p>You have no orders yet. <a routerLink="/catalog">Browse the catalog</a></p>
-  }
+  <div class="order-list">
+    @for (order of result.items; track order.id) {
+      <p-card [header]="'Order #' + order.id">
+        <p><p-tag [value]="label(order.status)" [severity]="tagSeverity(order.status)" /></p>
+        <p>{{ lang.t('orders.total') }}: {{ order.totalAmount | currency:'EGP':'symbol':'1.2-2' }} · {{ linesCount(order.items.length) }}</p>
+        <p-button
+          [label]="lang.t('catalog.details')"
+          [routerLink]="['/orders', order.id]"
+          severity="secondary"
+          [text]="true"
+          [ariaLabel]="lang.t('orders.detailsOf') + ' ' + order.id"
+        />
+      </p-card>
+    } @empty {
+      <p>{{ lang.t('orders.empty') }} <a routerLink="/catalog">{{ lang.t('orders.browse') }}</a></p>
+    }
+  </div>
   <p-paginator
     [rows]="pageSize"
     [totalRecords]="result.totalCount"

@@ -1,0 +1,26 @@
+.cart-line {
+  gap: var(--of-space-md);
+  padding: var(--of-space-md) 0;
+}
+
+.cart-name {
+  flex: 1 1 10rem;
+  min-width: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.cart-price {
+  white-space: nowrap;
+}
+
+.button-row {
+  display: flex;
+  gap: var(--of-space-sm);
+  flex-wrap: wrap;
+  margin-top: var(--of-space-md);
+}
+
+p-inputnumber {
+  max-width: 100%;
+}

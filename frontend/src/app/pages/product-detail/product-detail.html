@@ -1,12 +1,23 @@
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a routerLink="/">Home</a>
+  <span aria-hidden="true">/</span>
+  <a routerLink="/catalog">{{ lang.t('nav.catalog') }}</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">Product</span>
+</nav>
 @if (failure()) {
   <p-message severity="error" [text]="failure()!" />
 }
 @if (product(); as item) {
-  <p-card [header]="item.name" [subheader]="item.categoryName">
+  <h1 class="product-title">{{ item.name }}</h1>
+  <app-product-art [name]="item.name" [category]="item.categoryName" [imageUrl]="item.imageUrl" />
+  <p-card [subheader]="item.categoryName">
     <p>{{ item.description }}</p>
-    <p>SKU: {{ item.sku }}</p>
-    <p><span class="price">{{ item.currentCustomerPrice }}</span> · {{ item.availableQuantity }} available</p>
-    <p-button label="Add to cart" styleClass="p-cta" (onClick)="add()" [disabled]="item.availableQuantity <= 0" />
-    <p-button label="Back to catalog" routerLink="/catalog" severity="secondary" />
+    <p class="sku">{{ lang.t('detail.sku') }}: {{ item.sku }}</p>
+    <p><span class="price">{{ item.currentCustomerPrice | currency:'EGP':'symbol':'1.2-2' }}</span> · {{ item.availableQuantity }} {{ lang.t('detail.available') }}</p>
+    <div class="button-row">
+      <p-button [label]="lang.t('detail.add')" styleClass="p-cta" (onClick)="add()" [disabled]="item.availableQuantity <= 0" />
+      <p-button [label]="lang.t('detail.back')" routerLink="/catalog" severity="secondary" [text]="true" />
+    </div>
   </p-card>
 }

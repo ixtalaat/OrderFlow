@@ -4,7 +4,6 @@ import { firstValueFrom } from 'rxjs';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputNumber } from 'primeng/inputnumber';
-import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { ApiErrorHandler } from '../../../core/api-error-handler';
 import { ToastNotify } from '../../../core/toast-notify';
@@ -12,7 +11,7 @@ import { PricingService } from '../../../core/pricing.service';
 
 @Component({
   selector: 'app-admin-pricing',
-  imports: [FormsModule, Button, Dialog, InputNumber, InputText, Message],
+  imports: [FormsModule, Button, Dialog, InputNumber, Message],
   templateUrl: './pricing.html',
   styleUrl: './pricing.scss',
 })

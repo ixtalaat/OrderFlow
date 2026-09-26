@@ -3,8 +3,13 @@
 :root {
   --of-font-heading: 'Rubik', 'Segoe UI', system-ui, sans-serif;
   --of-font-body: 'Nunito Sans', 'Segoe UI', system-ui, sans-serif;
+  --of-ink: #0b1f17;
   --of-accent: #ea580c;
+  --of-accent-dark: #c2410c;
   --of-accent-contrast: #ffffff;
+  --of-green: #059669;
+  --of-green-strong: #047857;
+  --of-green-soft: rgba(5, 150, 105, 0.1);
   --of-space-xs: 0.25rem;
   --of-space-sm: 0.5rem;
   --of-space-md: 1rem;
@@ -12,9 +17,36 @@
   --of-space-xl: 2rem;
   --of-space-2xl: 3rem;
   --of-space-3xl: 4rem;
+  --of-radius-sm: 0.5rem;
   --of-radius: 0.75rem;
+  --of-radius-lg: 1rem;
+  --of-radius-xl: 1.25rem;
   --of-transition: 200ms ease;
-  --of-page-max: 72rem;
+  --of-page-max: 80rem;
+  --of-gutter: 1.5rem;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: var(--of-ink);
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-subtle: #e2e8f0;
+  --shadow-card: 0 4px 6px rgba(2, 6, 23, 0.06);
+  --shadow-lift: 0 20px 25px rgba(2, 6, 23, 0.12);
+}
+
+html.app-dark {
+  --of-green-bright: #34d399;
+  --bg-primary: #020617;
+  --bg-secondary: #0b1526;
+  --bg-card: #0f172a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-subtle: #1e293b;
+  --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lift: 0 20px 25px rgba(0, 0, 0, 0.4);
 }
 
 *,
@@ -40,13 +72,29 @@ body {
   font-family: var(--of-font-body);
   font-size: 1rem;
   line-height: 1.5;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-.app-dark body {
-  background: #020617;
-  color: #f1f5f9;
+img {
+  max-width: 100%;
+}
+
+/* Routed page container. Global (not shell-scoped): component style
+   encapsulation does not cross the router-outlet boundary, so a scoped
+   `.content > router-outlet + *` rule never matches the page component. */
+main.content > router-outlet + * {
+  display: block;
+  max-width: var(--of-page-max);
+  margin-inline: auto;
+  padding: var(--of-space-lg) var(--of-gutter) var(--of-space-2xl);
+  min-width: 0;
+}
+
+@media (max-width: 48rem) {
+  main.content > router-outlet + * {
+    padding-top: var(--of-space-md);
+  }
 }
 
 h1,
@@ -140,16 +188,37 @@ a {
   font-family: var(--of-font-heading);
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
-}
-
-.app-dark .price {
-  color: #f8fafc;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 .auth-card {
   max-width: 28rem;
-  margin: var(--of-space-2xl) auto;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Split-screen auth: brand aside beside the form. */
+.auth-split {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: var(--of-space-xl);
+  align-items: stretch;
+  max-width: 56rem;
+  margin: var(--of-space-xl) auto;
+}
+
+.auth-main {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+@media (max-width: 48rem) {
+  .auth-split {
+    grid-template-columns: 1fr;
+    margin-top: var(--of-space-md);
+  }
 }
 
 .auth-icon {
@@ -184,6 +253,87 @@ a {
 
 .table-wrap {
   overflow-x: auto;
+  margin-bottom: var(--of-space-md);
+}
+
+/* Vertical rhythm between stacked components. */
+main p-message {
+  display: block;
+  margin: 0 0 var(--of-space-md);
+}
+
+main p-paginator {
+  display: block;
+  margin-top: var(--of-space-lg);
+}
+
+main p-card {
+  display: block;
+}
+
+/* Stacked card lists (orders, queue): consistent gaps on all screens. */
+.order-list {
+  display: grid;
+  gap: var(--of-space-md);
+  margin-bottom: var(--of-space-md);
+}
+
+@media (min-width: 48rem) {
+  .order-list {
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  }
+}
+
+.loading {
+  color: var(--text-muted);
+  padding: var(--of-space-lg) 0;
+}
+
+.hint {
+  color: var(--text-muted);
+}
+
+/* Admin table action cells: never force horizontal scroll on mobile. */
+.row-actions {
+  display: flex;
+  gap: var(--of-space-xs);
+  flex-wrap: wrap;
+  min-width: 12rem;
+}
+
+/* PrimeNG dialogs: stacked full-width form that fits 375px screens. */
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--of-space-sm);
+  padding-top: var(--of-space-sm);
+}
+
+.dialog-form label {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.dialog-form input,
+.dialog-form p-inputnumber,
+.dialog-form .p-inputnumber {
+  width: 100%;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* Generic wrapping button group for cards and detail pages. */
+.button-row {
+  display: flex;
+  gap: var(--of-space-sm);
+  flex-wrap: wrap;
+  margin-top: var(--of-space-md);
 }
 
 .line-row {
@@ -191,12 +341,8 @@ a {
   align-items: center;
   gap: var(--of-space-sm);
   padding: var(--of-space-sm) 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-subtle);
   flex-wrap: wrap;
-}
-
-.app-dark .line-row {
-  border-bottom-color: #1e293b;
 }
 
 .app-dark a {
@@ -211,6 +357,17 @@ a {
   .page {
     padding: var(--of-space-md) var(--of-space-sm) var(--of-space-xl);
   }
+}
+
+[dir='rtl'] .toolbar-field select,
+[dir='rtl'] .newsletter input {
+  text-align: right;
+}
+
+[dir='rtl'] .breadcrumb,
+[dir='rtl'] .chip-row,
+[dir='rtl'] .toolbar {
+  direction: rtl;
 }
 
 @media (prefers-reduced-motion: reduce) {

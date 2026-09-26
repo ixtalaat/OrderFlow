@@ -9,6 +9,7 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { AppConfigService } from '../../core/app-config.service';
 import { ApiErrorHandler } from '../../core/api-error-handler';
+import { LangService } from '../../core/lang.service';
 
 @Component({
   selector: 'app-confirm-email',
@@ -24,6 +25,7 @@ export class ConfirmEmail {
 
   protected readonly failure = signal<string | null>(null);
   protected readonly busy = signal(false);
+  protected readonly lang = inject(LangService);
   protected readonly form = inject(FormBuilder).group({
     email: [inject(ActivatedRoute).snapshot.queryParamMap.get('email') ?? '', Validators.required],
     token: ['', Validators.required],
