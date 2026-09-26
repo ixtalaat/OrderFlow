@@ -77,3 +77,20 @@ dominate traffic. The natural first step then is short-TTL caching of the
 no-search browse pages only (the path the new covering index serves), with
 write-through invalidation on product and pricing-rule changes and
 graceful fall-through to the database on cache failure.
+
+## Full-text search evaluation (2026-09-26)
+
+Evaluated end to end and reverted: the stock SQL Server Linux image ships
+no Full-Text Engine (`CREATE FULLTEXT INDEX` fails with error 7609 and
+crash-loops the API at startup). Migration `AddProductFullTextSearch` is
+kept as a guarded no-op (creates `FTCatalog` plus the
+`Products(Name, Description, Sku)` index only when
+`IsFullTextInstalled = 1`); the repository stays on `LIKE` everywhere.
+See ADR-011. Browse (no term) still uses the `IX_Products_IsActive_Name`
+covering index.
+
+## Caching revisit (2026-09-26)
+
+Per user request the triggers were re-checked: handler time remains
+single-digit ms, no DB saturation signal, no identical-page dominance data.
+Decision stands — no cache. Next check at the same p95 > 200 ms trigger.

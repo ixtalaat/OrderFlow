@@ -34,3 +34,9 @@ covering indexes (see `docs/products/catalog-performance.md`).
   production data, reads saturate the DB, or identical page reads dominate.
   First step then: short-TTL no-search browse pages only, with
   write-through invalidation and DB fall-through.
+
+## Revisit 2026-09-26
+
+Triggers re-checked at user request: no latency problem, no saturation,
+no dominance evidence. Decision stands (no cache). See
+`docs/products/catalog-performance.md`.

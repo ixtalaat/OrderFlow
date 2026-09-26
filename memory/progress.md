@@ -1,5 +1,51 @@
 # Project Progress
 
+## Roadmap bundle (2026-09-26)
+
+Backend-first per user scope: SQL Server full-text catalog search
+(`AddProductFullTextSearch`, `FreeText` with `LIKE` fallback, ADR-011);
+caching revisit (triggers re-checked, no-cache stands, ADR-007 + catalog
+doc updated); accounting `Fake`/`GenericRest`/`Disabled` provider seam
+with `X-Api-Key` and configurable path; Testcontainers CI already present
+(`sqlserver-tests`), roadmap marked done; full OpenTelemetry
+(ASP.NET/HttpClient/EF Core/runtime, OTLP collector + Prometheus +
+Grafana, ADR-012). Frontend: debounced catalog search with sort/category
+chips/in-stock filter, currency prices, badge/promo/footer polish, lazy
+routes. Backend: 165 unit + 12 targeted integration green; `ng build`
+green (Karma needs CHROME_BIN, runs in CI).
+
+## Frontend fix bundle (2026-09-26)
+
+"Data doesn't load" on order/catalog pages traced to role gating, not a
+backend outage (API healthy; customer catalog/orders verified via API and
+Playwright): the shell linked Customer-only pages to staff, who got 403s
+with a generic message. Fixed with role-aware nav (staff see backoffice
+only), plain-language 401/403 messages, and loading indicators on every
+list page. Responsive pass: cart `.line`→`.line-row` fix, wrapping button
+rows, `overflow-wrap` for names/SKUs, mobile-capped admin dialogs with
+stacked forms, wrapping table actions, table/dialog empty states,
+`CurrencyPipe` prices, dashboard clamp, chip `aria-pressed`, labelled
+steppers/buttons, `role=status` totals. Verified: `ng build` warning-free;
+Playwright as customer (catalog 3, orders/cart empty states) and admin
+(backoffice nav, dashboard, products, inventory) with zero failed
+requests.
+
+## FTS incident (2026-09-26, live stack)
+
+Shipped `FreeText` search + FTS migration without a Designer partial, so
+`MigrateAsync` never applied it (search silently stayed on `LIKE`). After
+adding the Designer, the migration crash-looped the API: the stock SQL
+Linux image has no Full-Text Engine (`CREATE FULLTEXT INDEX` → 7609;
+`CREATE FULLTEXT CATALOG` alone succeeds, and the `IF` guard does not
+help because the statement is validated at batch-compile time).
+Recovered via `EXEC(N'...')` dynamic SQL (compiles only on capable
+servers) + reverting the repository to `LIKE`-only. Verified live:
+migration recorded, `/health/ready` Healthy, search/browse/orders 200.
+Lessons: hand-written migrations need the `[Migration]` Designer
+partial (`dotnet ef migrations list` must show them Pending before
+deploy); never gate engine features on runtime `IF` alone — use dynamic
+SQL; stock Linux SQL images have no FTS (see ADR-011).
+
 ## Frontend delivery
 
 nginx image with runtime `API_URL` entrypoint, `frontend` compose service,
@@ -114,3 +160,7 @@ Verification: unit and integration test suites pass locally (46 unit tests and 2
 Remaining Epic 2 consideration:
 
 - Customer deactivation now prevents the associated customer from obtaining new login tokens. Existing JWTs remain valid until normal expiration; token revocation is outside the Epic 2 scope.
+
+## Egypt localization (2026-09-26)
+
+Backend: Product.ImageUrl + AddProductImageUrl migration, JPEG/PNG upload endpoint with magic-byte + 5 MB guards, static files, IProductImageStorage DI; CatalogSeeder with 24 door-accessory products (Arabic names/descs, EGP, stock; idempotent; skipped in Testing); wired in Program.cs. Frontend: photo-with-fallback ProductArt, cart image pass-through, admin upload UI, EGP everywhere, LangService + ~140-key AR dictionary for shop/auth/shell with dir=rtl toggle (backoffice EN). Verified: 170 unit + 79 integration green; AR DOM (dir/lang/strings) correct; EN home screenshot clean. RTL white-screen fixed (skip-link clip pattern) but the final AR paint check is pending a stable local environment (stack and dev servers were being restarted mid-session). Upload real product photos via the admin product dialog; seed ships with art fallback.

@@ -46,6 +46,23 @@ pinned by `GlobalExceptionHandlerTests`.
   runs). There is no Redis check because the stack uses no Redis
   (see `docs/products/catalog-performance.md`).
 
+## OpenTelemetry (traces + metrics)
+
+`OrderFlow.API` registers OpenTelemetry (disabled in `Testing`):
+
+- Tracing: ASP.NET Core, HttpClient, EF Core, plus the `OrderFlow.Api`
+  `ActivitySource`. OTLP export when `Telemetry:OtlpEndpoint` is set
+  (`http://otel-collector:4317` in compose).
+- Metrics: ASP.NET Core, HttpClient, .NET runtime, plus the `OrderFlow.Api`
+  meter (`orderflow.orders.created`, `orderflow.accounting.syncs`).
+- Collector (`docker/otel-collector-config.yaml`) receives OTLP and exposes
+  Prometheus format on `:8889`; `docker/prometheus.yml` scrapes it and
+  Grafana runs on `:3000` (see `docker-compose.yml`). No API `/metrics`
+  endpoint — Prometheus scrapes the collector.
+
+Correlation IDs remain the log-level trace key; OTel spans carry their own
+trace IDs. Both are returned/logged per request.
+
 ## Sensitive information
 
 Never logged: passwords, JWTs and signing keys, connection strings, email
